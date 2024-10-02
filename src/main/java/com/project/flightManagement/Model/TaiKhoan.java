@@ -32,10 +32,10 @@ public class TaiKhoan {
     private String matKhau;
 
     @OneToOne
-    @JoinColumn(name = "id_khach_hang", nullable = false)
+    @JoinColumn(name = "id_khach_hang", nullable = true)
     private KhachHang khachHang;
     @OneToOne
-    @JoinColumn(name = "id_nhan_vien", nullable = false)
+    @JoinColumn(name = "id_nhan_vien", nullable = true)
     private NhanVien nhanVien;
     @Column(name = "thoi_gian_tao", nullable = false)
     private LocalDateTime thoiGianTao;
