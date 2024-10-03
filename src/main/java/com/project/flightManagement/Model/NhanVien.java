@@ -11,11 +11,13 @@ import lombok.NoArgsConstructor;
 import java.util.Date;
 import java.util.List;
 
-@Entity
-@Table(name = "nhanvien")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+
+@Entity
+@Table(name = "nhanvien")
+
 public class NhanVien {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
