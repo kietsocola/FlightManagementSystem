@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface MayBayRepository extends JpaRepository<MayBay, Integer> {
-    MayBay findByIcao(String icao);
+    MayBay findByIcaoMayBay(String icaoMayBay);
     MayBay findBySoHieu(String soHieu);
     List<MayBay> findByTenMayBay(String keyword);
     List<MayBay> findByHangBay(HangBay hangBay);

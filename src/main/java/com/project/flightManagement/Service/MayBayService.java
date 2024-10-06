@@ -12,7 +12,7 @@ import java.util.Optional;
 @Service
 public interface MayBayService {
     public Optional<MayBayDTO> getMayBayById(int id);
-    public Optional<MayBayDTO> getMayBayByIcao(String icao);
+    public Optional<MayBayDTO> getMayBayByIcaoMayBay(String icaoMayBay);
     public Optional<MayBayDTO> getMayBayBySoHieu(String soHieu);
     public Optional<MayBayDTO> addNewMayBay(MayBayDTO mayBayDTO);
     public Optional<MayBayDTO> updateMayBay(MayBayDTO mayBayDTO);

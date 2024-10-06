@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "http://localhost:5175")
 public class MayBayController {
     @Autowired
     private MayBayService mayBayService;
@@ -47,7 +47,7 @@ public class MayBayController {
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
-    @GetMapping("/GetAllPlane")
+    @GetMapping("/getAllPlane")
     public ResponseEntity<ResponseData> getAllPlane() {
         Iterable<MayBayDTO> mbDTO = mayBayService.getAllMayBay();
         if(mbDTO.iterator().hasNext()) {
@@ -150,7 +150,7 @@ public class MayBayController {
                 }
             }
             if (mbDTO.getIcaoMayBay() != null) {
-                Optional<MayBayDTO> existingMBByIcao = mayBayService.getMayBayByIcao(mbDTO.getIcaoMayBay());
+                Optional<MayBayDTO> existingMBByIcao = mayBayService.getMayBayByIcaoMayBay(mbDTO.getIcaoMayBay());
                 if (existingMBByIcao.isPresent()) {
                     response.setMessage("Plane with this ICAO already exists!!");
                     response.setData(null);
@@ -211,7 +211,7 @@ public class MayBayController {
                     }
                 }
                 if (mbDTO.getIcaoMayBay() != null && !Objects.equals(existingMB.get().getIcaoMayBay(), mbDTO.getIcaoMayBay())) {
-                    Optional<MayBayDTO> existingMBByIcao = mayBayService.getMayBayByIcao(mbDTO.getIcaoMayBay());
+                    Optional<MayBayDTO> existingMBByIcao = mayBayService.getMayBayByIcaoMayBay(mbDTO.getIcaoMayBay());
                     if (existingMBByIcao.isPresent()) {
                         response.setMessage("Plane with this ICAO already exists!!");
                         response.setData(null);

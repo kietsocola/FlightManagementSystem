@@ -46,9 +46,9 @@ public class MayBayServiceImpl implements MayBayService {
         }
     }
     @Override
-    public Optional<MayBayDTO> getMayBayByIcao(String icao){
+    public Optional<MayBayDTO> getMayBayByIcaoMayBay(String icaoMayBay){
         try {
-            MayBay mb = mbRepo.findByIcao(icao);
+            MayBay mb = mbRepo.findByIcaoMayBay(icaoMayBay);
             return Optional.ofNullable(MayBayMapper.toDTO(mb));
         } catch (Exception e) {
             return Optional.empty();

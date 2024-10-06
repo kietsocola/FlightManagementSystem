@@ -8,4 +8,5 @@ import java.util.Optional;
 @Service
 public interface HangBayService {
     public Optional<HangBayDTO> getHangBayById(int id);
+    public Iterable<HangBayDTO> getAllHangBay();
 }
