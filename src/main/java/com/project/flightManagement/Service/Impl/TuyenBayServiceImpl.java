@@ -22,18 +22,20 @@ public class TuyenBayServiceImpl implements TuyenBayService {
     private TuyenBayRepository tuyenBayRepo;
 
     @Override
-    public Iterable<TuyenBayDTO> getAllTuyenBay() {
+    public List<TuyenBayDTO> getAllTuyenBay() {
         try {
             Iterable<TuyenBay> listTuyenBay = tuyenBayRepo.findAll();
-            Iterable<TuyenBayDTO> listTuyenBayDTO = StreamSupport.stream(listTuyenBay.spliterator(), false)
-                .map(TuyenBayMapper::toDTO)
-                .collect(Collectors.toList());
-            return listTuyenBayDTO;
+            return StreamSupport.stream(listTuyenBay.spliterator(), false)
+                    .map(TuyenBayMapper::toDTO)
+                    .collect(Collectors.toList());
         } catch (Exception e) {
-            System.err.println("Error occurred while fetching routes: " + e.getMessage());
+            System.err.println("Error occurred while fetching routes: " + e);
+
             return Collections.emptyList();
         }
     }
+
+
 
     @Override
     public Optional<TuyenBayDTO> getTuyenBayById(int id) {
