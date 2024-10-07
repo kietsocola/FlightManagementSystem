@@ -43,8 +43,9 @@ public class KhachHangController {
     }
 
     @GetMapping("/getAllCustomerSorted")
-    public ResponseEntity<ResponseData> getAllKhachHang(@RequestParam(defaultValue = "idKhachHang") String sortBy){
-        Iterable<KhachHangDTO> listKhDTO = khachHangService.getAllKhachHangSorted(sortBy);
+    public ResponseEntity<ResponseData> getAllKhachHang(@RequestParam(defaultValue = "idKhachHang") String sortBy,
+                                                        @RequestParam(defaultValue = "asc") String order){
+        Iterable<KhachHangDTO> listKhDTO = khachHangService.getAllKhachHangSorted(sortBy, order);
         if(listKhDTO.iterator().hasNext()){
             response.setMessage("get list customers success!!");
             response.setData(listKhDTO);
@@ -106,37 +107,17 @@ public class KhachHangController {
         // Kiểm tra xem khDTO có khác null và có ít nhất một trường thông tin cần thiết không
         if (khDTO != null && (khDTO.getEmail() != null || khDTO.getCccd() != null || khDTO.getSoDienThoai() != null)) {
 
-            // Kiểm tra sự tồn tại theo email
-            if (khDTO.getEmail() != null) {
-                Optional<KhachHangDTO> existingKHByEmail = khachHangService.getKhachHangByEmail(khDTO.getEmail());
-                if (existingKHByEmail.isPresent()) {
-                    response.setMessage("Customer with this email already exists!!");
-                    response.setData(null);
-                    response.setStatusCode(409); // Conflict
-                    return new ResponseEntity<>(response, HttpStatus.CONFLICT);
-                }
+            ResponseEntity<ResponseData> rs = checkExistEmail(khDTO.getEmail());
+            if(rs!=null){
+                return rs;
             }
-
-            // Kiểm tra sự tồn tại theo số điện thoại
-            if (khDTO.getSoDienThoai() != null) {
-                Optional<KhachHangDTO> existingKHByPhone = khachHangService.getKhachHangBySDT(khDTO.getSoDienThoai());
-                if (existingKHByPhone.isPresent()) {
-                    response.setMessage("Customer with this phone number already exists!!");
-                    response.setData(null);
-                    response.setStatusCode(409); // Conflict
-                    return new ResponseEntity<>(response, HttpStatus.CONFLICT);
-                }
+            rs = checkExistCCCD(khDTO.getCccd());
+            if(rs!=null){
+                return rs;
             }
-
-            // Kiểm tra sự tồn tại theo CCCD
-            if (khDTO.getCccd() != null) {
-                Optional<KhachHangDTO> existingKHByCccd = khachHangService.getKhachHangByCccd(khDTO.getCccd());
-                if (existingKHByCccd.isPresent()) {
-                    response.setMessage("Customer with this CCCD already exists!!");
-                    response.setData(null);
-                    response.setStatusCode(409); // Conflict
-                    return new ResponseEntity<>(response, HttpStatus.CONFLICT);
-                }
+            rs = checkExistSDT(khDTO.getSoDienThoai());
+            if(rs!=null){
+                return rs;
             }
 
             // Nếu không có thông tin nào tồn tại, tiến hành lưu khách hàng mới
@@ -184,32 +165,23 @@ public class KhachHangController {
 
                 // Kiểm tra xem email, số điện thoại, CCCD đã tồn tại hay chưa (nếu có sự thay đổi)
                 if (khDTO.getEmail() != null && !Objects.equals(existingKH.get().getEmail(), khDTO.getEmail()) ) {
-                    Optional<KhachHangDTO> existingKHByEmail = khachHangService.getKhachHangByEmail(khDTO.getEmail());
-                    if (existingKHByEmail.isPresent()) {
-                        response.setMessage("Customer with this email already exists!!");
-                        response.setData(null);
-                        response.setStatusCode(409); // Conflict
-                        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+                    ResponseEntity<ResponseData> rs = checkExistEmail(khDTO.getEmail());
+                    if(rs!=null){
+                        return rs;
                     }
                 }
 
                 if (khDTO.getSoDienThoai() != null && !Objects.equals(existingKH.get().getSoDienThoai(), khDTO.getSoDienThoai())) {
-                    Optional<KhachHangDTO> existingKHByPhone = khachHangService.getKhachHangBySDT(khDTO.getSoDienThoai());
-                    if (existingKHByPhone.isPresent()) {
-                        response.setMessage("Customer with this phone number already exists!!");
-                        response.setData(null);
-                        response.setStatusCode(409); // Conflict
-                        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+                    ResponseEntity<ResponseData> rs = checkExistSDT(khDTO.getSoDienThoai());
+                    if(rs!=null){
+                        return rs;
                     }
                 }
 
                 if (khDTO.getCccd() != null && !Objects.equals(existingKH.get().getCccd(), khDTO.getCccd())) {
-                    Optional<KhachHangDTO> existingKHByCccd = khachHangService.getKhachHangByCccd(khDTO.getCccd());
-                    if (existingKHByCccd.isPresent()) {
-                        response.setMessage("Customer with this CCCD already exists!!");
-                        response.setData(null);
-                        response.setStatusCode(409); // Conflict
-                        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+                    ResponseEntity<ResponseData> rs = checkExistCCCD(khDTO.getCccd());
+                    if(rs!=null){
+                        return rs;
                     }
                 }
 
@@ -244,6 +216,43 @@ public class KhachHangController {
     }
 
 
+    public ResponseEntity<ResponseData> checkExistEmail(String email){
+        Optional<KhachHangDTO> existingKHByEmail = khachHangService.getKhachHangByEmail(email);
+        if (existingKHByEmail.isPresent()) {
+            response.setMessage("Customer with this email already exists!!");
+            Map<String, String> errorMessage = new HashMap<>();
+            errorMessage.put("email", "Customer with this email already exists!!");
+            response.setData(errorMessage);
+            response.setStatusCode(409); // Conflict
+            return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+        }
+        return null;
+    }
+
+    public ResponseEntity<ResponseData> checkExistSDT(String sdt){
+        Optional<KhachHangDTO> existingKHByPhone = khachHangService.getKhachHangBySDT(sdt);
+        if (existingKHByPhone.isPresent()) {
+            response.setMessage("Customer with this phone number already exists!!");
+            Map<String, String> errorMessage = new HashMap<>();
+            errorMessage.put("soDienThoai", "Customer with this phone number already exists!!");
+            response.setData(errorMessage);
+            response.setStatusCode(409); // Conflict
+            return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+        }
+        return null;
+    }
+    public ResponseEntity<ResponseData> checkExistCCCD(String cccd){
+        Optional<KhachHangDTO> existingKHByCccd = khachHangService.getKhachHangByCccd(cccd);
+        if (existingKHByCccd.isPresent()) {
+            response.setMessage("Customer with this CCCD already exists!!");
+            Map<String, String> errorMessage = new HashMap<>();
+            errorMessage.put("cccd", "Customer with this cccd already exists!!");
+            response.setData(errorMessage);
+            response.setStatusCode(409); // Conflict
+            return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+        }
+        return null;
+    }
 
 
 }

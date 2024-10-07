@@ -19,6 +19,6 @@ public interface KhachHangService {
     public Optional<KhachHangDTO> getKhachHangBySDT(String sodienthoai);
 
     public Optional<KhachHangDTO> getKhachHangByCccd(String cccd);
-    public Iterable<KhachHangDTO> getAllKhachHangSorted(String sortBy);
+    public Iterable<KhachHangDTO> getAllKhachHangSorted(String sortBy, String direction);
     public List<KhachHangDTO> findByHoTen(String keyword);
 }

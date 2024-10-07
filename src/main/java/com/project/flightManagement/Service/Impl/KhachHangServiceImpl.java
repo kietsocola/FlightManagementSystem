@@ -104,10 +104,15 @@ public class KhachHangServiceImpl implements KhachHangService {
     }
 
     @Override
-    public Iterable<KhachHangDTO> getAllKhachHangSorted(String sortBy) {
+    public Iterable<KhachHangDTO> getAllKhachHangSorted(String sortBy, String direction) {
         try {
+            List<KhachHang> khachHangList;
             // Lấy danh sách KhachHang từ cơ sở dữ liệu và sắp xếp theo sortBy
-            List<KhachHang> khachHangList = khRepo.findAll(Sort.by(Sort.Direction.DESC, sortBy));
+            if(direction.equals("asc")) {
+                khachHangList = khRepo.findAll(Sort.by(Sort.Direction.ASC, sortBy));
+            } else {
+                khachHangList = khRepo.findAll(Sort.by(Sort.Direction.DESC, sortBy));
+            }
 
             // Chuyển đổi từ KhachHang sang KhachHangDTO
             List<KhachHangDTO> khachHangDTOList = khachHangList.stream()
@@ -130,8 +135,13 @@ public class KhachHangServiceImpl implements KhachHangService {
 
     @Override
     public List<KhachHangDTO> findByHoTen(String keyword) {
-        List<KhachHang> khachHangList = khRepo.findByHoTen(keyword);
-
+        List<KhachHang> khachHangList = khRepo.findByKeywordContainingIgnoreCase(keyword);
+        if (khachHangList.isEmpty()) {
+            System.out.println("No customer found with the keyword: " + keyword);
+        } else {
+            KhachHang kh = khachHangList.get(0); // Dùng get(0) thay vì getFirst()
+            System.out.println("Id kh found: " + kh.getHoTen());
+        }
         return khachHangList.stream()
                 .map(KhachHangMapper::toDTO)
                 .collect(Collectors.toList());
