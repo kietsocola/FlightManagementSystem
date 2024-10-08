@@ -1,6 +1,6 @@
-package com.project.flightManagement.DTO.KhachHangDTO;
+package com.project.flightManagement.DTO.NhanVienDTO;
 
-import com.project.flightManagement.Enum.GioiTinhEnum;
+import com.project.flightManagement.Enum.ActiveEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,12 +9,14 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class KhachHangCreateDTO {
-    private int id;
+public class NhanVienDTO {
+    private int idNhanVien;
     private String cccd;
     private String email;
-    private GioiTinhEnum gioiTinh;
+    private String gioiTinh;
     private String hoTen;
     private Date ngaySinh;
     private String soDienThoai;
+    private ActiveEnum trangthai;
+
 }

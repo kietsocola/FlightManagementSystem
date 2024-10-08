@@ -3,8 +3,10 @@ package com.project.flightManagement.Service.Impl;
 import com.project.flightManagement.DTO.AuthDTO.LoginDTO;
 import com.project.flightManagement.DTO.AuthDTO.SignupDTO;
 import com.project.flightManagement.DTO.KhachHangDTO.KhachHangCreateDTO;
+import com.project.flightManagement.DTO.TaiKhoanDTO.TaiKhoanDTO;
 import com.project.flightManagement.Enum.ActiveEnum;
 import com.project.flightManagement.Mapper.KhachHangMapper;
+import com.project.flightManagement.Mapper.TaiKhoanMapper;
 import com.project.flightManagement.Model.KhachHang;
 import com.project.flightManagement.Model.Quyen;
 import com.project.flightManagement.Model.TaiKhoan;
@@ -12,6 +14,11 @@ import com.project.flightManagement.Repository.TaiKhoanRepository;
 import com.project.flightManagement.Service.KhachHangService;
 import com.project.flightManagement.Service.TaiKhoanService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -25,46 +32,46 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
     private KhachHangService khachHangService;
     @Autowired
     private KhachHangMapper khachHangMapper;
+    @Autowired
+    @Lazy
+    private TaiKhoanMapper taiKhoanMapper;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     @Override
     public boolean checkLogin(LoginDTO loginDTO) {
-        try {
-            // Tìm tài khoản theo tên đăng nhập từ repository
-            Optional<TaiKhoan> optionalTaiKhoan = taiKhoanRepository.findTaiKhoanByTenDangNhap(loginDTO.getUserName());
+        Optional<TaiKhoan> optionalTaiKhoan = taiKhoanRepository.findTaiKhoanByTenDangNhap(loginDTO.getUserName());
 
-            if (optionalTaiKhoan.isPresent()) {
-                TaiKhoan taiKhoan = optionalTaiKhoan.get();
-                if (taiKhoan.getMatKhau().equals(loginDTO.getPassword())) {
-                    return true; // Đăng nhập thành công
-                } else {
-                    return false; // Sai mật khẩu
-                }
-            } else {
-                return false; // Không tìm thấy tài khoản
+        if (optionalTaiKhoan.isPresent()) {
+            TaiKhoan taiKhoan = optionalTaiKhoan.get();
+            if (passwordEncoder.matches(loginDTO.getPassword(), taiKhoan.getMatKhau())) {
+                return true; // Đăng nhập thành công
             }
-
-        } catch (Exception e) {
-            System.err.println("Đã xảy ra lỗi khi kiểm tra đăng nhập: " + e.getMessage());
-            e.printStackTrace();
         }
-        return false;
+        return false; // Sai mật khẩu hoặc không tìm thấy tài khoản
     }
+
 
     @Override
     public Optional<TaiKhoan> getTaiKhoanByTenDangNhap(String userName) {
-        try {
-            Optional<TaiKhoan> optionalTaiKhoan = taiKhoanRepository.findTaiKhoanByTenDangNhap(userName);
-            if (optionalTaiKhoan.isPresent()) {
-                return optionalTaiKhoan;
-            } else {
-                System.out.println("Không tìm thấy tài khoản với tên đăng nhập: " + userName);
-                return Optional.empty();
-            }
-        } catch (Exception e) {
-            // Log lỗi để dễ dàng theo dõi
-            System.err.println("Đã xảy ra lỗi khi tìm tài khoản với tên đăng nhập: " + userName);
-            e.printStackTrace();
-            return Optional.empty();
+        return taiKhoanRepository.findTaiKhoanByTenDangNhap(userName);
+    }
+
+    @Override
+    public TaiKhoanDTO getTaiKhoanByIdTaiKhoan(int idTaiKhoan) {
+        Optional<TaiKhoan> taiKhoanOptional = taiKhoanRepository.findTaiKhoanByIdTaiKhoan(idTaiKhoan);
+        if(taiKhoanOptional.isEmpty()) {
+            return null;
         }
+        TaiKhoan taiKhoan = taiKhoanOptional.get();
+        return taiKhoanMapper.toTaiKhoanDTO(taiKhoan);
+    }
+
+    @Override
+    public Page<TaiKhoanDTO> getAllTaiKhoan(int page, int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<TaiKhoan> taiKhoanPage = taiKhoanRepository.findAll(pageable);
+        return taiKhoanPage.map(taiKhoanMapper::toTaiKhoanDTO);
     }
 
     @Override
@@ -74,7 +81,7 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
             KhachHang khachHangNew = khachHangService.createKhachHang(khachHangCreateDTO);
             TaiKhoan taiKhoan = new TaiKhoan();
             taiKhoan.setTenDangNhap(signupDTO.getUserName());
-            taiKhoan.setMatKhau(signupDTO.getPassword());
+            taiKhoan.setMatKhau(passwordEncoder.encode(signupDTO.getPassword()));
             taiKhoan.setKhachHang(khachHangNew);
             Quyen quyen = new Quyen();
             quyen.setIdQuyen(1);
@@ -84,17 +91,15 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
             taiKhoanRepository.save(taiKhoan);
             return true;
         }catch (Exception e) {
-            System.out.println(e);
+            System.err.println("Lỗi khi tạo tài khoản: " + e.getMessage());
         }
         return false;
     }
 
+
     @Override
     public boolean existsTaiKhoanByTenDangNhap(String userName) {
-        if(taiKhoanRepository.existsTaiKhoanByTenDangNhap(userName)) {
-            return true;
-        }
-        return false;
+        return taiKhoanRepository.existsTaiKhoanByTenDangNhap(userName);
     }
 
 }

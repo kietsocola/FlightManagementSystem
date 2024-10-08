@@ -19,14 +19,15 @@ public class Quyen {
     @Column(name = "id_quyen")
     private int idQuyen;
 
-    @Column(name = "tenQuyen", nullable = false)
+    @Column(name = "ten_quyen", nullable = false)
     private String tenQuyen;
 
-    @OneToMany(mappedBy = "quyen")
+    @OneToMany(mappedBy = "quyen", fetch = FetchType.EAGER)
     private List<TaiKhoan> taiKhoanList;
 
     @OneToMany(mappedBy = "quyen")
     private List<ChiTietQuyen> chiTietQuyenList;
+
     @Column(name = "active_status")
     @Enumerated(EnumType.STRING)
     private ActiveEnum trangThaiActive;

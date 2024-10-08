@@ -3,6 +3,7 @@ package com.project.flightManagement.Controller;
 import com.project.flightManagement.DTO.AuthDTO.LoginDTO;
 import com.project.flightManagement.DTO.AuthDTO.SignupDTO;
 import com.project.flightManagement.Payload.ResponseData;
+import com.project.flightManagement.Sercurity.JwtTokenProvider;
 import com.project.flightManagement.Service.KhachHangService;
 import com.project.flightManagement.Service.TaiKhoanService;
 import jakarta.validation.Valid;
@@ -22,6 +23,8 @@ public class AuthController {
     private TaiKhoanService taiKhoanService;
     @Autowired
     private KhachHangService khachHangService;
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
     @PostMapping("/login")
     public ResponseEntity<ResponseData> login(@RequestBody LoginDTO loginDTO) {
         ResponseData responseData = new ResponseData();
@@ -29,6 +32,7 @@ public class AuthController {
             // Kiểm tra đăng nhập
             if (taiKhoanService.checkLogin(loginDTO)) {
                 responseData.setMessage("Login success");
+                responseData.setData(jwtTokenProvider.generateToken(loginDTO.getUserName()));
                 return new ResponseEntity<>(responseData, HttpStatus.OK);
             } else {
                 responseData.setMessage("Login failed: Invalid credentials");
