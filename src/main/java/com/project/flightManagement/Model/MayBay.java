@@ -28,7 +28,7 @@ public class MayBay {
     @JoinColumn(name = "id_hang_bay", referencedColumnName = "id_hang_bay") // Khóa ngoại đến bảng HangBay
     private HangBay hangBay;
 
-    @Column(name = "icao_may_bay", length = 4)
+    @Column(name = "icao_may_bay", length = 6)
     private String icaoMayBay;  // Mã ICAO có độ dài 4 ký tự
 
     @OneToMany(mappedBy = "mayBay")

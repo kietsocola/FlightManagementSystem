@@ -2,6 +2,7 @@ package com.project.flightManagement.Controller;
 
 import com.project.flightManagement.DTO.HangBayDTO.HangBayDTO;
 import com.project.flightManagement.DTO.MayBayDTO.MayBayDTO;
+import com.project.flightManagement.DTO.QuocGiaDTO.QuocGiaDTO;
 import com.project.flightManagement.Mapper.HangBayMapper;
 import com.project.flightManagement.Mapper.MayBayMapper;
 import com.project.flightManagement.Model.HangBay;
@@ -22,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:5175")
+@CrossOrigin(origins = "http://localhost:5173")
 public class MayBayController {
     @Autowired
     private MayBayService mayBayService;
@@ -49,21 +50,21 @@ public class MayBayController {
     }
     @GetMapping("/getAllPlane")
     public ResponseEntity<ResponseData> getAllPlane() {
-        Iterable<MayBayDTO> mbDTO = mayBayService.getAllMayBay();
-        if(mbDTO.iterator().hasNext()) {
-            response.setMessage("Get all plane success!!");
-            response.setData(mbDTO);
+        Iterable<MayBayDTO> mbDTOList = mayBayService.getAllMayBay();
+        if(mbDTOList.iterator().hasNext()) {
+            response.setData(mbDTOList);
             response.setStatusCode(200);
+            response.setMessage("Get all plane success!!");
             return new ResponseEntity<>(response, HttpStatus.OK);
-        }else {
+        } else {
+            response.setStatusCode(404);
             response.setMessage("Get all plane failed!!");
             response.setData(null);
-            response.setStatusCode(404);
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
-    @GetMapping("/findPlane/{keyword}")
-    public ResponseEntity<ResponseData> findMayBayByTenMayBay(@PathVariable String keyword) {
+    @GetMapping("/findPlane")
+    public ResponseEntity<ResponseData> findMayBayByTenMayBay(@RequestParam String keyword) {
         System.out.println("Searching for: " + keyword);
         Iterable<MayBayDTO> listMbDTO = mayBayService.findMayBayByTenMayBay(keyword);
         if(listMbDTO.iterator().hasNext()){
@@ -80,9 +81,10 @@ public class MayBayController {
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
-    @GetMapping("/getAllPlaneSorted/{sortBy}")
-    public ResponseEntity<ResponseData> getAllKhachHang(@RequestParam(defaultValue = "idMayBay") String sortBy){
-        Iterable<MayBayDTO> listMbDTO = mayBayService.getAllMayBaySorted(sortBy);
+    @GetMapping("/getAllPlaneSorted")
+    public ResponseEntity<ResponseData> getAllKhachHangSorted(@RequestParam(defaultValue = "idKhachHang") String sortBy,
+                                                        @RequestParam(defaultValue = "asc") String order){
+        Iterable<MayBayDTO> listMbDTO = mayBayService.getAllMayBaySorted(sortBy, order);
         if(listMbDTO.iterator().hasNext()){
             response.setMessage("get list plane success!!");
             response.setData(listMbDTO);
@@ -95,7 +97,7 @@ public class MayBayController {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
     }
-    @GetMapping("/getPlaneByAirLine/{idHangBay}")
+    @GetMapping("/getPlaneByAirline/{idHangBay}")
     public ResponseEntity<ResponseData> getPlaneByAirLine(@PathVariable int idHangBay) {
 //        response.setMessage("hello");
 //        response.setStatusCode(200);
@@ -128,7 +130,8 @@ public class MayBayController {
     }
     @PostMapping("/addPlane")
     public ResponseEntity<ResponseData> addPlane(@Valid @RequestBody MayBayDTO mbDTO, BindingResult bindingResult) {
-        ResponseData response = new ResponseData();
+//        ResponseData response = new ResponseData();
+
         if(bindingResult.hasErrors()){
             Map<String, String> fieldErrors = new HashMap<>();
             bindingResult.getFieldErrors().forEach(error ->
@@ -138,26 +141,13 @@ public class MayBayController {
             response.setMessage("There are some fields invalid");
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
-        if (mbDTO != null && (mbDTO.getSoHieu() != null || mbDTO.getIcaoMayBay() != null)) {
-            // Kiểm tra sự tồn tại theo email
-            if (mbDTO.getSoHieu() != null) {
-                Optional<MayBayDTO> existingMBBySoHieu = mayBayService.getMayBayBySoHieu(mbDTO.getSoHieu());
-                if (existingMBBySoHieu.isPresent()) {
-                    response.setMessage("Plane with this flight number already exists!!");
-                    response.setData(null);
-                    response.setStatusCode(409); // Conflict
-                    return new ResponseEntity<>(response, HttpStatus.CONFLICT);
-                }
+        // Kiểm tra xem khDTO có khác null và có ít nhất một trường thông tin cần thiết không
+        if (mbDTO != null && mbDTO.getSoHieu()!= null) {
+            ResponseEntity<ResponseData> rs = checkExistSoHieu(mbDTO.getSoHieu());
+            if(rs!=null){
+                return rs;
             }
-            if (mbDTO.getIcaoMayBay() != null) {
-                Optional<MayBayDTO> existingMBByIcao = mayBayService.getMayBayByIcaoMayBay(mbDTO.getIcaoMayBay());
-                if (existingMBByIcao.isPresent()) {
-                    response.setMessage("Plane with this ICAO already exists!!");
-                    response.setData(null);
-                    response.setStatusCode(409); // Conflict
-                    return new ResponseEntity<>(response, HttpStatus.CONFLICT);
-                }
-            }
+
 
             // Nếu không có thông tin nào tồn tại, tiến hành lưu khách hàng mới
             Optional<MayBayDTO> savedMB = mayBayService.addNewMayBay(mbDTO);
@@ -181,7 +171,7 @@ public class MayBayController {
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
     }
-    @PutMapping("/updatePlane")
+    @PutMapping("/updatePlane/{idMB}")
     public ResponseEntity<ResponseData> updatePlane(@PathVariable("idMB") Integer idMB,@Valid @RequestBody MayBayDTO mbDTO, BindingResult bindingResult) {
         ResponseData response = new ResponseData();
         if(bindingResult.hasErrors()){
@@ -193,38 +183,21 @@ public class MayBayController {
             response.setMessage("There are some fields invalid");
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
-        // Kiểm tra xem đối tượng khDTO có khác null và ID có hợp lệ không
         if (mbDTO != null && idMB != null) {
-            // Kiểm tra xem khách hàng có tồn tại hay không
             Optional<MayBayDTO> existingMB = mayBayService.getMayBayById(idMB);
             if (existingMB.isPresent()) {
-                // Cập nhật thông tin khách hàng
-                mbDTO.setIdMayBay(idMB); // Đảm bảo rằng ID của khách hàng được thiết lập
-                // Kiểm tra xem email, số điện thoại, CCCD đã tồn tại hay chưa (nếu có sự thay đổi)
+                mbDTO.setIdMayBay(idMB);
                 if (mbDTO.getSoHieu() != null && !Objects.equals(existingMB.get().getSoHieu(), mbDTO.getSoHieu()) ) {
-                    Optional<MayBayDTO> existingMBBySoHieu = mayBayService.getMayBayBySoHieu(mbDTO.getSoHieu());
-                    if (existingMBBySoHieu.isPresent()) {
-                        response.setMessage("Plane with this flight number already exists!!");
-                        response.setData(null);
-                        response.setStatusCode(409); // Conflict
-                        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
-                    }
-                }
-                if (mbDTO.getIcaoMayBay() != null && !Objects.equals(existingMB.get().getIcaoMayBay(), mbDTO.getIcaoMayBay())) {
-                    Optional<MayBayDTO> existingMBByIcao = mayBayService.getMayBayByIcaoMayBay(mbDTO.getIcaoMayBay());
-                    if (existingMBByIcao.isPresent()) {
-                        response.setMessage("Plane with this ICAO already exists!!");
-                        response.setData(null);
-                        response.setStatusCode(409); // Conflict
-                        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+                    ResponseEntity<ResponseData> rs = checkExistSoHieu(mbDTO.getSoHieu());
+                    if(rs!=null){
+                        return rs;
                     }
                 }
 
-                // Cập nhật khách hàng
                 Optional<MayBayDTO> updatedMB = mayBayService.updateMayBay(mbDTO);
                 if (updatedMB.isPresent()) {
                     response.setMessage("Update plane successfully!!");
-                    response.setData(updatedMB.get()); // Trả về thông tin khách hàng đã cập nhật
+                    response.setData(updatedMB.get());
                     response.setStatusCode(200); // OK
                     return new ResponseEntity<>(response, HttpStatus.OK);
                 } else {
@@ -235,7 +208,6 @@ public class MayBayController {
                     return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
                 }
             } else {
-                // Khách hàng không tồn tại
                 response.setMessage("Plane not found!!");
                 response.setData(null);
                 response.setStatusCode(404); // Not Found
@@ -248,5 +220,17 @@ public class MayBayController {
             response.setStatusCode(400); // Bad Request
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
+    }
+    public ResponseEntity<ResponseData> checkExistSoHieu(String soHieu){
+        Optional<MayBayDTO> existingMBBySoHieu = mayBayService.getMayBayBySoHieu(soHieu);
+        if (existingMBBySoHieu.isPresent()) {
+            response.setMessage("Plane with this phone number already exists!!");
+            Map<String, String> errorMessage = new HashMap<>();
+            errorMessage.put("So hieu", "Customer with this phone number already exists!!");
+            response.setData(errorMessage);
+            response.setStatusCode(409); // Conflict
+            return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+        }
+        return null;
     }
 }

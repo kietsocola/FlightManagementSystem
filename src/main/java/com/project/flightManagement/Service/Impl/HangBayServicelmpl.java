@@ -14,30 +14,30 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Service
 public class HangBayServicelmpl implements HangBayService {
     @Autowired
     private HangBayRepository hbRepo;
-
     @Override
     public Optional<HangBayDTO> getHangBayById(int id){
-        try {
+        try{
             Optional<HangBay> hb = hbRepo.findById(id);
-            Optional<HangBayDTO> hbDTO = hb.map(HangBayMapper::toDTO);
-            return hbDTO;
+            Optional<HangBayDTO> hangBayDTO = hb.map(HangBayMapper::toDTO);
+            return hangBayDTO;
         } catch (Exception e) {
-            System.err.println("Error occurred while get plane: " + e.getMessage());
+            System.err.println("Error occurred while get airline: " + e.getMessage());
             return null;
         }
     }
     @Override
     public Iterable<HangBayDTO> getAllHangBay(){
-        try {
-            Iterable<HangBay> hb = hbRepo.findAll();
-            Iterable<HangBayDTO> hbDTO = StreamSupport.stream(hb.spliterator(),false).map(HangBayMapper::toDTO).toList();
-            return hbDTO;
+        try{
+            Iterable<HangBay> hbs = hbRepo.findAll();
+            Iterable<HangBayDTO> hbDTOs = StreamSupport.stream(hbs.spliterator(), false).map(HangBayMapper::toDTO).collect(Collectors.toList());
+            return hbDTOs;
         } catch (Exception e) {
             System.err.println("Error occurred while fetching airline: " + e.getMessage());
             return Collections.emptyList();

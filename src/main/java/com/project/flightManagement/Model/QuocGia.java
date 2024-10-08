@@ -23,8 +23,8 @@ public class QuocGia {
     @Column(name = "ten_quoc_gia" , nullable = false)
     private String tenQuocGia;
 
-    @OneToMany(mappedBy = "quocGia")
-    private List<ThanhPho> thanhPhoList;
+//    @OneToMany(mappedBy = "quocGia")
+//    private List<ThanhPho> thanhPhoList;
 
     @Column(name = "active_status")
     @Enumerated(EnumType.STRING)

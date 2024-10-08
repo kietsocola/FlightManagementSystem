@@ -36,24 +36,16 @@ public class MayBayServiceImpl implements MayBayService {
 
     @Override
     public Iterable<MayBayDTO> getAllMayBay() {
-        try {
-            Iterable<MayBay> mb = mbRepo.findAll();
-            Iterable<MayBayDTO> mbDTO = StreamSupport.stream(mb.spliterator(),false).map(MayBayMapper::toDTO).toList();
-            return mbDTO;
+        try{
+            Iterable<MayBay> mbList = mbRepo.findAll();
+            Iterable<MayBayDTO> mbDTOList = StreamSupport.stream(mbList.spliterator(), false).map(MayBayMapper::toDTO).toList();
+            return mbDTOList;
         } catch (Exception e) {
             System.err.println("Error occurred while fetching plane: " + e.getMessage());
             return Collections.emptyList();
         }
     }
-    @Override
-    public Optional<MayBayDTO> getMayBayByIcaoMayBay(String icaoMayBay){
-        try {
-            MayBay mb = mbRepo.findByIcaoMayBay(icaoMayBay);
-            return Optional.ofNullable(MayBayMapper.toDTO(mb));
-        } catch (Exception e) {
-            return Optional.empty();
-        }
-    }
+
     @Override
     public Optional<MayBayDTO> getMayBayBySoHieu(String soHieu){
         try {
@@ -65,16 +57,27 @@ public class MayBayServiceImpl implements MayBayService {
     }
     @Override
     public List<MayBayDTO> findMayBayByTenMayBay(String keyword){
-        List<MayBay> listMb = mbRepo.findByTenMayBay(keyword);
-        return listMb.stream().map(MayBayMapper::toDTO).collect(Collectors.toList());
+        List<MayBay> mayBayList = mbRepo.findByKeywordContainingIgnoreCase(keyword);
+        if (mayBayList.isEmpty()) {
+            System.out.println("No plane found with the keyword: " + keyword);
+        } else {
+            MayBay kh = mayBayList.get(0); // Dùng get(0) thay vì getFirst()
+            System.out.println("Id mb found: " + kh.getTenMayBay());
+        }
+        return mayBayList.stream()
+                .map(MayBayMapper::toDTO)
+                .collect(Collectors.toList());
     }
     @Override
-    public Iterable<MayBayDTO> getAllMayBaySorted(String sortBy){
+    public Iterable<MayBayDTO> getAllMayBaySorted(String sortBy, String order){
         try {
-            List<MayBay> mayBayList = mbRepo.findAll(Sort.by(Sort.Direction.DESC, sortBy));
-            List<MayBayDTO> mayBayDTOList = mayBayList.stream()
-                    .map(MayBayMapper::toDTO)
-                    .collect(Collectors.toList());
+            List<MayBay> mayBayList;
+            if(order.equals("asc")){
+                mayBayList = mbRepo.findAll(Sort.by(Sort.Direction.ASC, sortBy));
+            } else {
+                mayBayList = mbRepo.findAll(Sort.by(Sort.Direction.DESC, sortBy));
+            }
+            List<MayBayDTO> mayBayDTOList = mayBayList.stream().map(MayBayMapper::toDTO).collect(Collectors.toList());
             return mayBayDTOList;
         } catch (IllegalArgumentException e) {
             // Xử lý lỗi nếu tham số sortBy không hợp lệ hoặc có lỗi khác liên quan đến tham số
