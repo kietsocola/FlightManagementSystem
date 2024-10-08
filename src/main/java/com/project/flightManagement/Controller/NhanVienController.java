@@ -28,7 +28,6 @@ public class NhanVienController {
     @Autowired
     private NhanVienService nvservice ;
     private ResponseData response =  new ResponseData();
-    private NhanVienRepository repo ;
 
     @GetMapping("/getallnhanvien")
     public ResponseEntity<ResponseData> getAllNhanVien(){
@@ -47,8 +46,8 @@ public class NhanVienController {
     }
 
     @GetMapping("/getallnhanviensorted")
-    public ResponseEntity<ResponseData> getAllNhanVien(@RequestParam(defaultValue = "idNhanVien") String sortBy){
-        Iterable<NhanVienDTO> listnvDTO = nvservice.getAllNhanVienSorted(sortBy);
+    public ResponseEntity<ResponseData> getAllNhanVien(@RequestParam(defaultValue = "idNhanVien") String sortField ,@RequestParam(defaultValue = "asc") String sortOrder){
+        Iterable<NhanVienDTO> listnvDTO = nvservice.getAllNhanVienSorted(sortField,sortOrder);
         if(listnvDTO.iterator().hasNext()){
             response.setMessage("get list Nhan Viens success!!");
             response.setData(listnvDTO);
@@ -97,8 +96,8 @@ public class NhanVienController {
 
     @GetMapping("/getnhanvienbyemail")
     public ResponseEntity<ResponseData> getNhanVienByEmail(@RequestParam String email){
-        Optional<NhanVienDTO> nvDTO = nvservice.getNhanVienByEmail(email);
-        if(nvDTO.isPresent()){
+        Iterable<NhanVienDTO> nvDTO = nvservice.getNhanVienByEmail(email);
+        if(nvDTO.iterator().hasNext()){
             response.setMessage("get list Nhan Viens success!!");
             response.setData(nvDTO);
             response.setStatusCode(200);
@@ -113,8 +112,8 @@ public class NhanVienController {
 
     @GetMapping("/getnhanvienbycccd")
     public ResponseEntity<ResponseData> getNhanVienByCccd(@RequestParam String cccd){
-        Optional<NhanVienDTO> nvDTO = nvservice.getNhanVienByCCCD(cccd);
-        if(nvDTO.isPresent()){
+        Iterable<NhanVienDTO> nvDTO = nvservice.getNhanVienByCCCD(cccd);
+        if(nvDTO.iterator().hasNext()){
             response.setMessage("get list Nhan Viens success!!");
             response.setData(nvDTO);
             response.setStatusCode(200);
@@ -129,8 +128,8 @@ public class NhanVienController {
 
     @GetMapping("/getnhanvienbysodienthoai")
     public ResponseEntity<ResponseData> getNhanVienBySoDienThoai(@RequestParam String sdt){
-        Optional<NhanVienDTO> nvDTO = nvservice.getNhanVienBySDT(sdt);
-        if(nvDTO.isPresent()){
+        Iterable<NhanVienDTO> nvDTO = nvservice.getNhanVienBySDT(sdt);
+        if(nvDTO.iterator().hasNext()){
             response.setMessage("get list Nhan Viens success!!");
             response.setData(nvDTO);
             response.setStatusCode(200);
@@ -155,29 +154,19 @@ public class NhanVienController {
             response.setMessage("There are some fields invalid");
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
+        System.out.println(nvDTO.getEmail());
 
-        Optional<NhanVienDTO> existingEmail = nvservice.getNhanVienByEmail(nvDTO.getEmail());
-        if(existingEmail.isPresent()){
-            response.setMessage("Nhan Vien with this email already exists!!");
-            response.setData(null);
-            response.setStatusCode(409); // Conflict
-            return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+
+        if(existInfo(nvDTO,"email") != null){
+            return existInfo(nvDTO,"email");
         }
 
-        Optional<NhanVienDTO> existingCccd = nvservice.getNhanVienByCCCD(nvDTO.getCccd());
-        if(existingCccd.isPresent()){
-            response.setMessage("Nhan Vien with this cccd already exists!!");
-            response.setData(null);
-            response.setStatusCode(409); // Conflict
-            return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+        if(existInfo(nvDTO,"cccd") != null){
+            return existInfo(nvDTO,"cccd");
         }
 
-        Optional<NhanVienDTO> existingSDT = nvservice.getNhanVienBySDT(nvDTO.getSoDienThoai());
-        if(existingSDT.isPresent()){
-            response.setMessage("Nhan Vien with this sdt already exists!!");
-            response.setData(null);
-            response.setStatusCode(409); // Conflict
-            return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+        if(existInfo(nvDTO,"sdt") != null){
+            return existInfo(nvDTO,"sdt");
         }
 
         Optional<NhanVienDTO> saveNv = nvservice.addNhanVien(nvDTO);
@@ -208,37 +197,29 @@ public class NhanVienController {
              return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
          }
 
-         Optional<NhanVienDTO> existingId = nvservice.getNhanVienByIdNhanVien(idNhanVien);
-         if(existingId.isEmpty()){
-             response.setMessage("Nhan vien with this id no exists!!");
-             response.setData(null);
-             response.setStatusCode(409); // Conflict
-             return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+         Optional<NhanVienDTO> nhanviendto = nvservice.getNhanVienByIdNhanVien(idNhanVien);
+         System.out.println("dang o update");
+         if(!nhanviendto.get().getEmail().equals(nvDTO.getEmail())){
+
+             if(existInfo(nvDTO,"email") != null){
+                 return existInfo(nvDTO,"email");
+             }
          }
 
-         Optional<NhanVienDTO> existingEmail = nvservice.getNhanVienByEmail(nvDTO.getEmail());
-         if(existingEmail.isPresent()){
-             response.setMessage("Nhan Vien with this email already exists!!");
-             response.setData(null);
-             response.setStatusCode(409); // Conflict
-             return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+         if(!nhanviendto.get().getCccd().equals(nvDTO.getCccd())){
+             if(existInfo(nvDTO,"cccd") != null){
+                 return existInfo(nvDTO,"cccd");
+             }
          }
 
-         Optional<NhanVienDTO> existingCccd = nvservice.getNhanVienByCCCD(nvDTO.getCccd());
-         if(existingCccd.isPresent()){
-             response.setMessage("Nhan Vien with this cccd already exists!!");
-             response.setData(null);
-             response.setStatusCode(409); // Conflict
-             return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+
+         if(!nhanviendto.get().getSoDienThoai().equals(nvDTO.getSoDienThoai())){
+             if(existInfo(nvDTO,"sdt") != null){
+                 return existInfo(nvDTO,"sdt");
+             }
          }
 
-         Optional<NhanVienDTO> existingSDT = nvservice.getNhanVienBySDT(nvDTO.getSoDienThoai());
-         if(existingSDT.isPresent()){
-             response.setMessage("Nhan Vien with this sdt already exists!!");
-             response.setData(null);
-             response.setStatusCode(409); // Conflict
-             return new ResponseEntity<>(response, HttpStatus.CONFLICT);
-         }
+
 
          Optional<NhanVienDTO> saveNv = nvservice.addNhanVien(nvDTO);
          if (saveNv.isPresent()) {
@@ -253,62 +234,65 @@ public class NhanVienController {
              response.setStatusCode(500); // Internal Server Error
              return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
          }
+
+
+     }
+
+     public ResponseEntity<ResponseData> existInfo(NhanVienDTO nvDTO , String type){
+
+        if(type.equals("email")){
+                Iterable<NhanVienDTO> existingEmail = nvservice.getNhanVienByEmail(nvDTO.getEmail());
+                if(existingEmail.iterator().hasNext()){
+                    NhanVienDTO error = new NhanVienDTO();
+                    error.setEmail("Email đã tồn tại");
+                    response.setMessage("Nhan Vien with this email already exists!!");
+                    response.setData(error);
+                    response.setStatusCode(409); // Conflict
+                    return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+                }
+        }
+        else if(type.equals("cccd")){
+                Iterable<NhanVienDTO> existingCccd = nvservice.getNhanVienByCCCD(nvDTO.getCccd());
+                if(existingCccd.iterator().hasNext()){
+                    NhanVienDTO error = new NhanVienDTO();
+                    error.setCccd("CCCD đã tồn tại");
+                    response.setMessage("Nhan Vien with this cccd already exists!!");
+                    response.setData(error);
+                    response.setStatusCode(409); // Conflict
+                    return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+                }
+        }
+        else if(type.equals("sdt")){
+                Iterable<NhanVienDTO> existingSDT = nvservice.getNhanVienBySDT(nvDTO.getSoDienThoai());
+                if(existingSDT.iterator().hasNext()){
+                    NhanVienDTO error = new NhanVienDTO();
+                    error.setSoDienThoai("Số điện thoại đã tồn tại");
+                    response.setMessage("Nhan Vien with this sdt already exists!!");
+                    response.setData(error);
+                    response.setStatusCode(409); // Conflict
+                    return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+                }
+        }
+
+        return null;
+
      }
 
 
-    @GetMapping("/")
-    public List<NhanVien> showProductList(Model model){
-        return repo.findAll();
+    @GetMapping("/getnhanvienbetween")
+    public ResponseEntity<ResponseData> getNhanVienBetween(@RequestParam String start,@RequestParam String end){
+        Iterable<NhanVienDTO> listNvDTO = nvservice.getNhanVienBetween(start, end);
+        if(listNvDTO.iterator().hasNext()){
+            response.setMessage("get list Nhan Viens between success!!");
+            response.setData(listNvDTO);
+            response.setStatusCode(200);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else {
+            response.setMessage("get list Nhan Viens unsuccess!!");
+            response.setData(null);
+            response.setStatusCode(404);
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
     }
-
-    @PostMapping("/add1")
-    public ResponseEntity<String> addNhanVien(@RequestBody NhanVien nhanVien) {
-        // Log dữ liệu nhận được
-        System.out.println("Dữ liệu nhận được: " + nhanVien);
-        NhanVien nv = new NhanVien();
-        nv.setHoTen(nhanVien.getHoTen());
-        nv.setCccd(nhanVien.getCccd());
-        nv.setEmail(nhanVien.getEmail());
-        nv.setSoDienThoai(nhanVien.getSoDienThoai());
-        nv.setChucVu(nhanVien.getChucVu());
-        nv.setGioiTinhEnum(nhanVien.getGioiTinhEnum());
-        nv.setTrangThaiActive(nhanVien.getTrangThaiActive());
-        nv.setNgaySinh(nhanVien.getNgaySinh());
-        repo.save(nv);
-        // Xử lý thêm nhân viên ở đây
-        return ResponseEntity.ok("thêm thành công");
-    }
-
-    @PutMapping("/edit1")
-    public ResponseEntity<String> editNhanVien(@RequestBody NhanVien nhanVien) {
-        // Log dữ liệu nhận được
-        System.out.println("Dữ liệu nhận được: " + nhanVien);
-        NhanVien nv = repo.findById(nhanVien.getIdNhanVien()).get();
-        nv.setIdNhanVien(nhanVien.getIdNhanVien());
-        nv.setHoTen(nhanVien.getHoTen());
-        nv.setCccd(nhanVien.getCccd());
-        nv.setChucVu(nhanVien.getChucVu());
-        nv.setTrangThaiActive(nhanVien.getTrangThaiActive());
-        nv.setSoDienThoai(nhanVien.getSoDienThoai());
-        nv.setNgaySinh(nhanVien.getNgaySinh());
-        nv.setGioiTinhEnum(nhanVien.getGioiTinhEnum());
-        nv.setEmail(nhanVien.getEmail());
-        repo.save(nv);
-        // Xử lý thêm nhân viên ở đây
-        return ResponseEntity.ok("thêm thành công");
-    }
-
-
-    @PutMapping("/delete1")
-    public ResponseEntity<String> deleteNhanVien(@RequestBody NhanVien nhanVien) {
-        // Log dữ liệu nhận được
-        System.out.println("Dữ liệu nhận được: " + nhanVien.getHoTen());
-        NhanVien nv = repo.findById(nhanVien.getIdNhanVien()).get();
-        nv.setTrangThaiActive(ActiveEnum.IN_ACTIVE);
-        repo.save(nv);
-        // Xử lý thêm nhân viên ở đây
-        return ResponseEntity.ok("thêm thành công");
-    }
-
 
 }

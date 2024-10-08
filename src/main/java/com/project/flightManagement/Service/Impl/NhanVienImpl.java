@@ -5,12 +5,10 @@ import com.project.flightManagement.Mapper.NhanVienMapper;
 import com.project.flightManagement.Model.NhanVien;
 import com.project.flightManagement.Repository.NhanVienRepository;
 import com.project.flightManagement.Service.NhanVienService;
-import org.hibernate.Internal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -55,19 +53,23 @@ public class NhanVienImpl implements NhanVienService {
     }
 
     @Override
-    public List<NhanVienDTO> getAllNhanVienSorted(String sort) {
+    public List<NhanVienDTO> getAllNhanVienSorted(String sortField ,String sortOrder) {
         try{
-            List<NhanVien> listnv = repo.findAll(Sort.by(Sort.Direction.ASC , sort));
+            // Kiểm tra hướng sắp xếp
+            Sort.Direction direction = Sort.Direction.ASC; // Mặc định là ASC
+            if ("desc".equalsIgnoreCase(sortOrder)) {
+                direction = Sort.Direction.DESC; // Thay đổi thành DESC nếu yêu cầu
+            }
+            List<NhanVien> listnv = repo.findAll(Sort.by( direction , sortField));
             List<NhanVienDTO> listnvDTO = listnv.stream().map(NhanVienMapper::toDTO).collect(Collectors.toList());
             return listnvDTO;
         }catch (IllegalArgumentException e){
-            // Xử lý lỗi nếu tham số sortBy không hợp lệ hoặc có lỗi khác liên quan đến tham số
-            System.err.println("Invalid sorting field: " + sort);
-            return Collections.emptyList(); // Trả về danh sách rỗng
+
+            System.err.println("Invalid sorting field: " + sortField);
+            return Collections.emptyList();
         }catch (Exception e) {
-            // Xử lý các lỗi không lường trước khác
             System.err.println("An error occurred while fetching sorted customers: " + e.getMessage());
-            return Collections.emptyList(); // Trả về danh sách rỗng nếu có lỗi
+            return Collections.emptyList();
         }
     }
 
@@ -76,8 +78,7 @@ public class NhanVienImpl implements NhanVienService {
 
         try{
             Optional<NhanVien> nv = repo.findById(idNhanVien);
-            Optional<NhanVienDTO> nvDTO = nv.map(NhanVienMapper::toDTO);
-            return nvDTO;
+            return nv.map(NhanVienMapper::toDTO);
         }catch (Exception e){
             System.err.println("Error occurred while get customer: " + e.getMessage());
             return Optional.empty();
@@ -87,40 +88,33 @@ public class NhanVienImpl implements NhanVienService {
 
     @Override
     public List<NhanVienDTO> getNhanVienByhoTen(String hoTen) {
-            List<NhanVien> nv = repo.findByHoTen(hoTen);
+            List<NhanVien> nv = repo.findByHoTenContaining(hoTen);
             return nv.stream().map(NhanVienMapper::toDTO).collect(Collectors.toList());
     }
 
     @Override
-    public Optional<NhanVienDTO> getNhanVienByEmail(String email) {
-        try {
-            NhanVien nv = repo.findByEmail(email);
-            return Optional.ofNullable(NhanVienMapper.toDTO(nv));// Trả về DTO hoặc null
-        } catch (Exception e) {
-            // Xử lý ngoại lệ (nếu có), có thể log hoặc ném ra lỗi tùy ý
-            return Optional.empty(); // Trả về Optional.empty() nếu có lỗi
-        }
+    public List<NhanVienDTO> getNhanVienByEmail(String email) {
+        List<NhanVien> nv = repo.findByEmailContaining(email);
+        return nv.stream().map(NhanVienMapper::toDTO).collect(Collectors.toList());
     }
 
     @Override
-    public Optional<NhanVienDTO> getNhanVienBySDT(String SDT) {
-        try {
-            NhanVien nv = repo.findBySoDienThoai(SDT);
-            return Optional.ofNullable(NhanVienMapper.toDTO(nv));// Trả về DTO hoặc null
-        } catch (Exception e) {
-            // Xử lý ngoại lệ (nếu có), có thể log hoặc ném ra lỗi tùy ý
-            return Optional.empty(); // Trả về Optional.empty() nếu có lỗi
-        }
+    public List<NhanVienDTO> getNhanVienBySDT(String SDT) {
+        List<NhanVien> nv = repo.findBySoDienThoaiContaining(SDT);
+        return nv.stream().map(NhanVienMapper::toDTO).collect(Collectors.toList());
     }
 
     @Override
-    public Optional<NhanVienDTO> getNhanVienByCCCD(String cccd) {
-        try {
-            NhanVien nv = repo.findByCccd(cccd);
-            return Optional.ofNullable(NhanVienMapper.toDTO(nv));// Trả về DTO hoặc null
-        } catch (Exception e) {
-            // Xử lý ngoại lệ (nếu có), có thể log hoặc ném ra lỗi tùy ý
-            return Optional.empty(); // Trả về Optional.empty() nếu có lỗi
-        }
+    public List<NhanVienDTO> getNhanVienByCCCD(String cccd) {
+        List<NhanVien> nv = repo.findByCccdContaining(cccd);
+        return nv.stream().map(NhanVienMapper::toDTO).collect(Collectors.toList());
     }
+
+    @Override
+    public List<NhanVienDTO> getNhanVienBetween(String start, String end) {
+        List<NhanVien> nv = repo.findByContentBetween(start ,end);
+        return nv.stream().map(NhanVienMapper::toDTO).collect(Collectors.toList());
+    }
+
+
 }
