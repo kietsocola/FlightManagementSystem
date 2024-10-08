@@ -107,15 +107,7 @@ public class KhachHangController {
         // Kiểm tra xem khDTO có khác null và có ít nhất một trường thông tin cần thiết không
         if (khDTO != null && (khDTO.getEmail() != null || khDTO.getCccd() != null || khDTO.getSoDienThoai() != null)) {
 
-            ResponseEntity<ResponseData> rs = checkExistEmail(khDTO.getEmail());
-            if(rs!=null){
-                return rs;
-            }
-            rs = checkExistCCCD(khDTO.getCccd());
-            if(rs!=null){
-                return rs;
-            }
-            rs = checkExistSDT(khDTO.getSoDienThoai());
+            ResponseEntity<ResponseData> rs = checkExistKhachHang(khDTO);
             if(rs!=null){
                 return rs;
             }
@@ -164,25 +156,25 @@ public class KhachHangController {
                 khDTO.setIdKhachHang(idKH); // Đảm bảo rằng ID của khách hàng được thiết lập
 
                 // Kiểm tra xem email, số điện thoại, CCCD đã tồn tại hay chưa (nếu có sự thay đổi)
-                if (khDTO.getEmail() != null && !Objects.equals(existingKH.get().getEmail(), khDTO.getEmail()) ) {
-                    ResponseEntity<ResponseData> rs = checkExistEmail(khDTO.getEmail());
-                    if(rs!=null){
-                        return rs;
-                    }
+                KhachHangDTO khachHangToCheck = new KhachHangDTO();
+
+                // Chỉ gán các giá trị khác so với existingKH vào đối tượng khachHangToCheck
+                if (khDTO.getEmail() != null && !Objects.equals(existingKH.get().getEmail(), khDTO.getEmail())) {
+                    khachHangToCheck.setEmail(khDTO.getEmail());
                 }
 
                 if (khDTO.getSoDienThoai() != null && !Objects.equals(existingKH.get().getSoDienThoai(), khDTO.getSoDienThoai())) {
-                    ResponseEntity<ResponseData> rs = checkExistSDT(khDTO.getSoDienThoai());
-                    if(rs!=null){
-                        return rs;
-                    }
+                    khachHangToCheck.setSoDienThoai(khDTO.getSoDienThoai());
                 }
 
                 if (khDTO.getCccd() != null && !Objects.equals(existingKH.get().getCccd(), khDTO.getCccd())) {
-                    ResponseEntity<ResponseData> rs = checkExistCCCD(khDTO.getCccd());
-                    if(rs!=null){
-                        return rs;
-                    }
+                    khachHangToCheck.setCccd(khDTO.getCccd());
+                }
+
+                // Kiểm tra tồn tại của email, số điện thoại, CCCD
+                ResponseEntity<ResponseData> rs = checkExistKhachHang(khachHangToCheck);
+                if (rs != null) {
+                    return rs;
                 }
 
                 // Cập nhật khách hàng
@@ -253,6 +245,46 @@ public class KhachHangController {
         }
         return null;
     }
+    public ResponseEntity<ResponseData> checkExistKhachHang(KhachHangDTO khachHangDTO) {
+        Map<String, String> errorMessage = new HashMap<>();
+
+        // Kiểm tra email nếu tồn tại
+        if (khachHangDTO.getEmail() != null) {
+            Optional<KhachHangDTO> existingKHByEmail = khachHangService.getKhachHangByEmail(khachHangDTO.getEmail());
+            if (existingKHByEmail.isPresent()) {
+                errorMessage.put("email", "Customer with this email already exists!!");
+            }
+        }
+
+        // Kiểm tra số điện thoại nếu tồn tại
+        if (khachHangDTO.getSoDienThoai() != null) {
+            Optional<KhachHangDTO> existingKHByPhone = khachHangService.getKhachHangBySDT(khachHangDTO.getSoDienThoai());
+            if (existingKHByPhone.isPresent()) {
+                errorMessage.put("soDienThoai", "Customer with this phone number already exists!!");
+            }
+        }
+
+        // Kiểm tra CCCD nếu tồn tại
+        if (khachHangDTO.getCccd() != null) {
+            Optional<KhachHangDTO> existingKHByCccd = khachHangService.getKhachHangByCccd(khachHangDTO.getCccd());
+            if (existingKHByCccd.isPresent()) {
+                errorMessage.put("cccd", "Customer with this CCCD already exists!!");
+            }
+        }
+
+        // Nếu có bất kỳ lỗi nào, trả về phản hồi với mã 409 và danh sách lỗi
+        if (!errorMessage.isEmpty()) {
+            response.setMessage("Validation failed for customer data.");
+            response.setData(errorMessage);
+            response.setStatusCode(409); // Conflict
+            return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+        }
+
+        // Không có lỗi, trả về null hoặc phản hồi thành công
+        return null;
+    }
+
+
 
 
 }
