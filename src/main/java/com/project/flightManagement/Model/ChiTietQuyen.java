@@ -31,8 +31,5 @@ public class ChiTietQuyen {
     @Enumerated(EnumType.STRING)
     private ChiTietQuyenActionEnum hanhDong;
 
-    @Column(name = "active_status")
-    @Enumerated(EnumType.STRING)
-    private ActiveEnum trangThaiActive;
 }
 

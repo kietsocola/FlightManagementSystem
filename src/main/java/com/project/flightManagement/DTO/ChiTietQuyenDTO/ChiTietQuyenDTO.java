@@ -10,5 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ChiTietQuyenDTO {
     private int idChucNang;
+    private String tenChucNang;
     private ChiTietQuyenActionEnum hanhDong;
 }

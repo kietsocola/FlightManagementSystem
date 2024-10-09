@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Controller
 @RequestMapping("/auth")
 public class AuthController {
@@ -47,28 +50,34 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<ResponseData> signup(@Valid @RequestBody SignupDTO signupDTO) {
         ResponseData responseData = new ResponseData();
+        List<String> errorList = new ArrayList<>();
+        boolean isError = false;
         try {
             // Kiểm tra nếu tên đăng nhập đã tồn tại
             if (taiKhoanService.existsTaiKhoanByTenDangNhap(signupDTO.getUserName())) {
-                responseData.setMessage("Signup failed: Username already exists");
-                return new ResponseEntity<>(responseData, HttpStatus.CONFLICT);
+                errorList.add("username already exists");
+                isError = true;
             }
 
             // Kiểm tra nếu email đã tồn tại
             if (khachHangService.existsKhachHangByEmail(signupDTO.getEmail())) {
-                responseData.setMessage("Signup failed: Email already exists");
-                return new ResponseEntity<>(responseData, HttpStatus.CONFLICT);
+                isError = true;
+                errorList.add("Email already exists");
             }
             // Kiểm tra nếu cccd đã tồn tại
             if (khachHangService.existsKhachHangByCccd(signupDTO.getCccd())) {
-                responseData.setMessage("Signup failed: Cccd already exists");
-                return new ResponseEntity<>(responseData, HttpStatus.CONFLICT);
+                isError = true;
+                errorList.add("Cccd already exists");
             }
             if(!signupDTO.getPassword().equals(signupDTO.getRePassword())) {
-                responseData.setMessage("Signup failed: Not match between password and re_password");
+                isError = true;
+                errorList.add("Not match between password and re_password");
+            }
+            if(isError) {
+                responseData.setMessage("Signup failed");
+                responseData.setData(errorList);
                 return new ResponseEntity<>(responseData, HttpStatus.CONFLICT);
             }
-
             // Tạo tài khoản mới
             boolean created = taiKhoanService.createTaiKhoan(signupDTO);
             if (created) {
@@ -83,5 +92,6 @@ public class AuthController {
             return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 
 }

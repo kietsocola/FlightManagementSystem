@@ -3,6 +3,7 @@ package com.project.flightManagement.Mapper;
 import com.project.flightManagement.DTO.ChiTietQuyenDTO.ChiTietQuyenCreateDTO;
 import com.project.flightManagement.DTO.ChiTietQuyenDTO.ChiTietQuyenDTO;
 import com.project.flightManagement.DTO.QuyenDTO.QuyenBasicDTO;
+import com.project.flightManagement.Enum.ActiveEnum;
 import com.project.flightManagement.Model.ChiTietQuyen;
 import com.project.flightManagement.Model.ChucNang;
 import com.project.flightManagement.Model.Quyen;
@@ -35,7 +36,16 @@ public class ChiTietQuyenMapper {
 
         chiTietQuyen.setHanhDong(chiTietQuyenCreateDTO.getHanhDong());
         return chiTietQuyen;
+    }
 
+    public ChiTietQuyen toChiTietQuyen(ChiTietQuyenDTO chiTietQuyenDTO) {
+        ChiTietQuyen chiTietQuyen = new ChiTietQuyen();
+
+        ChucNang chucNang = chucNangService.getChucNangByIdChucNang(chiTietQuyenDTO.getIdChucNang());
+        chiTietQuyen.setChucNang(chucNang);
+
+        chiTietQuyen.setHanhDong(chiTietQuyenDTO.getHanhDong());
+        return chiTietQuyen;
     }
     public ChiTietQuyenDTO toChiTietQuyenDTO(ChiTietQuyen chiTietQuyen) {
         return null;

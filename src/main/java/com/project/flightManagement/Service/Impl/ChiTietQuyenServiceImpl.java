@@ -20,7 +20,6 @@ public class ChiTietQuyenServiceImpl implements ChiTietQuyenService {
     @Override
     public boolean createChiTietQuyen(ChiTietQuyenCreateDTO chiTietQuyenCreateDTO) {
         ChiTietQuyen chiTietQuyen = chiTietQuyenMapper.toChiTietQuyen(chiTietQuyenCreateDTO);
-        chiTietQuyen.setTrangThaiActive(ActiveEnum.ACTIVE);
         ChiTietQuyen chiTietQuyenNew = chiTietQuyenRepository.save(chiTietQuyen);
         if(chiTietQuyenNew!=null) {
             return true;
