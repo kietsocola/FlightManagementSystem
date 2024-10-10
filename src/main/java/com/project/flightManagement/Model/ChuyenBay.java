@@ -28,8 +28,8 @@ public class ChuyenBay {
     @JoinColumn(name = "id_tuyen_bay", nullable = false)
     private TuyenBay tuyenBay;
 
-    @OneToMany(mappedBy = "chuyenBay")
-    private List<DanhGia> danhGiaList;
+//    @OneToMany(mappedBy = "chuyenBay")
+//    private List<DanhGia> danhGiaList;
 
     @ManyToOne
     @JoinColumn(name = "id_may_bay", nullable = false)

@@ -9,6 +9,8 @@ public class TaiKhoanMapper {
         tkDTO.setIdTaiKhoan(tk.getIdTaiKhoan());
         tkDTO.setTenDangNhap(tk.getTenDangNhap());
         tkDTO.setMatKhau(tk.getMatKhau());
+        tkDTO.setIdKH(tk.getKhachHang());
+        tkDTO.setIdNV(tk.getNhanVien());
         tkDTO.setIdQuyen(tk.getQuyen());
         tkDTO.setThoiGianTao(tk.getThoiGianTao());
         tkDTO.setStatus(tk.getTrangThaiActive());
@@ -22,6 +24,8 @@ public class TaiKhoanMapper {
         tk.setTenDangNhap(tkDTO.getTenDangNhap());
         tk.setQuyen(tkDTO.getIdQuyen());
         tk.setMatKhau(tkDTO.getMatKhau());
+        tk.setKhachHang(tkDTO.getIdKH());
+        tk.setNhanVien(tkDTO.getIdNV());
         tk.setThoiGianTao(tkDTO.getThoiGianTao());
         tk.setTrangThaiActive(tkDTO.getStatus());
 

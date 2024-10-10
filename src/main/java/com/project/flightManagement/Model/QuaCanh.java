@@ -23,8 +23,8 @@ public class QuaCanh {
     @JoinColumn(name = "flight_id", nullable = false)
     private TuyenBay tuyenBay;
 
-    @OneToMany(mappedBy = "quaCanh")
-    private List<ChiTietQuaCanh> chiTietQuaCanhList;
+//    @OneToMany(mappedBy = "quaCanh")
+//    private List<ChiTietQuaCanh> chiTietQuaCanhList;
 
     @ManyToOne
     @JoinColumn(name = "san_bay_bat_dau", referencedColumnName = "id_san_bay") // Foreign key đến bảng SanBay

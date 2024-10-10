@@ -22,8 +22,9 @@ public class PhuongThucThanhToan {
 
     @Column(name = "ten_phuong_thuc", nullable = false)
     private String tenPhuongThucTT;
-@OneToMany(mappedBy = "phuongThucTT")
-    private List<HoaDon> hoaDonList;
+
+//    @OneToMany(mappedBy = "phuongThucTT")
+//    private List<HoaDon> hoaDonList;
 
     @Column(name = "mo_ta")
     private String moTa;

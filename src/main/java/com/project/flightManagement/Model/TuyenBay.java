@@ -35,8 +35,8 @@ public class TuyenBay {
     @Column(name = "khoang_cach")
     private int khoangCach;
 
-    @OneToMany(mappedBy = "tuyenBay")
-    private List<ChuyenBay> chuyenBayList;
+//    @OneToMany(mappedBy = "tuyenBay")
+//    private List<ChuyenBay> chuyenBayList;
 
     // Mối quan hệ 1-1 với Transit là tùy chọn (có thể không có Transit)
     @OneToOne(mappedBy = "tuyenBay", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)

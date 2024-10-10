@@ -33,6 +33,6 @@ public class HangBay {
     @Column(name = "active_status")
     private ActiveEnum trangThaiActive;
 
-    @OneToMany(mappedBy = "hangBay")
-    private List<MayBay> mayBayList;
+//    @OneToMany(mappedBy = "hangBay")
+//    private List<MayBay> mayBayList;
 }

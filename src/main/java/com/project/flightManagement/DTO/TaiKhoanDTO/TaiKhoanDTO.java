@@ -1,6 +1,8 @@
 package com.project.flightManagement.DTO.TaiKhoanDTO;
 
 import com.project.flightManagement.Enum.ActiveEnum;
+import com.project.flightManagement.Model.KhachHang;
+import com.project.flightManagement.Model.NhanVien;
 import com.project.flightManagement.Model.Quyen;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -24,6 +26,10 @@ public class TaiKhoanDTO {
 
     @NotBlank(message = "Mật khẩu không được bỏ trống")
     private  String matKhau;
+
+    private KhachHang idKH;
+
+    private NhanVien idNV;
 
     private LocalDateTime thoiGianTao;
 

@@ -28,8 +28,8 @@ public class LoaiQuyDinh {
     @Column(name = "mo_ta_loai_quy_dinh" , nullable = false)
     private String moTaLoaiQuyDinh ;
 
-    @OneToMany(mappedBy = "loaiQuyDinh")
-    private List<QuyDinh> quyDinhList;
+//    @OneToMany(mappedBy = "loaiQuyDinh")
+//    private List<QuyDinh> quyDinhList;
 
     @Column(name = "active_status")
     @Enumerated(EnumType.STRING)

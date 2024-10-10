@@ -39,8 +39,8 @@ public class NhanVien {
     private String cccd;
 
     // Mối quan hệ 1-1 tùy chọn với Account
-    @OneToOne(mappedBy = "nhanVien", optional = true)
-    private TaiKhoan taiKhoan;
+//    @OneToOne(mappedBy = "nhanVien", optional = true)
+//    private TaiKhoan taiKhoan;
 
     @OneToMany(mappedBy = "nhanVien")
     List<QuyDinh> quyDinhList;

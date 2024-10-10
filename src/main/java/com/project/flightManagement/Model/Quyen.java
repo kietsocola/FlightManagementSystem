@@ -22,8 +22,8 @@ public class Quyen {
     @Column(name = "tenQuyen", nullable = false)
     private String tenQuyen;
 
-    @OneToMany(mappedBy = "quyen")
-    private List<TaiKhoan> taiKhoanList;
+//    @OneToMany(mappedBy = "quyen")
+//    private List<TaiKhoan> taiKhoanList;
 
     @OneToMany(mappedBy = "quyen")
     private List<ChiTietQuyen> chiTietQuyenList;

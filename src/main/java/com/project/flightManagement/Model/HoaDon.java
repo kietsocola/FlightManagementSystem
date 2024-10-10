@@ -47,10 +47,11 @@ public class HoaDon {
     @Column(name = "thoi_gian_lap", nullable = false)
     private LocalDateTime thoiGianLap;
 
-    @OneToMany(mappedBy = "hoaDon")
-    private List<ChiTietHoaDon> chiTietHoaDonList;
+//    @OneToMany(mappedBy = "hoaDon")
+//    private List<ChiTietHoaDon> chiTietHoaDonList;
 
     @Column(name = "active_status")
     @Enumerated(EnumType.STRING)
     private ActiveEnum trangThaiActive;
+
 }

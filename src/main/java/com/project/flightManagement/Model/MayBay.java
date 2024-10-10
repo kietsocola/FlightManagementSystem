@@ -30,8 +30,8 @@ public class MayBay {
     @Column(name = "icao_may_bay", length = 4)
     private String icaoMayBay;  // Mã ICAO có độ dài 4 ký tự
 
-    @OneToMany(mappedBy = "mayBay")
-    private List<ChuyenBay> chuyenBayList;
+//    @OneToMany(mappedBy = "mayBay")
+//    private List<ChuyenBay> chuyenBayList;
 
     @Column(name = "so_luong_ghe")
     private int soLuongGhe;
@@ -41,8 +41,8 @@ public class MayBay {
 
     @Column(name = "nam_san_xuat")
     private int namSanXuat;
-    @OneToMany(mappedBy = "mayBay")
-    private List<ChoNgoi> choNgoiList;
+//    @OneToMany(mappedBy = "mayBay")
+//    private List<ChoNgoi> choNgoiList;
 
     @Column(name = "active_status")
     @Enumerated(EnumType.STRING)
