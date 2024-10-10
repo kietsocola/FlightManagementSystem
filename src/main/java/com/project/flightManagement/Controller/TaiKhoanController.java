@@ -112,7 +112,7 @@ public class TaiKhoanController {
         } catch (Exception e) {
             responseData.setStatusCode(500);
             responseData.setData("");
-            responseData.setMessage("Đã xảy ra lỗi khi lấy thông tin tài khoản.");
+            responseData.setMessage("Đã xảy ra lỗi khi lấy thông tin tài khoản: " + e);
             return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
