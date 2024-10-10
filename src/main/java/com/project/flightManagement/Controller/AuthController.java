@@ -1,9 +1,12 @@
 package com.project.flightManagement.Controller;
 
 import com.project.flightManagement.DTO.AuthDTO.LoginDTO;
+import com.project.flightManagement.DTO.AuthDTO.LogoutDTO;
 import com.project.flightManagement.DTO.AuthDTO.SignupDTO;
+import com.project.flightManagement.DTO.InvalidToken.InvalidTokenDTO;
 import com.project.flightManagement.Payload.ResponseData;
 import com.project.flightManagement.Security.JwtTokenProvider;
+import com.project.flightManagement.Service.InvalidTokenService;
 import com.project.flightManagement.Service.KhachHangService;
 import com.project.flightManagement.Service.TaiKhoanService;
 import jakarta.validation.Valid;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -27,6 +31,9 @@ public class AuthController {
     private KhachHangService khachHangService;
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
+    @Autowired
+    private InvalidTokenService invalidTokenService;
+
     @PostMapping("/login")
     public ResponseEntity<ResponseData> login(@RequestBody LoginDTO loginDTO) {
         ResponseData responseData = new ResponseData();
@@ -91,6 +98,24 @@ public class AuthController {
             return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@RequestBody LogoutDTO logoutDTO) {
+        ResponseData responseData = new ResponseData();
+        try {
+            String idToken = jwtTokenProvider.getIdTokenFromJwtToken(logoutDTO.getToken());
+            Date expirationTime = jwtTokenProvider.getExpirationTimeTokenFromJwtToken(logoutDTO.getToken());
+            InvalidTokenDTO invalidTokenDTO = new InvalidTokenDTO(idToken, expirationTime);
+            invalidTokenService.saveInvalidTokenIntoDatabase(invalidTokenDTO);
 
-
+            responseData.setStatusCode(200);
+            responseData.setMessage("dang xuat thanh cong");
+            responseData.setData("");
+            return new ResponseEntity<>(responseData, HttpStatus.OK);
+        } catch (Exception e) {
+            responseData.setStatusCode(500);
+            responseData.setMessage("dang xuat that bai" + e);
+            responseData.setData("");
+            return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
