@@ -1,4 +1,4 @@
-package com.project.flightManagement.Sercurity;
+package com.project.flightManagement.Security;
 
 import com.project.flightManagement.Service.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;

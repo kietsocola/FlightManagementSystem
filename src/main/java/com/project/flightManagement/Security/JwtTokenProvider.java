@@ -1,4 +1,4 @@
-package com.project.flightManagement.Sercurity;
+package com.project.flightManagement.Security;
 
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;

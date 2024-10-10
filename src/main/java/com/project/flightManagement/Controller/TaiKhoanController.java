@@ -147,6 +147,7 @@ public class TaiKhoanController {
             isError = true;
         }
         if(isError) {
+            responseData.setStatusCode(409);
             responseData.setMessage("Đổi mật không thành công");
             responseData.setData(errorList);
             return new ResponseEntity<>(responseData, HttpStatus.CONFLICT);
@@ -154,6 +155,7 @@ public class TaiKhoanController {
 
         // Nếu mọi thứ đều ổn, gọi Service để cập nhật mật khẩu
         taiKhoanService.updateTaiKhoan(userName ,taiKhoanUpdateNguoiDungDTO);
+        responseData.setStatusCode(200);
         responseData.setMessage("Đổi mật khẩu thành công!");
         responseData.setData("");
         return new ResponseEntity<>(responseData, HttpStatus.OK);

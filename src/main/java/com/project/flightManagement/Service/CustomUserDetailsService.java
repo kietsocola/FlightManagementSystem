@@ -40,15 +40,15 @@ public class CustomUserDetailsService implements UserDetailsService {
         List<GrantedAuthority> authorityList = (List<GrantedAuthority>) mapRoleToAuthorities(quyen);
 
         return new org.springframework.security.core.userdetails.User(
+                String.valueOf(taiKhoan.getIdTaiKhoan()),
                 taiKhoan.getTenDangNhap(),
-                taiKhoan.getMatKhau(),
                 authorityList
         );
     }
 
     private Collection<? extends GrantedAuthority> mapRoleToAuthorities(Quyen quyen) {
         return quyen.getChiTietQuyenList().stream()
-                .map(chiTietQuyen -> new SimpleGrantedAuthority(chiTietQuyen.getChucNang().getTenChucNang() + "_" + chiTietQuyen.getHanhDong()))
+                .map(chiTietQuyen -> new SimpleGrantedAuthority(chiTietQuyen.getChucNang().getTenChucNang()+ "_" + chiTietQuyen.getHanhDong()))
                 .collect(Collectors.toList());
     }
 
