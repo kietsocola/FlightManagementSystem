@@ -3,11 +3,11 @@ package com.project.flightManagement.Controller;
 import com.project.flightManagement.DTO.TuyenBayDTO.TuyenBayDTO;
 import com.project.flightManagement.Payload.ResponseData;
 import com.project.flightManagement.Service.TuyenBayService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-@Controller
+
 @RestController
 @CrossOrigin("http://localhost:5173")
 public class TuyenBayController {
@@ -25,6 +25,7 @@ public class TuyenBayController {
 
     @GetMapping("/getAllRoutes")
     public ResponseEntity<ResponseData> getAllTuyenBay() {
+        ResponseData response = new ResponseData();
         Iterable<TuyenBayDTO> listTuyenBayDTO = tuyenBayService.getAllTuyenBay();
         if (listTuyenBayDTO.iterator().hasNext()) {
             response.setMessage("Get list of routes success!!");
@@ -40,8 +41,9 @@ public class TuyenBayController {
     }
 
     @GetMapping("/getAllRoutesSorted")
-    public ResponseEntity<ResponseData> getAllTuyenBaySorted(@RequestParam(defaultValue = "idTuyenBay") String sortBy) {
-        Iterable<TuyenBayDTO> listTuyenBayDTO = tuyenBayService.getAllTuyenBaySorted(sortBy);
+    public ResponseEntity<ResponseData> getAllTuyenBaySorted(@RequestParam(defaultValue = "idTuyenBay") String sortBy,
+                                                             @RequestParam(defaultValue = "asc") String order) {
+        Iterable<TuyenBayDTO> listTuyenBayDTO = tuyenBayService.getAllTuyenBaySorted(sortBy, order);
         if (listTuyenBayDTO.iterator().hasNext()) {
             response.setMessage("Get sorted routes success!!");
             response.setData(listTuyenBayDTO);
@@ -55,12 +57,13 @@ public class TuyenBayController {
         }
     }
 
-    @GetMapping("/getRouteById")
-    public ResponseEntity<ResponseData> getTuyenBayById(@RequestParam(defaultValue = "idTuyenBay") int idTuyenBay) {
-        Optional<TuyenBayDTO> tuyenBayDTO = tuyenBayService.getTuyenBayById(idTuyenBay);
+    @GetMapping("/getRouteById/{idTB}")
+    public ResponseEntity<ResponseData> getTuyenBayByIdTuyenBay(@PathVariable int idTB) {
+        ResponseData response = new ResponseData(); // Khởi tạo đối tượng response
+        Optional<TuyenBayDTO> tuyenBayDTO = tuyenBayService.getTuyenBayByIdTuyenBay(idTB);
         if (tuyenBayDTO.isPresent()) {
             response.setMessage("Get route by ID success!!");
-            response.setData(tuyenBayDTO);
+            response.setData(tuyenBayDTO.get()); // Chỉ lấy đối tượng DTO
             response.setStatusCode(200);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
@@ -71,8 +74,10 @@ public class TuyenBayController {
         }
     }
 
+
     @PostMapping("/addNewRoute")
     public ResponseEntity<ResponseData> addNewTuyenBay(@Valid @RequestBody TuyenBayDTO tuyenBayDTO, BindingResult bindingResult) {
+        ResponseData response = new ResponseData();
         if (bindingResult.hasErrors()) {
             Map<String, String> fieldErrors = new HashMap<>();
             bindingResult.getFieldErrors().forEach(error -> fieldErrors.put(error.getField(), error.getDefaultMessage()));
@@ -98,6 +103,7 @@ public class TuyenBayController {
 
     @PutMapping("/updateRoute/{idTuyenBay}")
     public ResponseEntity<ResponseData> updateTuyenBay(@PathVariable("idTuyenBay") Integer idTuyenBay, @Valid @RequestBody TuyenBayDTO tuyenBayDTO, BindingResult bindingResult) {
+        ResponseData response = new ResponseData();
         if (bindingResult.hasErrors()) {
             Map<String, String> fieldErrors = new HashMap<>();
             bindingResult.getFieldErrors().forEach(error -> fieldErrors.put(error.getField(), error.getDefaultMessage()));
@@ -110,8 +116,8 @@ public class TuyenBayController {
         Optional<TuyenBayDTO> updatedRoute = tuyenBayService.updateTuyenBay(tuyenBayDTO);
         if (updatedRoute.isPresent()) {
             response.setMessage("Update route successfully!!");
-            response.setData(updatedRoute.get());
-            response.setStatusCode(200);
+            response.setData(updatedRoute.get());// Trả về thông tin tuến bay đã cập
+            response.setStatusCode(200); //ok
             return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
             response.setMessage("Route not found!!");
@@ -121,9 +127,33 @@ public class TuyenBayController {
         }
     }
 
-    @GetMapping("/findRoutesByStartAirport")
-    public ResponseEntity<ResponseData> findRoutesByStartAirport(@RequestParam("idSanBayBatDau") int idSanBayBatDau) {
-        Iterable<TuyenBayDTO> listTuyenBayDTO = tuyenBayService.getAllTuyenBayIdSanBayBatDau(idSanBayBatDau);
+    @DeleteMapping("/deleteRoute/{idTB}")
+    public ResponseEntity<ResponseData> deleteTuyenBay(@PathVariable int idTB) {
+        try {
+            tuyenBayService.deleteTuyenBay(idTB);
+            response.setMessage("Route deleted successfully!!");
+            response.setData(null);
+            response.setStatusCode(200);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            response.setMessage(e.getMessage());
+            response.setData(null);
+            response.setStatusCode(404);
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            response.setMessage("Error occurred while deleting the route: " + e.getMessage());
+            response.setData(null);
+            response.setStatusCode(500);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+
+    @GetMapping("/findRoutes")
+    public ResponseEntity<ResponseData> findRoutesByStartAirport(@RequestParam String keyword) {
+        System.out.println("Searching for: " + keyword);
+        Iterable<TuyenBayDTO> listTuyenBayDTO = tuyenBayService.findBySanBayBatDau(keyword);
         if (listTuyenBayDTO.iterator().hasNext()) {
             response.setMessage("Get routes by start airport success!!");
             response.setData(listTuyenBayDTO);
@@ -137,19 +167,5 @@ public class TuyenBayController {
         }
     }
 
-    @GetMapping("/findRoutesByEndAirport")
-    public ResponseEntity<ResponseData> findRoutesByEndAirport(@RequestParam("idSanBayKetThuc") int idSanBayKetThuc) {
-        Iterable<TuyenBayDTO> listTuyenBayDTO = tuyenBayService.getAllTuyenBayIdSanBayKetThuc(idSanBayKetThuc);
-        if (listTuyenBayDTO.iterator().hasNext()) {
-            response.setMessage("Get routes by end airport success!!");
-            response.setData(listTuyenBayDTO);
-            response.setStatusCode(200);
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } else {
-            response.setMessage("No routes found for the end airport!!");
-            response.setData(null);
-            response.setStatusCode(404);
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-        }
-    }
+
 }

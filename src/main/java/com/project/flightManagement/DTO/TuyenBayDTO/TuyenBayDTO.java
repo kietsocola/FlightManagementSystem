@@ -13,14 +13,14 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TuyenBayDTO {
-	
+
     private int idTuyenBay;
 
-    @NotNull(message = "Không để trống mã của sân bay khởi hành")
-    private SanBay idSanBayBatDau;
+//    @NotNull(message = "Không đúng thông tin sân bay khởi hành")
+    private SanBay SanBayBatDau;
 
-    @NotNull(message = "Không để trống mã của sân bay hạ cánh")
-    private SanBay idSanBayKetThuc;
+//    @NotNull(message = "Không đúng thông tin sân bay hạ cánh")
+    private SanBay SanBayKetThuc;
 
     @NotNull(message = "Không để trống thời gian của chuyến bay")
     private LocalTime thoiGianChuyenBay;
@@ -35,9 +35,4 @@ public class TuyenBayDTO {
 		return idTuyenBay;
 	}
 
-	public void setIdTuyenBay(int idTuyenBay) {
-		this.idTuyenBay = idTuyenBay;
-	}
-
-	
 }

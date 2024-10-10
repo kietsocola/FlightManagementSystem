@@ -7,18 +7,18 @@ import com.project.flightManagement.DTO.TuyenBayDTO.TuyenBayDTO;
 
 public interface TuyenBayService {
 
-     Iterable<TuyenBayDTO> getAllTuyenBay();
+    public Iterable<TuyenBayDTO> getAllTuyenBay();
 
-    Optional<TuyenBayDTO> getTuyenBayById(int id);
+    public Optional<TuyenBayDTO> getTuyenBayByIdTuyenBay(int id);
 
-    Optional<TuyenBayDTO> addNewTuyenBay(TuyenBayDTO tuyenBayDTO);
+    public Optional<TuyenBayDTO> addNewTuyenBay(TuyenBayDTO tuyenBayDTO);
 
-    Optional<TuyenBayDTO> updateTuyenBay(TuyenBayDTO tuyenBayDTO);
+    public Optional<TuyenBayDTO> updateTuyenBay(TuyenBayDTO tuyenBayDTO);
 
-    Iterable<TuyenBayDTO> getAllTuyenBaySorted(String sortBy);
+    public Iterable<TuyenBayDTO> getAllTuyenBaySorted(String sortBy, String direction);
 
-    List<TuyenBayDTO> getAllTuyenBayIdSanBayBatDau(int idSanBayBatDau);
+    public List<TuyenBayDTO> findBySanBayBatDau(String keyword);
 
-    List<TuyenBayDTO> getAllTuyenBayIdSanBayKetThuc(int idSanBayKetThuc);
+    public String deleteTuyenBay(int id);
 
 }

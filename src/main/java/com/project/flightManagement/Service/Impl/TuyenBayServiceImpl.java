@@ -19,70 +19,73 @@ import java.util.stream.StreamSupport;
 public class TuyenBayServiceImpl implements TuyenBayService {
 
     @Autowired
-    private TuyenBayRepository tuyenBayRepo;
+    private TuyenBayRepository tbRepo;
 
     @Override
     public List<TuyenBayDTO> getAllTuyenBay() {
         try {
-            Iterable<TuyenBay> listTuyenBay = tuyenBayRepo.findAll();
-            return StreamSupport.stream(listTuyenBay.spliterator(), false)
+            Iterable<TuyenBay> listTB = tbRepo.findAll();
+            return StreamSupport.stream(listTB.spliterator(), false)
                     .map(TuyenBayMapper::toDTO)
                     .collect(Collectors.toList());
         } catch (Exception e) {
             System.err.println("Error occurred while fetching routes: " + e);
-
             return Collections.emptyList();
         }
     }
 
-
-
     @Override
-    public Optional<TuyenBayDTO> getTuyenBayById(int id) {
+    public Optional<TuyenBayDTO> getTuyenBayByIdTuyenBay(int idTB) {
         try {
-            Optional<TuyenBay> tuyenBay = tuyenBayRepo.findById(id);
-            return tuyenBay.map(TuyenBayMapper::toDTO);
+            return tbRepo.findById(idTB).map(TuyenBayMapper::toDTO);
         } catch (Exception e) {
-            System.err.println("Error occurred while fetching route by id: " + e.getMessage());
+            System.err.println("Error occurred while fetching route by ID: " + e.getMessage());
+            // Bạn có thể xử lý thêm ở đây
             return Optional.empty();
         }
     }
 
+
     @Override
     public Optional<TuyenBayDTO> addNewTuyenBay(TuyenBayDTO tuyenBayDTO) {
         try {
-            TuyenBay tuyenBay = TuyenBayMapper.toEntity(tuyenBayDTO);
-            TuyenBay savedTuyenBay = tuyenBayRepo.save(tuyenBay);
+            TuyenBay tb = TuyenBayMapper.toEntity(tuyenBayDTO);
+            TuyenBay savedTuyenBay = tbRepo.save(tb);
             return Optional.of(TuyenBayMapper.toDTO(savedTuyenBay));
         } catch (Exception e) {
             System.err.println("Error occurred while adding new route: " + e.getMessage());
-            return Optional.empty();
+            return Optional.empty(); // Trả về Optional.empty() thay vì null
         }
     }
 
     @Override
     public Optional<TuyenBayDTO> updateTuyenBay(TuyenBayDTO tuyenBayDTO) {
-        try {
-            if (tuyenBayRepo.existsById(tuyenBayDTO.getIdTuyenBay())) {
-                TuyenBay tuyenBay = TuyenBayMapper.toEntity(tuyenBayDTO);
-                TuyenBay updatedTuyenBay = tuyenBayRepo.save(tuyenBay);
-                return Optional.of(TuyenBayMapper.toDTO(updatedTuyenBay));
-            } else {
-                System.err.println("Route does not exist!");
-                return Optional.empty();
-            }
-        } catch (Exception e) {
-            System.err.println("Error occurred while updating route: " + e.getMessage());
+        Optional<TuyenBay> existingTB = tbRepo.findById(tuyenBayDTO.getIdTuyenBay());
+        if (existingTB.isPresent()) {
+            TuyenBay tuyenBay = TuyenBayMapper.toEntity(tuyenBayDTO);
+            TuyenBay updatedTuyenBay = tbRepo.save(tuyenBay);
+            return Optional.of(TuyenBayMapper.toDTO(updatedTuyenBay));
+        } else {
+            System.err.println("Route does not exist!");
             return Optional.empty();
         }
     }
 
+    @Override
+    public String deleteTuyenBay(int id) {
+        tbRepo.deleteById(id);
+        return "Route remove: " + id;
+    }
+
+
 
     @Override
-    public Iterable<TuyenBayDTO> getAllTuyenBaySorted(String sortBy) {
+    public List<TuyenBayDTO> getAllTuyenBaySorted(String sortBy, String direction) {
         try {
-            List<TuyenBay> tuyenBayList = tuyenBayRepo.findAll(Sort.by(Sort.Direction.DESC, sortBy));
-            return tuyenBayList.stream().map(TuyenBayMapper::toDTO).collect(Collectors.toList());
+            Sort sort = Sort.by("asc".equalsIgnoreCase(direction) ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
+            return tbRepo.findAll(sort).stream()
+                    .map(TuyenBayMapper::toDTO)
+                    .collect(Collectors.toList());
         } catch (IllegalArgumentException e) {
             System.err.println("Invalid sorting field: " + sortBy);
             return Collections.emptyList();
@@ -93,24 +96,16 @@ public class TuyenBayServiceImpl implements TuyenBayService {
     }
 
     @Override
-    public List<TuyenBayDTO> getAllTuyenBayIdSanBayBatDau(int idSanBayBatDau) {
-        try {
-            List<TuyenBay> tuyenBayList = tuyenBayRepo.findBySanBayBatDau_Id(idSanBayBatDau);
-            return tuyenBayList.stream().map(TuyenBayMapper::toDTO).collect(Collectors.toList());
-        } catch (Exception e) {
-            System.err.println("Error occurred while fetching routes by start airport: " + e.getMessage());
+    public List<TuyenBayDTO> findBySanBayBatDau(String keyword) {
+        List<TuyenBay> tuyenBayList = tbRepo.findByKeywordContainingIgnoreCase(keyword);
+        if (tuyenBayList.isEmpty()) {
+            System.out.println("No route found with the keyword: " + keyword);
             return Collections.emptyList();
-        }
-    }
-
-    @Override
-    public List<TuyenBayDTO> getAllTuyenBayIdSanBayKetThuc(int idSanBayKetThuc) {
-        try {
-            List<TuyenBay> tuyenBayList = tuyenBayRepo.findBySanBayKetThuc_Id(idSanBayKetThuc);
-            return tuyenBayList.stream().map(TuyenBayMapper::toDTO).collect(Collectors.toList());
-        } catch (Exception e) {
-            System.err.println("Error occurred while fetching routes by end airport: " + e.getMessage());
-            return Collections.emptyList();
+        } else {
+            System.out.println("Id route found: " + tuyenBayList.get(0).getSanBayBatDau());
+            return tuyenBayList.stream()
+                    .map(TuyenBayMapper::toDTO)
+                    .collect(Collectors.toList());
         }
     }
 }
