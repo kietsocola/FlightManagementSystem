@@ -2,6 +2,7 @@ package com.project.flightManagement.Service.Impl;
 
 import com.project.flightManagement.DTO.HangBayDTO.HangBayDTO;
 import com.project.flightManagement.DTO.MayBayDTO.MayBayDTO;
+import com.project.flightManagement.Enum.ActiveEnum;
 import com.project.flightManagement.Mapper.MayBayMapper;
 import com.project.flightManagement.Model.HangBay;
 import com.project.flightManagement.Model.MayBay;
@@ -113,6 +114,32 @@ public class MayBayServiceImpl implements MayBayService {
             MayBay mbSaved = mbRepo.save(mb);
             return Optional.of(MayBayMapper.toDTO(mbSaved));
         }else {
+            System.err.println("Plane does not existing!!!");
+            return Optional.empty();
+        }
+    }
+    @Override
+    public Optional<MayBayDTO> blockMayBay(int id){
+        Optional<MayBay> existingMB = mbRepo.findById(id);
+        if(existingMB.isPresent()){
+            MayBay mb = existingMB.get();
+            mb.setTrangThaiActive(ActiveEnum.IN_ACTIVE);
+            MayBay savedMB = mbRepo.save(mb);
+            return Optional.of(MayBayMapper.toDTO(savedMB));
+        } else {
+            System.err.println("Plane does not existing!!!");
+            return Optional.empty();
+        }
+    }
+    @Override
+    public Optional<MayBayDTO> unblockMayBay(int id){
+        Optional<MayBay> existingMB = mbRepo.findById(id);
+        if(existingMB.isPresent()){
+            MayBay mb = existingMB.get();
+            mb.setTrangThaiActive(ActiveEnum.ACTIVE);
+            MayBay savedMB = mbRepo.save(mb);
+            return Optional.of(MayBayMapper.toDTO(savedMB));
+        } else {
             System.err.println("Plane does not existing!!!");
             return Optional.empty();
         }

@@ -19,5 +19,6 @@ public interface MayBayService {
     public List<MayBayDTO> findMayBayByHangBay(HangBay hangBay);
     public List<MayBayDTO> findMayBayByTenMayBay(String keyword);
     public Iterable<MayBayDTO> getAllMayBaySorted(String sortBy, String order);
-
+    public Optional<MayBayDTO> blockMayBay(int id);
+    public Optional<MayBayDTO> unblockMayBay(int id);
 }

@@ -3,6 +3,7 @@ package com.project.flightManagement.Controller;
 import com.project.flightManagement.DTO.HangBayDTO.HangBayDTO;
 import com.project.flightManagement.DTO.MayBayDTO.MayBayDTO;
 import com.project.flightManagement.DTO.QuocGiaDTO.QuocGiaDTO;
+import com.project.flightManagement.Enum.ActiveEnum;
 import com.project.flightManagement.Mapper.HangBayMapper;
 import com.project.flightManagement.Mapper.MayBayMapper;
 import com.project.flightManagement.Model.HangBay;
@@ -232,5 +233,45 @@ public class MayBayController {
             return new ResponseEntity<>(response, HttpStatus.CONFLICT);
         }
         return null;
+    }
+    @PutMapping("/blockPlane/{idMayBay}")
+    public ResponseEntity<ResponseData> blockMayBay(@PathVariable int idMayBay){
+        Optional<MayBayDTO> existingMB = mayBayService.getMayBayById(idMayBay);
+        if(existingMB.isPresent()){
+            if(existingMB.get().getTrangThaiActive() == ActiveEnum.ACTIVE){
+                Optional<MayBayDTO> blockMB = mayBayService.blockMayBay(existingMB.get().getIdMayBay());
+                if(blockMB.isPresent()){
+                    response.setMessage("Block plane successfully!!");
+                    response.setData(blockMB.get());
+                    response.setStatusCode(200); // OK
+                    return new ResponseEntity<>(response, HttpStatus.OK);
+                } else {
+                    // Xử lý lỗi khi cập nhật không thành công
+                    response.setMessage("Block plane unsuccessfully!!");
+                    response.setData(null);
+                    response.setStatusCode(500); // Internal Server Error
+                    return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            } else {
+                Optional<MayBayDTO> unblockMB = mayBayService.unblockMayBay(existingMB.get().getIdMayBay());
+                if(unblockMB.isPresent()){
+                    response.setMessage("Unblock plane successfully!!");
+                    response.setData(unblockMB.get());
+                    response.setStatusCode(200); // OK
+                    return new ResponseEntity<>(response, HttpStatus.OK);
+                } else {
+                    // Xử lý lỗi khi cập nhật không thành công
+                    response.setMessage("Unblock plane unsuccessfully!!");
+                    response.setData(null);
+                    response.setStatusCode(500); // Internal Server Error
+                    return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            }
+        } else {
+            response.setMessage("Plane not found!!");
+            response.setData(null);
+            response.setStatusCode(404); // Not Found
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
     }
 }
