@@ -18,13 +18,15 @@ import java.util.UUID;
 public class JwtTokenProvider {
     @Value("${jwt.secret}")
     private String secretKey;
-    private final long JWT_EXPIRATION = 1800000L; // 30 phút
+    private final long JWT_EXPIRATION = 15 * 60 * 1000L; // 15 phút
+    private final long JWT_REFRESH_EXPIRATION = 7 * 24 * 60 * 60 * 1000L; // 7 ngày
+
 
     @Autowired
     private InvalidTokenService invalidTokenService;
 
     // Tạo JWT từ username
-    public String generateToken(String data) {
+    public String generateToken(String data) { // access token
         SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
         // Tạo ID cho token
         String tokenId = UUID.randomUUID().toString(); // Tạo ID ngẫu nhiên
@@ -38,6 +40,19 @@ public class JwtTokenProvider {
         return jws;
     }
 
+    public String generateRefreshToken(String data) {
+        SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
+        // Tạo ID cho token
+        String tokenId = UUID.randomUUID().toString(); // Tạo ID ngẫu nhiên
+        String jws = Jwts.builder()
+                .setSubject(data)
+                .setIssuedAt(new Date())
+                .setId(tokenId)
+                .setExpiration(new Date((new Date()).getTime() + JWT_REFRESH_EXPIRATION)) // Thời gian hết hạn
+                .signWith(key)
+                .compact();
+        return jws;
+    }
 
     // Lấy username từ JWT
     public String getUserNameFromJwtToken(String token) {

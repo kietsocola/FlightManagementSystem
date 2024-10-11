@@ -9,18 +9,20 @@ import com.project.flightManagement.Security.JwtTokenProvider;
 import com.project.flightManagement.Service.InvalidTokenService;
 import com.project.flightManagement.Service.KhachHangService;
 import com.project.flightManagement.Service.TaiKhoanService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Controller
 @RequestMapping("/auth")
@@ -40,14 +42,31 @@ public class AuthController {
         try {
             // Kiểm tra đăng nhập
             if (taiKhoanService.checkLogin(loginDTO)) {
+
+                // Tạo access token và refresh token
+                String accessToken = jwtTokenProvider.generateToken(loginDTO.getUserName());
+                String refreshToken = jwtTokenProvider.generateRefreshToken(loginDTO.getUserName());
+
+                ResponseCookie responseCookie = ResponseCookie.from("refreshToken", refreshToken)
+                        .httpOnly(true)// Chỉ dùng Http, không thể truy cập từ JavaScript
+                        .secure(true)  // Chỉ gửi cookie qua HTTPS
+                        .path("http://localhost:8080/auth/refresh_token")// Đường dẫn của API refresh token
+                        .maxAge(7 * 24 * 60 * 60)
+                        .build();
+
+                responseData.setStatusCode(200);
                 responseData.setMessage("Login success");
-                responseData.setData(jwtTokenProvider.generateToken(loginDTO.getUserName()));
-                return new ResponseEntity<>(responseData, HttpStatus.OK);
+                responseData.setData(accessToken);
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.SET_COOKIE, responseCookie.toString())
+                        .body(responseData);
             } else {
+                responseData.setStatusCode(401);
                 responseData.setMessage("Login failed: Invalid credentials");
                 return new ResponseEntity<>(responseData, HttpStatus.UNAUTHORIZED);
             }
         } catch (Exception e) {
+            responseData.setStatusCode(500);
             responseData.setMessage("Login failed: " + e.getMessage());
             return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -56,45 +75,56 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<ResponseData> signup(@Valid @RequestBody SignupDTO signupDTO) {
         ResponseData responseData = new ResponseData();
-        List<String> errorList = new ArrayList<>();
+        Map<String, String> errorMap = new HashMap<>(); // Thay đổi List thành Map để gán label cho từng lỗi
         boolean isError = false;
+
         try {
             // Kiểm tra nếu tên đăng nhập đã tồn tại
             if (taiKhoanService.existsTaiKhoanByTenDangNhap(signupDTO.getUserName())) {
-                errorList.add("username already exists");
+                errorMap.put("username", "Tên đăng nhập đã tồn tại");
                 isError = true;
             }
 
             // Kiểm tra nếu email đã tồn tại
             if (khachHangService.existsKhachHangByEmail(signupDTO.getEmail())) {
+                errorMap.put("email", "Email đã tồn tại");
                 isError = true;
-                errorList.add("Email already exists");
             }
-            // Kiểm tra nếu cccd đã tồn tại
+
+            // Kiểm tra nếu CCCD đã tồn tại
             if (khachHangService.existsKhachHangByCccd(signupDTO.getCccd())) {
+                errorMap.put("cccd", "CCCD đã tồn tại");
                 isError = true;
-                errorList.add("Cccd already exists");
             }
-            if(!signupDTO.getPassword().equals(signupDTO.getRePassword())) {
+
+            // Kiểm tra nếu mật khẩu không khớp
+            if (!signupDTO.getPassword().equals(signupDTO.getRePassword())) {
+                errorMap.put("password", "Mật khẩu và xác nhận mật khẩu không khớp");
                 isError = true;
-                errorList.add("Not match between password and re_password");
             }
-            if(isError) {
-                responseData.setMessage("Signup failed");
-                responseData.setData(errorList);
+
+            // Nếu có lỗi, trả về thông báo với danh sách lỗi
+            if (isError) {
+                responseData.setMessage("Đăng ký không thành công");
+                responseData.setData(errorMap); // Gán Map chứa các lỗi vào response
                 return new ResponseEntity<>(responseData, HttpStatus.CONFLICT);
             }
+
             // Tạo tài khoản mới
             boolean created = taiKhoanService.createTaiKhoan(signupDTO);
             if (created) {
-                responseData.setMessage("Signup success");
+                responseData.setStatusCode(200);
+                responseData.setMessage("Đăng ký thành công");
                 return new ResponseEntity<>(responseData, HttpStatus.OK);
             } else {
-                responseData.setMessage("Signup failed: Unable to create account");
+                responseData.setStatusCode(500);
+                responseData.setMessage("Đăng ký không thành công: Không thể tạo tài khoản");
                 return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
             }
+
         } catch (Exception e) {
-            responseData.setMessage("Signup failed: " + e.getMessage());
+            responseData.setStatusCode(500);
+            responseData.setMessage("Đăng ký không thành công: " + e.getMessage());
             return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -107,6 +137,13 @@ public class AuthController {
             InvalidTokenDTO invalidTokenDTO = new InvalidTokenDTO(idToken, expirationTime);
             invalidTokenService.saveInvalidTokenIntoDatabase(invalidTokenDTO);
 
+            ResponseCookie deleteCookie = ResponseCookie.from("refreshToken", null)
+                    .httpOnly(true)
+                    .secure(true)
+                    .path("http://localhost:8080/auth/refresh_token")
+                    .maxAge(0) // Xóa cookie
+                    .build();
+
             responseData.setStatusCode(200);
             responseData.setMessage("dang xuat thanh cong");
             responseData.setData("");
@@ -116,6 +153,38 @@ public class AuthController {
             responseData.setMessage("dang xuat that bai" + e);
             responseData.setData("");
             return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/refresh_token")
+    public ResponseEntity<?> refreshToken(HttpServletRequest request) {
+        String refreshToken = null;
+
+        ResponseData responseData = new ResponseData();
+
+        // Lấy refresh token từ cookie
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("refreshToken")) {
+                    refreshToken = cookie.getValue();
+                }
+            }
+        }
+
+        // Kiểm tra refresh token có hợp lệ không
+        if (refreshToken != null && jwtTokenProvider.validateJwtToken(refreshToken)) {
+            String username = jwtTokenProvider.getUserNameFromJwtToken(refreshToken);
+            String newAccessToken = jwtTokenProvider.generateToken(username);
+            responseData.setStatusCode(200);
+            responseData.setMessage("tao moi access token thanh cong");
+            responseData.setData(newAccessToken);
+            return new ResponseEntity<>(responseData, HttpStatus.OK);
+        } else {
+            responseData.setStatusCode(401);
+            responseData.setMessage("Refresh token is invalid or expired");
+            responseData.setData("");
+            return new ResponseEntity<>(responseData, HttpStatus.FORBIDDEN);
         }
     }
 }
