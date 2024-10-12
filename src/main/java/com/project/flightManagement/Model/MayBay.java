@@ -1,5 +1,6 @@
 package com.project.flightManagement.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.flightManagement.Enum.ActiveEnum; // Giả sử bạn có enum StatusEnum
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -31,6 +32,7 @@ public class MayBay {
     private String icaoMayBay;  // Mã ICAO có độ dài 4 ký tự
 
     @OneToMany(mappedBy = "mayBay")
+    @JsonIgnore
     private List<ChuyenBay> chuyenBayList;
 
     @Column(name = "so_luong_ghe")
@@ -47,4 +49,10 @@ public class MayBay {
     @Column(name = "active_status")
     @Enumerated(EnumType.STRING)
     private ActiveEnum trangThaiActive;
+
+    @Column(name = "max_row", nullable = false)
+    private String max_row;
+
+    @Column(name = "max_column", nullable = false)
+    private int max_column;
 }
