@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "taikhoan")
@@ -39,6 +40,9 @@ public class TaiKhoan {
     private NhanVien nhanVien;
     @Column(name = "thoi_gian_tao", nullable = false)
     private LocalDateTime thoiGianTao;
+
+    @OneToMany(mappedBy = "taiKhoan")
+    private List<RefreshToken> refreshTokenList;
 
     @Column(name = "active_status")
     @Enumerated(EnumType.STRING)

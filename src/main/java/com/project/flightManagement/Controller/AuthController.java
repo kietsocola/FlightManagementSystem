@@ -4,10 +4,14 @@ import com.project.flightManagement.DTO.AuthDTO.LoginDTO;
 import com.project.flightManagement.DTO.AuthDTO.LogoutDTO;
 import com.project.flightManagement.DTO.AuthDTO.SignupDTO;
 import com.project.flightManagement.DTO.InvalidToken.InvalidTokenDTO;
+import com.project.flightManagement.DTO.RefreshTokenDTO.RefreshTokenDTO;
+import com.project.flightManagement.Enum.ActiveEnum;
+import com.project.flightManagement.Model.RefreshToken;
 import com.project.flightManagement.Payload.ResponseData;
 import com.project.flightManagement.Security.JwtTokenProvider;
 import com.project.flightManagement.Service.InvalidTokenService;
 import com.project.flightManagement.Service.KhachHangService;
+import com.project.flightManagement.Service.RefreshTokenService;
 import com.project.flightManagement.Service.TaiKhoanService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,30 +40,25 @@ public class AuthController {
     @Autowired
     private InvalidTokenService invalidTokenService;
 
+    @Autowired
+    private RefreshTokenService refreshTokenService;
+
     @PostMapping("/login")
     public ResponseEntity<ResponseData> login(@RequestBody LoginDTO loginDTO) {
         ResponseData responseData = new ResponseData();
         try {
             // Kiểm tra đăng nhập
             if (taiKhoanService.checkLogin(loginDTO)) {
-
                 // Tạo access token và refresh token
                 String accessToken = jwtTokenProvider.generateToken(loginDTO.getUserName());
                 String refreshToken = jwtTokenProvider.generateRefreshToken(loginDTO.getUserName());
-
-                ResponseCookie responseCookie = ResponseCookie.from("refreshToken", refreshToken)
-                        .httpOnly(true)// Chỉ dùng Http, không thể truy cập từ JavaScript
-                        .secure(true)  // Chỉ gửi cookie qua HTTPS
-                        .path("http://localhost:8080/auth/refresh_token")// Đường dẫn của API refresh token
-                        .maxAge(7 * 24 * 60 * 60)
-                        .build();
+                RefreshTokenDTO refreshTokenDTO = new RefreshTokenDTO(jwtTokenProvider.getIdTokenFromJwtToken(refreshToken), jwtTokenProvider.getExpirationTimeTokenFromJwtToken(refreshToken), taiKhoanService.getTaiKhoanByTenDangNhap(loginDTO.getUserName()).get().getIdTaiKhoan(), ActiveEnum.ACTIVE);
+                refreshTokenService.saveRefreshTokenIntoDatabase(refreshTokenDTO);
 
                 responseData.setStatusCode(200);
                 responseData.setMessage("Login success");
                 responseData.setData(accessToken);
-                return ResponseEntity.ok()
-                        .header(HttpHeaders.SET_COOKIE, responseCookie.toString())
-                        .body(responseData);
+                return new ResponseEntity<>(responseData, HttpStatus.OK);
             } else {
                 responseData.setStatusCode(401);
                 responseData.setMessage("Login failed: Invalid credentials");
@@ -133,16 +132,12 @@ public class AuthController {
         ResponseData responseData = new ResponseData();
         try {
             String idToken = jwtTokenProvider.getIdTokenFromJwtToken(logoutDTO.getToken());
+            String userName = jwtTokenProvider.getUserNameFromJwtToken(logoutDTO.getToken());
             Date expirationTime = jwtTokenProvider.getExpirationTimeTokenFromJwtToken(logoutDTO.getToken());
             InvalidTokenDTO invalidTokenDTO = new InvalidTokenDTO(idToken, expirationTime);
             invalidTokenService.saveInvalidTokenIntoDatabase(invalidTokenDTO);
+//            refreshTokenService.deactivateToken()
 
-            ResponseCookie deleteCookie = ResponseCookie.from("refreshToken", null)
-                    .httpOnly(true)
-                    .secure(true)
-                    .path("http://localhost:8080/auth/refresh_token")
-                    .maxAge(0) // Xóa cookie
-                    .build();
 
             responseData.setStatusCode(200);
             responseData.setMessage("dang xuat thanh cong");
