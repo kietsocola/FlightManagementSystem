@@ -31,8 +31,8 @@ public class SanBay {
     private String diaChi;
 
     // Mapping to ThanhPho entity
-    @OneToOne
-    @JoinColumn(name = "id_thanh_pho", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "id_thanh_pho", referencedColumnName = "id_thanh_pho")
     private ThanhPho thanhPho;
     @Column(name = "active_status")
     @Enumerated(EnumType.STRING)

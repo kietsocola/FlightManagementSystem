@@ -43,4 +43,17 @@ public class HangBayServicelmpl implements HangBayService {
             return Collections.emptyList();
         }
     }
+    @Override
+    public Iterable<HangBayDTO> findHangBayByKeyWord(String keyword){
+        List<HangBay> hangBayList = hbRepo.findByKeywordContainingIgnoreCase(keyword);
+        if (hangBayList.isEmpty()) {
+            System.out.println("No airlines found with the keyword: " + keyword);
+        } else {
+            HangBay hb = hangBayList.get(0); // Dùng get(0) thay vì getFirst()
+            System.out.println("Id hb found: " + hb.getTenHangBay());
+        }
+        return hangBayList.stream()
+                .map(HangBayMapper::toDTO)
+                .collect(Collectors.toList());
+    }
 }

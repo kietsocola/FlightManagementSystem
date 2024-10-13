@@ -1,6 +1,8 @@
 package com.project.flightManagement.Service.Impl;
 
+import com.project.flightManagement.DTO.MayBayDTO.MayBayDTO;
 import com.project.flightManagement.DTO.SanBayDTO.SanBayDTO;
+import com.project.flightManagement.Enum.ActiveEnum;
 import com.project.flightManagement.Mapper.MayBayMapper;
 import com.project.flightManagement.Mapper.SanBayMapper;
 import com.project.flightManagement.Model.MayBay;
@@ -118,6 +120,32 @@ public class SanBayServicelmpl implements SanBayService {
             return Optional.ofNullable(SanBayMapper.toDTO(sb));
         } catch (Exception e) {
             return  Optional.empty();
+        }
+    }
+    @Override
+    public Optional<SanBayDTO> blockSanBay(int id){
+        Optional<SanBay> existingSB = sanBayRepository.findById(id);
+        if(existingSB.isPresent()){
+            SanBay sb = existingSB.get();
+            sb.setTrangThaiActive(ActiveEnum.IN_ACTIVE);
+            SanBay savedSB = sanBayRepository.save(sb);
+            return Optional.of(SanBayMapper.toDTO(savedSB));
+        } else {
+            System.err.println("Airport does not existing!!!");
+            return Optional.empty();
+        }
+    }
+    @Override
+    public Optional<SanBayDTO> unblockSanBay(int id){
+        Optional<SanBay> existingSB = sanBayRepository.findById(id);
+        if(existingSB.isPresent()){
+            SanBay sb = existingSB.get();
+            sb.setTrangThaiActive(ActiveEnum.ACTIVE);
+            SanBay savedSB = sanBayRepository.save(sb);
+            return Optional.of(SanBayMapper.toDTO(savedSB));
+        } else {
+            System.err.println("Airport does not existing!!!");
+            return Optional.empty();
         }
     }
 }

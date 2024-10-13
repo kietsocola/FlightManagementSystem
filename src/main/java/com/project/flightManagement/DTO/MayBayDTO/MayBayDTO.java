@@ -18,7 +18,7 @@ public class MayBayDTO {
     private String tenMayBay;
     @Valid
     private HangBay hangBay;
-    @Pattern(regexp = "^[A-Z]{3}[0-9]{3}$", message = "Mã ICAO phải có 6 kí tự chữ in hoa(3 kí tự đầu in hoa, 3 kí tự sau chữ số)")
+    @Pattern(regexp = "^[A-Z]{1}[0-9]{3}$", message = "Mã ICAO phải có 6 kí tự chữ in hoa(3 kí tự đầu in hoa, 3 kí tự sau chữ số)")
     private String icaoMayBay;
     private int soLuongGhe;
     @NotBlank(message = "Không được bỏ trống số hiệu")
