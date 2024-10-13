@@ -22,8 +22,8 @@ public class ChoNgoi {
     @JoinColumn(name = "id_hang_ve",nullable = false)
     private HangVe hangVe;
 
-    @OneToOne(mappedBy = "choNgoi")
-    private Ve ve;
+//    @OneToOne(mappedBy = "choNgoi")
+//    private Ve ve;
 
     // Mapping to MayBay entity
     @ManyToOne

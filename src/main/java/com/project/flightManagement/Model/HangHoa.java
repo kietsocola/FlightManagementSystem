@@ -30,8 +30,8 @@ public class HangHoa {
 
     @Column(name = "gia_phat_sinh")
     private double giaPhatSinh;
-    @OneToOne(mappedBy = "hangHoa")
-    private ChiTietHoaDon chiTietHoaDon;
+//    @OneToOne(mappedBy = "hangHoa")
+//    private ChiTietHoaDon chiTietHoaDon;
 
     @Column(name = "active_status")
     @Enumerated(EnumType.STRING)

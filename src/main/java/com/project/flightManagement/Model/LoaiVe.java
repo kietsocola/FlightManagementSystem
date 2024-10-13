@@ -25,8 +25,8 @@ public class LoaiVe {
 
     @Column(name = "mo_ta")
     private String moTa;
-    @OneToMany(mappedBy = "loaiVe")
-    private List<Ve> list;
+//    @OneToMany(mappedBy = "loaiVe")
+//    private List<Ve> list;
     @Column(name = "active_status")
     @Enumerated(EnumType.STRING)
     private ActiveEnum trangThaiActive;
