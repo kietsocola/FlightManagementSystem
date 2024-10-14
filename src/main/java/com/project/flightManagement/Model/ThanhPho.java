@@ -24,7 +24,6 @@ public class ThanhPho {
 
     // Mapping to QuocGia entity
     @ManyToOne
-    @JsonIgnore
     @JoinColumn(name = "id_quoc_gia")
     private QuocGia quocGia;
 
