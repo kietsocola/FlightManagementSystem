@@ -1,8 +1,8 @@
 package com.project.flightManagement.Controller;
 
-import com.project.flightManagement.DTO.TuyenBayDTO.TuyenBayDTO;
+import com.project.flightManagement.DTO.HangHoaDTO.HangHoaDTO;
 import com.project.flightManagement.Payload.ResponseData;
-import com.project.flightManagement.Service.TuyenBayService;
+import com.project.flightManagement.Service.HangHoaService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,56 +18,56 @@ import java.util.Optional;
 
 @RestController
 @CrossOrigin("http://localhost:5173")
-public class TuyenBayController {
+public class HangHoaController {
     @Autowired
-    private TuyenBayService tuyenBayService;
+    private HangHoaService HangHoaService;
     private ResponseData response = new ResponseData();
 
-    @GetMapping("/getAllRoutes")
-    public ResponseEntity<ResponseData> getAllTuyenBay() {
+    @GetMapping("/getAllMerchandises")
+    public ResponseEntity<ResponseData> getAllHangHoa() {
         ResponseData response = new ResponseData();
-        Iterable<TuyenBayDTO> listTuyenBayDTO = tuyenBayService.getAllTuyenBay();
-        if (listTuyenBayDTO.iterator().hasNext()) {
-            response.setMessage("Get list of routes success!!");
-            response.setData(listTuyenBayDTO);
+        Iterable<HangHoaDTO> listHangHoaDTO = HangHoaService.getAllHangHoa();
+        if (listHangHoaDTO.iterator().hasNext()) {
+            response.setMessage("Get list of merchandise success!!");
+            response.setData(listHangHoaDTO);
             response.setStatusCode(200);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
-            response.setMessage("No routes found!!");
+            response.setMessage("No merchandise found!!");
             response.setData(null);
             response.setStatusCode(204);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
     }
 
-    @GetMapping("/getAllRoutesSorted")
-    public ResponseEntity<ResponseData> getAllTuyenBaySorted(@RequestParam(defaultValue = "idTuyenBay") String sortBy,
-                                                             @RequestParam(defaultValue = "asc") String order) {
-        Iterable<TuyenBayDTO> listTuyenBayDTO = tuyenBayService.getAllTuyenBaySorted(sortBy, order);
-        if (listTuyenBayDTO.iterator().hasNext()) {
-            response.setMessage("Get sorted routes success!!");
-            response.setData(listTuyenBayDTO);
+    @GetMapping("/getAllMerchandiseSorted")
+    public ResponseEntity<ResponseData> getAllHangHoaSorted(@RequestParam(defaultValue = "idHangHoa") String sortBy,
+                                                            @RequestParam(defaultValue = "asc") String order) {
+        Iterable<HangHoaDTO> listHangHoaDTO = HangHoaService.getAllHangHoaSorted(sortBy, order);
+        if (listHangHoaDTO.iterator().hasNext()) {
+            response.setMessage("Get sorted merchandise success!!");
+            response.setData(listHangHoaDTO);
             response.setStatusCode(200);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
-            response.setMessage("No routes found!!");
+            response.setMessage("No merchandise found!!");
             response.setData(null);
             response.setStatusCode(204);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
     }
 
-    @GetMapping("/getRouteById/{idTB}")
-    public ResponseEntity<ResponseData> getTuyenBayByIdTuyenBay(@PathVariable int idTB) {
+    @GetMapping("/getMerchandiseById/{idHH}")
+    public ResponseEntity<ResponseData> getHangHoaByIdHangHoa(@PathVariable int idHH) {
         ResponseData response = new ResponseData(); // Khởi tạo đối tượng response
-        Optional<TuyenBayDTO> tuyenBayDTO = tuyenBayService.getTuyenBayByIdTuyenBay(idTB);
-        if (tuyenBayDTO.isPresent()) {
-            response.setMessage("Get route by ID success!!");
-            response.setData(tuyenBayDTO.get()); // Chỉ lấy đối tượng DTO
+        Optional<HangHoaDTO> HangHoaDTO = HangHoaService.getHangHoaByIdHangHoa(idHH);
+        if (HangHoaDTO.isPresent()) {
+            response.setMessage("Get merchandise by ID success!!");
+            response.setData(HangHoaDTO.get()); // Chỉ lấy đối tượng DTO
             response.setStatusCode(200);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
-            response.setMessage("Route not found!!");
+            response.setMessage("merchandise not found!!");
             response.setData(null);
             response.setStatusCode(404);
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
@@ -75,8 +75,8 @@ public class TuyenBayController {
     }
 
 
-    @PostMapping("/addNewRoute")
-    public ResponseEntity<ResponseData> addNewTuyenBay(@Valid @RequestBody TuyenBayDTO tuyenBayDTO, BindingResult bindingResult) {
+    @PostMapping("/addNewMerchandise")
+    public ResponseEntity<ResponseData> addNewHangHoa(@Valid @RequestBody HangHoaDTO HangHoaDTO, BindingResult bindingResult) {
         ResponseData response = new ResponseData();
 
         // Handle validation errors
@@ -90,30 +90,30 @@ public class TuyenBayController {
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
 
-        // Add new route
+        // Add new merchandise
         try {
-            Optional<TuyenBayDTO> savedRoute = tuyenBayService.addNewTuyenBay(tuyenBayDTO);
-            if (savedRoute.isPresent()) {
-                response.setMessage("Route saved successfully!");
-                response.setData(savedRoute.get());
+            Optional<HangHoaDTO> savedMerchandise = HangHoaService.addNewHangHoa(HangHoaDTO);
+            if (savedMerchandise.isPresent()) {
+                response.setMessage("merchandise saved successfully!");
+                response.setData(savedMerchandise.get());
                 response.setStatusCode(201);
                 return new ResponseEntity<>(response, HttpStatus.CREATED);
             } else {
-                response.setMessage("Route saving failed due to unknown reasons.");
+                response.setMessage("merchandise saving failed due to unknown reasons.");
                 response.setData(null);
                 response.setStatusCode(500);
                 return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
             }
         } catch (Exception e) {
-            response.setMessage("Error saving route: " + e.getMessage());
+            response.setMessage("Error saving merchandise: " + e.getMessage());
             response.setData(null);
             response.setStatusCode(500);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @PutMapping("/updateRoute/{idTuyenBay}")
-    public ResponseEntity<ResponseData> updateTuyenBay(@PathVariable("idTuyenBay") Integer idTuyenBay, @Valid @RequestBody TuyenBayDTO tuyenBayDTO, BindingResult bindingResult) {
+    @PutMapping("/updateMerchandise/{idHangHoa}")
+    public ResponseEntity<ResponseData> updateHangHoa(@PathVariable("idHangHoa") Integer idHangHoa, @Valid @RequestBody HangHoaDTO HangHoaDTO, BindingResult bindingResult) {
         ResponseData response = new ResponseData();
 
         // Handle validation errors
@@ -128,22 +128,22 @@ public class TuyenBayController {
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
 
-        // Update existing route
+        // Update existing merchandise
         try {
-            Optional<TuyenBayDTO> updatedRoute = tuyenBayService.updateTuyenBay(idTuyenBay, tuyenBayDTO);
-            if (updatedRoute.isPresent()) {
-                response.setMessage("Route updated successfully!");
-                response.setData(updatedRoute.get());
+            Optional<HangHoaDTO> updatedMerchandise = HangHoaService.updateHangHoa(idHangHoa, HangHoaDTO);
+            if (updatedMerchandise.isPresent()) {
+                response.setMessage("Merchandise updated successfully!");
+                response.setData(updatedMerchandise.get());
                 response.setStatusCode(200); // OK
                 return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
-                response.setMessage("Route with ID " + idTuyenBay + " not found!"); // Cung cấp ID cụ thể
+                response.setMessage("merchandise with ID " + idHangHoa + " not found!"); // Cung cấp ID cụ thể
                 response.setData(null);
                 response.setStatusCode(404); // Not Found
                 return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
             }
         } catch (Exception e) {
-            response.setMessage("Error updating route: " + e.getMessage());
+            response.setMessage("Error updating merchandise: " + e.getMessage());
             response.setData(null);
             response.setStatusCode(500);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -151,11 +151,11 @@ public class TuyenBayController {
     }
 
 
-    @DeleteMapping("/deleteRoute/{idTB}")
-    public ResponseEntity<ResponseData> deleteTuyenBay(@PathVariable int idTB) {
+    @DeleteMapping("/deleteMerchandise/{idHH}")
+    public ResponseEntity<ResponseData> deleteHangHoa(@PathVariable int idHH) {
         try {
-            tuyenBayService.deleteTuyenBay(idTB);
-            response.setMessage("Route deleted successfully!!");
+            HangHoaService.deleteHangHoa(idHH);
+            response.setMessage("merchandise deleted successfully!!");
             response.setData(null);
             response.setStatusCode(200);
             return new ResponseEntity<>(response, HttpStatus.OK);
@@ -165,7 +165,7 @@ public class TuyenBayController {
             response.setStatusCode(404);
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            response.setMessage("Error occurred while deleting the route: " + e.getMessage());
+            response.setMessage("Error occurred while deleting the merchandise: " + e.getMessage());
             response.setData(null);
             response.setStatusCode(500);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -174,17 +174,17 @@ public class TuyenBayController {
 
 
 
-    @GetMapping("/findRoutes")
-    public ResponseEntity<ResponseData> findRoutesByStartAirport(@RequestParam String keyword) {
+    @GetMapping("/findMerchandise")
+    public ResponseEntity<ResponseData> findByTenHangHoa(@RequestParam String keyword) {
         System.out.println("Searching for: " + keyword);
-        Iterable<TuyenBayDTO> listTuyenBayDTO = tuyenBayService.findBySanBayBatDau(keyword);
-        if (listTuyenBayDTO.iterator().hasNext()) {
-            response.setMessage("Get routes by start airport success!!");
-            response.setData(listTuyenBayDTO);
+        Iterable<HangHoaDTO> listHangHoaDTO = HangHoaService.findByTenHangHoa(keyword);
+        if (listHangHoaDTO.iterator().hasNext()) {
+            response.setMessage("Get merchandise by start airport success!!");
+            response.setData(listHangHoaDTO);
             response.setStatusCode(200);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
-            response.setMessage("No routes found for the start airport!!");
+            response.setMessage("No merchandise found for the start airport!!");
             response.setData(null);
             response.setStatusCode(404);
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);

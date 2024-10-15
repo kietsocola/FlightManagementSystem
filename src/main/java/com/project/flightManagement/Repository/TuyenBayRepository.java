@@ -9,9 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface TuyenBayRepository extends JpaRepository<TuyenBay, Integer> {
-    TuyenBay findBySanBayBatDau(SanBay idSanBay);
 
-    TuyenBay findBySanBayKetThuc(SanBay idSanBay);
 
     @Query("SELECT tb FROM TuyenBay tb WHERE " +
             "LOWER(tb.sanBayBatDau) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +

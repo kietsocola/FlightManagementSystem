@@ -2,45 +2,39 @@ package com.project.flightManagement.Mapper;
 
 import com.project.flightManagement.DTO.TuyenBayDTO.TuyenBayDTO;
 import com.project.flightManagement.Model.TuyenBay;
-import java.sql.Timestamp;
-import java.time.LocalTime;
+import com.project.flightManagement.Model.SanBay;
+
 
 public class TuyenBayMapper {
 
-    public static TuyenBayDTO toDTO(TuyenBay tb) {
-        TuyenBayDTO tbDTO = new TuyenBayDTO();
-
-        tbDTO.setIdTuyenBay(tb.getIdTuyenBay());
-        tbDTO.setSanBayBatDau(tb.getSanBayBatDau());
-        tbDTO.setSanBayKetThuc(tb.getSanBayKetThuc());
-
-        if (tb.getThoiGianChuyenBay() != null) {
-            LocalTime thoiGianChuyenBay = tb.getThoiGianChuyenBay().toLocalDateTime().toLocalTime();
-            tbDTO.setThoiGianChuyenBay(thoiGianChuyenBay);
-        }
-
-        tbDTO.setKhoangCach(tb.getKhoangCach());
-        tbDTO.setStatus(tb.getTrangThaiActive());
-
-        return tbDTO;
+    public static TuyenBayDTO toDTO(TuyenBay tuyenBay) {
+        TuyenBayDTO dto = new TuyenBayDTO();
+        dto.setIdTuyenBay(tuyenBay.getIdTuyenBay());
+        dto.setIdSanBayBatDau(tuyenBay.getSanBayBatDau().getIdSanBay());
+        dto.setIdSanBayKetThuc(tuyenBay.getSanBayKetThuc().getIdSanBay());
+        dto.setThoiGianChuyenBay(tuyenBay.getThoiGianChuyenBay());
+        dto.setKhoangCach(tuyenBay.getKhoangCach());
+        dto.setStatus(tuyenBay.getStatus());
+        return dto;
     }
 
-    public static TuyenBay toEntity(TuyenBayDTO tbDTO) {
-        TuyenBay tb = new TuyenBay();
+    public static TuyenBay toEntity(TuyenBayDTO dto) {
+        TuyenBay tuyenBay = new TuyenBay();
+        tuyenBay.setIdTuyenBay(dto.getIdTuyenBay());
 
-        tb.setIdTuyenBay(tbDTO.getIdTuyenBay());
-        tb.setSanBayBatDau(tbDTO.getSanBayBatDau());
-        tb.setSanBayKetThuc(tbDTO.getSanBayKetThuc());
+        // Tạo các đối tượng SanBay để thiết lập mối quan hệ
+        SanBay sanBayBatDau = new SanBay();
+        sanBayBatDau.setIdSanBay(dto.getIdSanBayBatDau());
 
-        if (tbDTO.getThoiGianChuyenBay() != null) {
-            Timestamp thoiGianChuyenBay = Timestamp
-                    .valueOf(tbDTO.getThoiGianChuyenBay().atDate(java.time.LocalDate.now()));
-            tb.setThoiGianChuyenBay(thoiGianChuyenBay);
-        }
+        SanBay sanBayKetThuc = new SanBay();
+        sanBayKetThuc.setIdSanBay(dto.getIdSanBayKetThuc());
 
-        tb.setKhoangCach(tbDTO.getKhoangCach());
-        tb.setTrangThaiActive(tbDTO.getStatus());
+        tuyenBay.setSanBayBatDau(sanBayBatDau);
+        tuyenBay.setSanBayKetThuc(sanBayKetThuc);
+        tuyenBay.setThoiGianChuyenBay(dto.getThoiGianChuyenBay());
+        tuyenBay.setKhoangCach(dto.getKhoangCach());
 
-        return tb;
+        tuyenBay.setStatus(dto.getStatus());
+        return tuyenBay;
     }
 }

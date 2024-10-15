@@ -20,7 +20,7 @@ public class HangHoa {
 
     @ManyToOne
     @JoinColumn(name = "id_loai_hang_hoa", nullable = false)
-    private LoaiHangHoa loaiHangHoa;
+    private LoaiHangHoa loaiHangHoa; //khoá ngoại
 
     @Column(name = "ten_hang_hoa", nullable = false)
     private String tenHangHoa;
