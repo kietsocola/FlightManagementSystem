@@ -46,7 +46,7 @@ public class ChuyenBayController {
         if (flightsVe != null && !flightsVe.isEmpty()) {
             flightMap.put("chuyenbayve", Map.of("status", "found", "data", flightsVe));
         } else {
-            flightMap.put("chuyenbayve", Map.of("status", "not_found", "data", null));
+            flightMap.put("chuyenbayve", Map.of("status", "not_found", "data", Collections.emptyList()));
         }
 
 // Xử lý phản hồi tổng thể

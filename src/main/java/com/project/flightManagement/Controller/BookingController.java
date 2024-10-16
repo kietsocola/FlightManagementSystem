@@ -1,22 +1,24 @@
 package com.project.flightManagement.Controller;
 
 import com.project.flightManagement.DTO.ChoNgoiDTO.ChoNgoiDTO;
-import com.project.flightManagement.DTO.HanhKhachDTO;
+import com.project.flightManagement.DTO.HanhKhachDTO.HanhKhachDTO;
 import com.project.flightManagement.DTO.HoldSeatDTO.HoldSeatRequest;
 import com.project.flightManagement.Enum.VeEnum;
-import com.project.flightManagement.Model.HanhKhach;
 import com.project.flightManagement.Model.Ve;
 import com.project.flightManagement.Payload.ResponseData;
 import com.project.flightManagement.Repository.VeRepository;
 import com.project.flightManagement.Service.ChoNgoiService;
 import com.project.flightManagement.Service.HoldSeatService;
+import com.project.flightManagement.Service.PaymentService;
 import com.project.flightManagement.Service.SocketIOService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -29,6 +31,8 @@ public class BookingController {
     private HoldSeatService holdSeatService;
     @Autowired
     private VeRepository veRepo;
+    @Autowired
+    private PaymentService paymentService;
 
     // Endpoint to get seats for a flight by flight ID
     @GetMapping("/getChoNgoiByChuyenBayAndHangVe")
@@ -103,6 +107,7 @@ public class BookingController {
             response.setStatusCode(400); // Bad Request
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
+        Map<String, Object> responseData = new HashMap<>();
 
         try {
             // Kiểm tra xem vé có tồn tại không
@@ -122,15 +127,29 @@ public class BookingController {
             }
 
             // Xác nhận đặt vé
-            holdSeatService.confirmBooking(hanhKhach.getIdVe());
-
-            // Cập nhật thông báo cho client
-            response.setMessage("Đã đặt vé thành công cho vé " + hanhKhach.getIdVe());
-            response.setStatusCode(200); // OK
-            return new ResponseEntity<>(response, HttpStatus.OK);
+            boolean isPaymentSuccessful = paymentService.checkPaymentStatus(hanhKhach);
+            if (isPaymentSuccessful) {
+                // Xác nhận đặt vé khi thanh toán thành công
+                holdSeatService.confirmBooking(hanhKhach);
+                responseData.put("payment", true);
+                // Cập nhật thông báo cho client
+                response.setMessage("Đã đặt vé thành công cho vé " + hanhKhach.getIdVe());
+                response.setData(responseData);
+                response.setStatusCode(200); // OK
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                responseData.put("payment", false);
+                // Nếu thanh toán thất bại, thông báo lỗi
+                response.setMessage("Thanh toán không thành công, không thể xác nhận vé.");
+                response.setData(responseData);
+                response.setStatusCode(400); // Bad Request
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            }
 
         } catch (Exception e) {
+            responseData.put("booking", false);
             // Bắt các lỗi ngoại lệ và trả về thông báo lỗi
+            response.setData(responseData);
             response.setMessage("Đặt vé thất bại cho vé " + hanhKhach.getIdVe() + ": " + e.getMessage());
             response.setStatusCode(400); // Bad Request
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);

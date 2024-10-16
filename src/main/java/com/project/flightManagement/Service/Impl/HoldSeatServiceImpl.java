@@ -1,7 +1,11 @@
 package com.project.flightManagement.Service.Impl;
 
+import com.project.flightManagement.DTO.HanhKhachDTO.HanhKhachDTO;
 import com.project.flightManagement.Enum.VeEnum;
+import com.project.flightManagement.Mapper.HanhKhachMapper;
+import com.project.flightManagement.Model.HanhKhach;
 import com.project.flightManagement.Model.Ve;
+import com.project.flightManagement.Repository.HanhKhachRepository;
 import com.project.flightManagement.Repository.VeRepository;
 import com.project.flightManagement.Service.HoldSeatService;
 import com.project.flightManagement.Service.SocketIOService;
@@ -19,6 +23,8 @@ import java.util.concurrent.TimeUnit;
 public class HoldSeatServiceImpl implements HoldSeatService {
     @Autowired
     private VeRepository veRepo;
+    @Autowired
+    private HanhKhachRepository hanhKhachRepo;
     @Autowired
     private SocketIOService socketIOService;
     private Map<Integer, ScheduledFuture<?>> holdSeatTasks = new HashMap<>();
@@ -57,13 +63,20 @@ public class HoldSeatServiceImpl implements HoldSeatService {
     }
 
     @Override
-    public void confirmBooking(int idVe) {
-        Ve ve = veRepo.findById(idVe).get();
+    public void confirmBooking(HanhKhachDTO hk) { //ở đây có đủ id Vé và id Khách hàng nên ai làm hóa đơn thì ok
+        Ve ve = veRepo.findById(hk.getIdVe()).get();
         if (holdSeatTasks.containsKey(ve.getIdVe())) {
             holdSeatTasks.get(ve.getIdVe()).cancel(false);  // Hủy tác vụ hủy ghế
             holdSeatTasks.remove(ve.getIdVe());  // Xóa khỏi bản đồ
         }
-        ve.setTrangThai(VeEnum.BOOKED);  // Cập nhật trạng thái thành BOOKED
-        veRepo.save(ve);
+        try{
+            HanhKhach hkEntity = HanhKhachMapper.toEntity(hk);
+            hkEntity = hanhKhachRepo.save(hkEntity);
+            ve.setHanhKhach(hkEntity);
+            ve.setTrangThai(VeEnum.BOOKED);  // Cập nhật trạng thái thành BOOKED
+            veRepo.save(ve);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }

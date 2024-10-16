@@ -1,4 +1,4 @@
-package com.project.flightManagement.DTO;
+package com.project.flightManagement.DTO.HanhKhachDTO;
 
 import com.project.flightManagement.Enum.ActiveEnum;
 import com.project.flightManagement.Enum.GioiTinhEnum;
