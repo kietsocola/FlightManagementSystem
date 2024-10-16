@@ -31,8 +31,5 @@ public class TuyenBayDTO {
     @NotNull(message = "Không để trống trạng thái chuyến bay")
     private ActiveEnum status;
 
-	public int getIdTuyenBay() {
-		return idTuyenBay;
-	}
 
 }

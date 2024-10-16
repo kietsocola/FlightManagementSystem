@@ -2,15 +2,16 @@ package com.project.flightManagement.Mapper;
 
 import com.project.flightManagement.DTO.ChuyenBayDTO.ChuyenBayDTO;
 import com.project.flightManagement.Model.ChuyenBay;
+import com.project.flightManagement.Model.TuyenBay;
 
 public class ChuyenBayMapper {
 
     public static ChuyenBayDTO toDTO(ChuyenBay chuyenBay) {
         ChuyenBayDTO dto = new ChuyenBayDTO();
         dto.setIdChuyenBay(chuyenBay.getIdChuyenBay());
-        dto.setTuyenBay(chuyenBay.getTuyenBay());
-        dto.setMayBay(chuyenBay.getMayBay());
-        dto.setCong(chuyenBay.getCong());
+        dto.setTuyenBay(TuyenBayMapper.toDTO(chuyenBay.getTuyenBay()));
+        dto.setMayBay(MayBayMapper.toDTO(chuyenBay.getMayBay()));
+        dto.setCong(CongMapper.toDTO(chuyenBay.getCong()));
         dto.setThoiGianBatDauDuTinh(chuyenBay.getThoiGianBatDauDuTinh());
         dto.setThoiGianKetThucDuTinh(chuyenBay.getThoiGianKetThucDuTinh());
         dto.setIataChuyenBay(chuyenBay.getIataChuyenBay());
@@ -29,9 +30,9 @@ public class ChuyenBayMapper {
     public static ChuyenBay toEntity(ChuyenBayDTO dto) {
         ChuyenBay chuyenBay = new ChuyenBay();
         chuyenBay.setIdChuyenBay(dto.getIdChuyenBay());
-        chuyenBay.setTuyenBay(dto.getTuyenBay());
-        chuyenBay.setMayBay(dto.getMayBay());
-        chuyenBay.setCong(dto.getCong());
+        chuyenBay.setTuyenBay(TuyenBayMapper.toEntity(dto.getTuyenBay()));
+        chuyenBay.setMayBay(MayBayMapper.toEntity(dto.getMayBay()));
+        chuyenBay.setCong(CongMapper.toEntity(dto.getCong()));
         chuyenBay.setThoiGianBatDauDuTinh(dto.getThoiGianBatDauDuTinh());
         chuyenBay.setThoiGianKetThucDuTinh(dto.getThoiGianKetThucDuTinh());
         chuyenBay.setIataChuyenBay(dto.getIataChuyenBay());

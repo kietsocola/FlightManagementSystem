@@ -1,5 +1,6 @@
 package com.project.flightManagement.DTO.CongDTO;
 
+import com.project.flightManagement.DTO.SanBayDTO.SanBayDTO;
 import com.project.flightManagement.Enum.ActiveEnum;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -18,6 +19,6 @@ public class CongDTO {
 
     private ActiveEnum trangThaiActive;
 
-    private int sanBayId; // ID của SanBay
+    private SanBayDTO sanBay; // ID của SanBay
 }
 

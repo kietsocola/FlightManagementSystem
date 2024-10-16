@@ -1,6 +1,7 @@
 package com.project.flightManagement.Controller;
 
 
+import com.project.flightManagement.DTO.ChuyenBayDTO.ChuyenBayDTO;
 import com.project.flightManagement.DTO.CongDTO.CongDTO;
 import com.project.flightManagement.DTO.NhanVienDTO.NhanVienDTO;
 import com.project.flightManagement.Model.SanBay;
@@ -11,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/admin/cong")
@@ -51,6 +54,23 @@ public class CongController {
             response.setData(null);
             response.setStatusCode(204);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+    }
+
+    @GetMapping("/getcongbyid/{idCong}")
+    public ResponseEntity<ResponseData> getcongbyidcong(@PathVariable int idCong){
+        Optional<CongDTO> cDTO = congService.getCongById(idCong);
+        if (cDTO.isPresent()) {
+            response.setMessage("get cong by id successfully!!");
+            response.setData(cDTO.get()); // Trả về dữ liệu của khách hàng đã lưu
+            response.setStatusCode(201); // Created
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+        } else {
+            // Xử lý lỗi khi lưu không thành công
+            response.setMessage("get cong by id unsuccessfully!!");
+            response.setData(null);
+            response.setStatusCode(500); // Internal Server Error
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

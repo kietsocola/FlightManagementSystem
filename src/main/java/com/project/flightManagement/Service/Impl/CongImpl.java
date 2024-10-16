@@ -43,7 +43,7 @@ public class CongImpl implements CongService {
 
     @Override
     public Iterable<CongDTO> getCongBySanBay(SanBay sanBay) {
-        Iterable<Cong> dscong = repo.findCongBySanBay(sanBay);
+        Iterable<Cong> dscong = repo.findBySanBay(sanBay);
         Iterable<CongDTO> listnvDTO = StreamSupport.stream(dscong.spliterator(),false)
                 .map(CongMapper::toDTO)
                 .toList();

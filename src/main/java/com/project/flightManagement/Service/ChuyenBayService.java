@@ -13,4 +13,5 @@ public interface ChuyenBayService {
     public Optional<ChuyenBayDTO> updateChuyenBay(ChuyenBayDTO cbDTO);
 
     public Iterable<ChuyenBayDTO> getAllChuyenBay();
+    public Optional<ChuyenBayDTO> getChuyenBayById(int  id);
 }

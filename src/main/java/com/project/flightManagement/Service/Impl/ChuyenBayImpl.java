@@ -1,11 +1,11 @@
 package com.project.flightManagement.Service.Impl;
 
 import com.project.flightManagement.DTO.ChuyenBayDTO.ChuyenBayDTO;
-import com.project.flightManagement.DTO.NhanVienDTO.NhanVienDTO;
+import com.project.flightManagement.DTO.ChuyenBayDTO.ChuyenBayDTO;
 import com.project.flightManagement.Mapper.ChuyenBayMapper;
-import com.project.flightManagement.Mapper.NhanVienMapper;
+import com.project.flightManagement.Mapper.ChuyenBayMapper;
 import com.project.flightManagement.Model.ChuyenBay;
-import com.project.flightManagement.Model.NhanVien;
+import com.project.flightManagement.Model.ChuyenBay;
 import com.project.flightManagement.Repository.ChuyenBayReposity;
 import com.project.flightManagement.Service.ChuyenBayService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,12 +26,16 @@ public class ChuyenBayImpl implements ChuyenBayService {
 
     @Override
     public Optional<ChuyenBayDTO> addChuyenBay(ChuyenBayDTO cbDTO) {
-        return Optional.empty();
+        ChuyenBay cb = ChuyenBayMapper.toEntity(cbDTO);
+        ChuyenBay savecb = repo.save(cb);
+        return Optional.of(ChuyenBayMapper. toDTO(savecb));
     }
 
     @Override
     public Optional<ChuyenBayDTO> updateChuyenBay(ChuyenBayDTO cbDTO) {
-        return Optional.empty();
+        ChuyenBay cb = ChuyenBayMapper.toEntity(cbDTO);
+        ChuyenBay updatecb = repo.save(cb);
+        return Optional.of(ChuyenBayMapper.toDTO(updatecb));
     }
 
     @Override
@@ -47,4 +51,12 @@ public class ChuyenBayImpl implements ChuyenBayService {
             return Collections.emptyList();
         }
     }
+
+    @Override
+    public Optional<ChuyenBayDTO> getChuyenBayById(int id) {
+        Optional<ChuyenBay> cb = repo.findById(id);
+        return cb.map(ChuyenBayMapper::toDTO);
+    }
+    
+    
 }

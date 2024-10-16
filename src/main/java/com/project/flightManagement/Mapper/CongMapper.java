@@ -7,12 +7,12 @@ import com.project.flightManagement.Model.SanBay;
 public class CongMapper {
 
     // Chuyển từ DTO sang Entity
-    public static Cong toEntity(CongDTO congDTO, SanBay sanBay) {
+    public static Cong toEntity(CongDTO congDTO) {
         Cong cong = new Cong();
         cong.setIdCong(congDTO.getIdCong());
         cong.setTenCong(congDTO.getTenCong());
         cong.setTrangThaiActive(congDTO.getTrangThaiActive());
-        cong.setSanBay(sanBay);
+        cong.setSanBay(SanBayMapper.toEntity(congDTO.getSanBay()));
 
         return cong;
     }
@@ -23,7 +23,7 @@ public class CongMapper {
         congDTO.setIdCong(cong.getIdCong());
         congDTO.setTenCong(cong.getTenCong());
         congDTO.setTrangThaiActive(cong.getTrangThaiActive());
-        congDTO.setSanBayId(cong.getSanBay().getIdSanBay());
+        congDTO.setSanBay(SanBayMapper.toDTO(cong.getSanBay()));
 
         return congDTO;
     }

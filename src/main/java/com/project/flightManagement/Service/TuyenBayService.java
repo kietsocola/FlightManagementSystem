@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.project.flightManagement.DTO.TuyenBayDTO.TuyenBayDTO;
+import com.project.flightManagement.Model.TuyenBay;
 
 public interface TuyenBayService {
 
