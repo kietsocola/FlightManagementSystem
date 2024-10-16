@@ -23,7 +23,7 @@ public class QuocGia {
     @Column(name = "ten_quoc_gia" , nullable = false)
     private String tenQuocGia;
 
-    @OneToMany(mappedBy = "quocGia")
+    @OneToMany(mappedBy = "quocGia", fetch = FetchType.EAGER)
     private List<ThanhPho> thanhPhoList;
 
     @Column(name = "active_status")

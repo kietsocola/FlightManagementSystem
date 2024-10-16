@@ -105,6 +105,7 @@ public class AuthController {
 
             // Nếu có lỗi, trả về thông báo với danh sách lỗi
             if (isError) {
+                responseData.setStatusCode(200);
                 responseData.setMessage("Đăng ký không thành công");
                 responseData.setData(errorMap); // Gán Map chứa các lỗi vào response
                 return new ResponseEntity<>(responseData, HttpStatus.CONFLICT);

@@ -22,7 +22,7 @@ public class QuyenController {
     private QuyenService quyenService;
 
     @GetMapping
-    public ResponseEntity<?> getAllTaiKhoan(@RequestParam(defaultValue = "0") int page,
+    public ResponseEntity<?> getAllQuyen(@RequestParam(defaultValue = "0") int page,
                                             @RequestParam(defaultValue = "10") int size) {
         ResponseData responseData = new ResponseData();
 
@@ -31,11 +31,13 @@ public class QuyenController {
 
         // Kiểm tra nếu danh sách đánh giá trống
         if (quyenResponseDTOPage.isEmpty()) {
+            responseData.setStatusCode(204);
             responseData.setMessage("No quyen found.");
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body(responseData);
         }
 
         // Nếu có dữ liệu
+        responseData.setStatusCode(200);
         responseData.setData(quyenResponseDTOPage);
         responseData.setMessage("Successfully retrieved all quyen.");
         return ResponseEntity.ok(responseData);
@@ -48,14 +50,17 @@ public class QuyenController {
             boolean isSusscess = quyenService.createQuyen(quyenCreateDTO);
             // Kiểm tra đăng nhập
             if (isSusscess) {
+                responseData.setStatusCode(200);
                 responseData.setMessage("created role success");
                 responseData.setData("");
                 return new ResponseEntity<>(responseData, HttpStatus.OK);
             } else {
+                responseData.setStatusCode(400);
                 responseData.setMessage("create role failed");
                 return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
             }
         } catch (Exception e) {
+            responseData.setStatusCode(500);
             responseData.setMessage("create role failed: " + e.getMessage());
             return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -69,14 +74,17 @@ public class QuyenController {
 
             // Kiểm tra đăng nhập
             if (quyenResponseDTO != null) {
+                responseData.setStatusCode(200);
                 responseData.setMessage("Lấy thông tin chi tiết quyền thành công");
                 responseData.setData(quyenResponseDTO);
                 return new ResponseEntity<>(responseData, HttpStatus.OK);
             } else {
+                responseData.setStatusCode(204);
                 responseData.setMessage("Không tìm thấy quyền với ID: " + idQuyen);
                 return new ResponseEntity<>(responseData, HttpStatus.NOT_FOUND);
             }
         } catch (Exception e) {
+            responseData.setStatusCode(500);
             responseData.setMessage("Có lỗi xảy ra: " + e.getMessage());
             return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -86,16 +94,20 @@ public class QuyenController {
         ResponseData responseData = new ResponseData();
         try {
             quyenService.updateQuyen(idQuyen, quyenCreateDTO);
+            responseData.setStatusCode(200);
             responseData.setMessage("Cập nhật quyền thành công");
             responseData.setData("");
             return new ResponseEntity<>(responseData, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
+            responseData.setStatusCode(400);
             responseData.setMessage(e.getMessage());
             return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
         } catch (ResourceNotFoundException e) {
+            responseData.setStatusCode(204);
             responseData.setMessage(e.getMessage());
             return new ResponseEntity<>(responseData, HttpStatus.NOT_FOUND);
         } catch (Exception e) {
+            responseData.setStatusCode(500);
             responseData.setMessage("Có lỗi xảy ra: " + e.getMessage());
             return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
         }

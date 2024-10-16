@@ -36,11 +36,13 @@ public class TaiKhoanController {
 
         // Kiểm tra nếu danh sách đánh giá trống
         if (reviewResponseDTOList.isEmpty()) {
+            responseData.setStatusCode(204);
             responseData.setMessage("No taikhoan found.");
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body(responseData);
         }
 
         // Nếu có dữ liệu
+        responseData.setStatusCode(200);
         responseData.setData(reviewResponseDTOList);
         responseData.setMessage("Successfully retrieved all taikhoan.");
         return ResponseEntity.ok(responseData);
@@ -56,7 +58,7 @@ public class TaiKhoanController {
 
             // Kiểm tra nếu tài khoản không tồn tại
             if (taiKhoan == null) {
-                responseData.setStatusCode(404);
+                responseData.setStatusCode(204);
                 responseData.setData("");
                 responseData.setMessage("Tài khoản với ID " + idTaiKhoan + " không tồn tại.");
                 return new ResponseEntity<>(responseData, HttpStatus.NOT_FOUND);
@@ -69,7 +71,7 @@ public class TaiKhoanController {
             return new ResponseEntity<>(responseData, HttpStatus.OK);
 
         } catch (EntityNotFoundException e) {
-            responseData.setStatusCode(404);
+            responseData.setStatusCode(204);
             responseData.setData("");
             responseData.setMessage("Tài khoản không tồn tại.");
             return new ResponseEntity<>(responseData, HttpStatus.NOT_FOUND);
@@ -130,6 +132,7 @@ public class TaiKhoanController {
         // Kiểm tra mật khẩu cũ có chính xác không
         Optional<TaiKhoan> optionalTaiKhoan = taiKhoanService.getTaiKhoanByTenDangNhap(userName);
         if (optionalTaiKhoan.isEmpty()) {
+            responseData.setStatusCode(204);
             responseData.setMessage("Người dùng không tồn tại.");
             responseData.setData("");
             return new ResponseEntity<>(responseData, HttpStatus.NOT_FOUND);

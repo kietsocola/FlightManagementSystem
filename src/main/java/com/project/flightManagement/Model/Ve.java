@@ -22,7 +22,7 @@ public class Ve {
     private int idVe;
 
     @Column(name = "ma_ve", nullable = false)
-    private String codeVe;
+    private String maVe;
 
     @ManyToOne
     @JoinColumn(name = "id_chuyen_bay", nullable = false)
@@ -43,12 +43,6 @@ public class Ve {
     @JoinColumn(name = "idLoaiVe", referencedColumnName = "id_loai_ve", nullable = false)
     private LoaiVe loaiVe;
 
-    @Column(name = "ngay_di", nullable = false)
-    private Date ngayDi;
-
-    @Column(name = "ngay_ve")
-    private Date ngayVe;
-
     @Column(name = "active_status")
     @Enumerated(EnumType.STRING)
     private ActiveEnum trangThaiActive;
@@ -56,7 +50,4 @@ public class Ve {
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private VeEnum trangThai;
-
-
-
 }
