@@ -1,5 +1,6 @@
 package com.project.flightManagement.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.flightManagement.DTO.HangBayDTO.HangBayDTO;
 import com.project.flightManagement.Enum.ActiveEnum; // Giả sử bạn có enum StatusEnum
 import jakarta.persistence.*;
@@ -36,6 +37,7 @@ public class HangBay {
     private ActiveEnum trangThaiActive;
 
 
-//    @OneToMany(mappedBy = "hangBay")
-//    private List<MayBay> mayBayList;
+    @OneToMany(mappedBy = "hangBay")
+    @JsonIgnore
+    private List<MayBay> mayBayList;
 }

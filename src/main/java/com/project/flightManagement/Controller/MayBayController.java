@@ -131,8 +131,6 @@ public class MayBayController {
     }
     @PostMapping("/addPlane")
     public ResponseEntity<ResponseData> addPlane(@Valid @RequestBody MayBayDTO mbDTO, BindingResult bindingResult) {
-//        ResponseData response = new ResponseData();
-
         if(bindingResult.hasErrors()){
             Map<String, String> fieldErrors = new HashMap<>();
             bindingResult.getFieldErrors().forEach(error ->

@@ -1,5 +1,6 @@
 package com.project.flightManagement.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.flightManagement.Enum.ActiveEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -36,6 +37,7 @@ public class TuyenBay {
     private int khoangCach;
 
     @OneToMany(mappedBy = "tuyenBay")
+    @JsonIgnore
     private List<ChuyenBay> chuyenBayList;
 
     // Mối quan hệ 1-1 với Transit là tùy chọn (có thể không có Transit)
