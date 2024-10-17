@@ -46,11 +46,11 @@ public class AuthController {
                 // Tạo access token và refresh token
                 String accessToken = jwtTokenProvider.generateToken(loginDTO.getUserName());
                 String refreshToken = jwtTokenProvider.generateRefreshToken(loginDTO.getUserName());
-
+                System.out.println("refreshToken ~ login" + refreshToken);
                 ResponseCookie responseCookie = ResponseCookie.from("refreshToken", refreshToken)
                         .httpOnly(true)// Chỉ dùng Http, không thể truy cập từ JavaScript
                         .secure(true)  // Chỉ gửi cookie qua HTTPS
-                        .path("http://localhost:8080/auth/refresh_token")// Đường dẫn của API refresh token
+                        .path("/")// Đường dẫn của API refresh token
                         .maxAge(7 * 24 * 60 * 60)
                         .build();
 
@@ -130,20 +130,36 @@ public class AuthController {
         }
     }
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(@RequestBody LogoutDTO logoutDTO) {
+    public ResponseEntity<?> logout(HttpServletRequest request, @RequestBody LogoutDTO logoutDTO) {
         ResponseData responseData = new ResponseData();
         try {
             String idToken = jwtTokenProvider.getIdTokenFromJwtToken(logoutDTO.getToken());
             Date expirationTime = jwtTokenProvider.getExpirationTimeTokenFromJwtToken(logoutDTO.getToken());
             InvalidTokenDTO invalidTokenDTO = new InvalidTokenDTO(idToken, expirationTime);
             invalidTokenService.saveInvalidTokenIntoDatabase(invalidTokenDTO);
+            String refreshToken = "";
+            Cookie[] cookies = request.getCookies();
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if (cookie.getName().equals("refreshToken")) {
+                        refreshToken = cookie.getValue();
+                        System.out.println("refreshToken: " + refreshToken);
+                    }
+                }
+            }
+            if(refreshToken != "")  {
+                invalidTokenService.saveInvalidTokenIntoDatabase(new InvalidTokenDTO(jwtTokenProvider.getIdTokenFromJwtToken(refreshToken),jwtTokenProvider.getExpirationTimeTokenFromJwtToken(refreshToken)));
+            }
 
             ResponseCookie deleteCookie = ResponseCookie.from("refreshToken", null)
                     .httpOnly(true)
                     .secure(true)
-                    .path("http://localhost:8080/auth/refresh_token")
+                    .path("/")
                     .maxAge(0) // Xóa cookie
                     .build();
+
+            // Lấy refresh token từ cookie
+
 
             responseData.setStatusCode(200);
             responseData.setMessage("dang xuat thanh cong");
@@ -169,12 +185,13 @@ public class AuthController {
             for (Cookie cookie : cookies) {
                 if (cookie.getName().equals("refreshToken")) {
                     refreshToken = cookie.getValue();
+                    System.out.println("refreshToken: " + refreshToken);
                 }
             }
         }
 
         // Kiểm tra refresh token có hợp lệ không
-        if (refreshToken != null && jwtTokenProvider.validateJwtToken(refreshToken)) {
+        if (refreshToken != null && jwtTokenProvider.validateJwtToken(refreshToken) && !invalidTokenService.existsByIdToken(refreshToken)) {
             String username = jwtTokenProvider.getUserNameFromJwtToken(refreshToken);
             String newAccessToken = jwtTokenProvider.generateToken(username);
             responseData.setStatusCode(200);
