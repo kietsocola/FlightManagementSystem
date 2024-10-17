@@ -202,7 +202,7 @@ public class AuthController {
             responseData.setStatusCode(401);
             responseData.setMessage("Refresh token is invalid or expired");
             responseData.setData("");
-            return new ResponseEntity<>(responseData, HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(responseData, HttpStatus.UNAUTHORIZED);
         }
     }
 }
