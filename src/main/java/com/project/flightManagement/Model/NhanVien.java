@@ -1,5 +1,6 @@
 package com.project.flightManagement.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.flightManagement.Enum.ActiveEnum;
 import com.project.flightManagement.Enum.ChucVuEnum;
 import com.project.flightManagement.Enum.GioiTinhEnum;
@@ -45,6 +46,7 @@ public class NhanVien {
 //    private TaiKhoan taiKhoan;
 
     @OneToMany(mappedBy = "nhanVien")
+    @JsonIgnore
     List<QuyDinh> quyDinhList;
 
     @Column(name = "gioi_tinh")

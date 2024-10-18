@@ -1,18 +1,18 @@
 package com.project.flightManagement.Service.Impl;
 
 import com.project.flightManagement.DTO.ChuyenBayDTO.ChuyenBayDTO;
-import com.project.flightManagement.DTO.ChuyenBayDTO.ChuyenBayDTO;
 import com.project.flightManagement.Mapper.ChuyenBayMapper;
-import com.project.flightManagement.Mapper.ChuyenBayMapper;
-import com.project.flightManagement.Model.ChuyenBay;
 import com.project.flightManagement.Model.ChuyenBay;
 import com.project.flightManagement.Repository.ChuyenBayReposity;
 import com.project.flightManagement.Service.ChuyenBayService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 
@@ -48,6 +48,27 @@ public class ChuyenBayImpl implements ChuyenBayService {
             return listcbDTO;
         }catch (Exception e){
             System.err.println("error occurred while fetching customers :" + e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    @Override
+    public List<ChuyenBayDTO> getAllChuyenBaySorted(String sortField, String sordOrder) {
+        try{
+            // Kiểm tra hướng sắp xếp
+            Sort.Direction direction = Sort.Direction.ASC; // Mặc định là ASC
+            if ("desc".equalsIgnoreCase(sordOrder)) {
+                direction = Sort.Direction.DESC; // Thay đổi thành DESC nếu yêu cầu
+            }
+            List<ChuyenBay> listcb = repo.findAll(Sort.by( direction , sortField));
+            List<ChuyenBayDTO> listcbDTO = listcb.stream().map(ChuyenBayMapper::toDTO).collect(Collectors.toList());
+            return listcbDTO;
+        }catch (IllegalArgumentException e){
+
+            System.err.println("Invalid sorting field: " + sortField);
+            return Collections.emptyList();
+        }catch (Exception e) {
+            System.err.println("An error occurred while fetching sorted chuyen bay: " + e.getMessage());
             return Collections.emptyList();
         }
     }
