@@ -18,7 +18,7 @@ import java.util.Optional;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
-@RequestMapping("admin/loaihoadon")
+//@RequestMapping("admin/loaihoadon")
 public class LoaiHoaDonController {
     @Autowired
     private LoaiHoaDonService loaiHoaDonService;
@@ -73,19 +73,28 @@ public class LoaiHoaDonController {
         }
 
         if (loaiHoaDonDTO != null && (loaiHoaDonDTO.getTenLoaiHD() != null)) {
-            Optional<LoaiHoaDonDTO> savedLoaiHD = loaiHoaDonService.addLoaiHoaDon(loaiHoaDonDTO);
-            if (savedLoaiHD.isPresent()) {
-                response.setMessage("Lưu loại hóa đơn mới thành công!");
-                response.setData(savedLoaiHD);
-                response.setStatusCode(201);
-
-                return new ResponseEntity<>(response, HttpStatus.CREATED);
-            } else {
-                response.setMessage("Lưu loại hóa đơn mới không thành công!");
+            Optional<LoaiHoaDonDTO> existingByTen = loaiHoaDonService.getLoaiHDByTen(loaiHoaDonDTO.getTenLoaiHD());
+            if (existingByTen.isPresent()) {
                 response.setData(null);
-                response.setStatusCode(500);
+                response.setMessage("Đã tồn tại loại hóa đơn với tên: " + loaiHoaDonDTO.getTenLoaiHD());
+                response.setStatusCode(409);
 
-                return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+                return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+            } else {
+                Optional<LoaiHoaDonDTO> savedLoaiHD = loaiHoaDonService.addLoaiHoaDon(loaiHoaDonDTO);
+                if (savedLoaiHD.isPresent()) {
+                    response.setMessage("Lưu loại hóa đơn mới thành công!");
+                    response.setData(savedLoaiHD);
+                    response.setStatusCode(201);
+
+                    return new ResponseEntity<>(response, HttpStatus.CREATED);
+                } else {
+                    response.setMessage("Lưu loại hóa đơn mới không thành công!");
+                    response.setData(null);
+                    response.setStatusCode(500);
+
+                    return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+                }
             }
         } else {
             response.setMessage("Thông tin của loại hóa đơn không hợp lệ!");
@@ -140,6 +149,40 @@ public class LoaiHoaDonController {
             responseData.setData(null);
             responseData.setStatusCode(400); // Bad Request
             return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/getAllLoaiHDSorted")
+    public ResponseEntity<ResponseData> getAllLoaiHDSorted(@RequestParam(defaultValue = "idLoaiHoaDon") String sortBy, @RequestParam(defaultValue = "asc") String order) {
+        Iterable<LoaiHoaDonDTO> listLoaiHDDTO = loaiHoaDonService.getAllLoaiHDSorted(sortBy, order);
+        if (listLoaiHDDTO.iterator().hasNext()) {
+            response.setMessage("get list loai hoa don success!!");
+            response.setData(listLoaiHDDTO);
+            response.setStatusCode(200);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else {
+            response.setMessage("get list loai hoa don unsuccess!!");
+            response.setData(null);
+            response.setStatusCode(204);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+    }
+
+    @GetMapping("/getLoaiHDByKeyWord")
+    public ResponseEntity<ResponseData> getLoaiHDByKeyWord(@RequestParam String keyWord) {
+        Iterable<LoaiHoaDonDTO> listLoaiHoaDonDTO = loaiHoaDonService.getLoaiHDByKeyWord(keyWord);
+        if (listLoaiHoaDonDTO.iterator().hasNext()) {
+            System.out.println("Searching for 1: " + keyWord);
+            response.setMessage("get list bill type success!!");
+            response.setData(listLoaiHoaDonDTO);
+            response.setStatusCode(200);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else {
+            System.out.println("Searching for 2: " + keyWord);
+            response.setMessage("get list bill type unsuccess!!");
+            response.setData(listLoaiHoaDonDTO);
+            response.setStatusCode(404);
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
 }

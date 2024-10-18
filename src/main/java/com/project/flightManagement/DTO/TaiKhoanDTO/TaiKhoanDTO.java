@@ -17,15 +17,15 @@ import java.util.Date;
 @AllArgsConstructor
 
 public class TaiKhoanDTO {
-    private  int idTaiKhoan;
+    private int idTaiKhoan;
 
     @NotBlank(message = "Tên đăng nhập không được bỏ trống")
-    private  String tenDangNhap;
+    private String tenDangNhap;
 
     private Quyen idQuyen;
 
     @NotBlank(message = "Mật khẩu không được bỏ trống")
-    private  String matKhau;
+    private String matKhau;
 
     private KhachHang idKH;
 

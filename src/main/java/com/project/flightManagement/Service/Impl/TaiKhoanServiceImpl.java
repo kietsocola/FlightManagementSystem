@@ -3,7 +3,7 @@ package com.project.flightManagement.Service.Impl;
 import com.project.flightManagement.DTO.TaiKhoanDTO.TaiKhoanDTO;
 import com.project.flightManagement.Mapper.TaiKhoanMapper;
 import com.project.flightManagement.Model.TaiKhoan;
-import com.project.flightManagement.Repository.TaiKhoanReposity;
+import com.project.flightManagement.Repository.TaiKhoanRepository;
 import com.project.flightManagement.Service.TaiKhoanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,7 @@ import java.util.stream.StreamSupport;
 @Service
 public class TaiKhoanServiceImpl implements TaiKhoanService {
     @Autowired
-    private TaiKhoanReposity tkRepo;
+    private TaiKhoanRepository tkRepo;
 
     @Override
     public Iterable<TaiKhoanDTO> getAllTaiKhoan() {
@@ -32,10 +32,12 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
     }
 
     @Override
-    public Optional<TaiKhoanDTO> getTaiKhoanByIdTK(int idTK) {
+    public Optional<TaiKhoanDTO> getTaiKhoanByID(int idTaiKhoan) {
         try {
-            Optional<TaiKhoan> tk = tkRepo.findById(idTK);
+            Optional<TaiKhoan> tk = tkRepo.findById(idTaiKhoan);
+            System.out.println("tai khoan: " + tk);
             Optional<TaiKhoanDTO> tkDTO = tk.map(TaiKhoanMapper::toDTO);
+            System.out.println("tk dto : " + tkDTO);
             return tkDTO;
         }catch (Exception e){
             System.err.println("Error occurred while get account: " + e.getMessage());
@@ -60,6 +62,7 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
         try {
             TaiKhoan tk = TaiKhoanMapper.toEntity(tkDTO);
             TaiKhoan savedTK = tkRepo.save(tk);
+            System.out.println(savedTK);
             return Optional.of(TaiKhoanMapper.toDTO(savedTK));
         }catch (Exception e){
             System.err.println("Error occurred while save account: " + e.getMessage());

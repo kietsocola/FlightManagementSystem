@@ -8,10 +8,9 @@ import java.util.Optional;
 
 @Service
 public interface TaiKhoanService {
-    public  Optional<TaiKhoanDTO> addTaiKhoan(TaiKhoanDTO taiKhoanDTO);
-    public  Optional<TaiKhoanDTO> updateTaiKhoan(TaiKhoanDTO taiKhoanDTO);
-    public  Iterable<TaiKhoanDTO> getAllTaiKhoan();
+    public Optional<TaiKhoanDTO> addTaiKhoan(TaiKhoanDTO taiKhoanDTO);
+    public Optional<TaiKhoanDTO> updateTaiKhoan(TaiKhoanDTO taiKhoanDTO);
+    public Iterable<TaiKhoanDTO> getAllTaiKhoan();
     public Optional<TaiKhoanDTO> getTaiKhoanByTenDN(String tenDN);
-    public  Optional<TaiKhoanDTO> getTaiKhoanByIdTK(int idTK);
-
+    public Optional<TaiKhoanDTO> getTaiKhoanByID(int idTaiKhoan);
 }

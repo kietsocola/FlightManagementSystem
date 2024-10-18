@@ -1,5 +1,6 @@
 package com.project.flightManagement.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.flightManagement.Enum.ActiveEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -47,8 +48,9 @@ public class HoaDon {
     @Column(name = "thoi_gian_lap", nullable = false)
     private LocalDateTime thoiGianLap;
 
-//    @OneToMany(mappedBy = "hoaDon")
-//    private List<ChiTietHoaDon> chiTietHoaDonList;
+    @JsonIgnore
+    @OneToMany(mappedBy = "hoaDon")
+    private List<ChiTietHoaDon> chiTietHoaDonList;
 
     @Column(name = "active_status")
     @Enumerated(EnumType.STRING)

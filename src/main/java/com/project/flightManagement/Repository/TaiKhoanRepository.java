@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface TaiKhoanReposity extends JpaRepository<TaiKhoan, Integer> {
+public interface TaiKhoanRepository extends JpaRepository<TaiKhoan, Integer> {
     Optional<TaiKhoan> findByTenDangNhap(String tendangnhap);
 
 }

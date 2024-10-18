@@ -18,9 +18,8 @@ import java.util.Optional;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
-@RequestMapping("admin/taikhoan")
+//@RequestMapping("admin/taikhoan")
 public class TaiKhoanController {
-    @Qualifier("taiKhoanServiceImpl")
     @Autowired
     private TaiKhoanService tkService;
     private ResponseData response = new ResponseData();
@@ -42,11 +41,11 @@ public class TaiKhoanController {
         }
     }
 
-    @GetMapping("/getTaiKhoanByTenDN/{tenDN}")
-    public ResponseEntity<ResponseData> getTaiKhoanByTenDN(@PathVariable String tenDN) {
-        Optional<TaiKhoanDTO> tkDTO = tkService.getTaiKhoanByTenDN(tenDN);
+    @GetMapping("/getTaiKhoanByID/{idTK}")
+    public ResponseEntity<ResponseData> getTaiKhoanById(@PathVariable("idTK") Integer idTK) {
+        Optional<TaiKhoanDTO> tkDTO = tkService.getTaiKhoanByID(idTK);
         if (tkDTO.isPresent()) {
-            response.setMessage("Get Account by Username success!!");
+            response.setMessage("Get account by ID success!!");
             response.setData(tkDTO);
             response.setStatusCode(200);
             return new ResponseEntity<>(response, HttpStatus.OK);
@@ -58,12 +57,12 @@ public class TaiKhoanController {
         }
     }
 
-    @GetMapping("/getTaiKhoan/{idTK}")
-    public ResponseEntity<ResponseData> getTaiKhoanById(@PathVariable int idTK) {
-        Optional<TaiKhoanDTO> khDTO = tkService.getTaiKhoanByIdTK(idTK);
-        if (khDTO.isPresent()) {
-            response.setMessage("Get account by ID success!!");
-            response.setData(khDTO);
+    @GetMapping("/getTaiKhoanByTenDN/{tenDN}")
+    public ResponseEntity<ResponseData> getTaiKhoanByTenDN(@PathVariable String tenDN) {
+        Optional<TaiKhoanDTO> tkDTO = tkService.getTaiKhoanByTenDN(tenDN);
+        if (tkDTO.isPresent()) {
+            response.setMessage("Get Account by Username success!!");
+            response.setData(tkDTO);
             response.setStatusCode(200);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
@@ -87,7 +86,7 @@ public class TaiKhoanController {
         }
 
         // Kiểm tra xem khDTO có khác null và có ít nhất một trường thông tin cần thiết không
-        if (tkDTO != null && (tkDTO.getTenDangNhap()!=null)) {
+        if (tkDTO != null) {
 
             // Kiểm tra sự tồn tại theo tên đăng nhập
             if (tkDTO.getTenDangNhap() != null) {
@@ -99,7 +98,6 @@ public class TaiKhoanController {
                     return new ResponseEntity<>(response, HttpStatus.CONFLICT);
                 }
             }
-
 
             // Nếu không có thông tin nào tồn tại, tiến hành lưu tài khoản mới
             Optional<TaiKhoanDTO> savedTK = tkService.addTaiKhoan(tkDTO);
@@ -139,7 +137,7 @@ public class TaiKhoanController {
         }
 
         // Kiểm tra xem tài khoản có tồn tại không
-        Optional<TaiKhoanDTO> existingTK = tkService.getTaiKhoanByIdTK(idTK);
+        Optional<TaiKhoanDTO> existingTK = tkService.getTaiKhoanByID(idTK);
         if (!existingTK.isPresent()) {
             responseData.setMessage("Account not found!!");
             responseData.setData(null);

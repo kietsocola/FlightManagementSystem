@@ -19,7 +19,7 @@ import java.util.Optional;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
-@RequestMapping("admin/PTTT")
+//@RequestMapping("admin/PTTT")
 public class PTTTController {
 
     @Autowired
@@ -43,7 +43,7 @@ public class PTTTController {
         }
     }
 
-    @GetMapping("/getPTTTById/{idPTTT}")
+    @GetMapping("/getPTTTByID/{idPTTT}")
     public ResponseEntity<ResponseData> getPTTTById(@PathVariable int idPTTT) {
         Optional<PTTTDTO> ptttDTO = ptttService.getPTTTByID(idPTTT);
         if (ptttDTO.isPresent()) {
@@ -71,17 +71,26 @@ public class PTTTController {
         }
 
         if (ptttDTO != null && (ptttDTO.getTenPTTT() != null)) {
-            Optional<PTTTDTO> savedPTTT = ptttService.addPTTT(ptttDTO);
-            if (savedPTTT.isPresent()) {
-                response.setMessage("Save payment method successfully!");
-                response.setData(savedPTTT.get());
-                response.setStatusCode(200);
-                return new ResponseEntity<>(response, HttpStatus.CREATED);
-            } else {
-                response.setMessage("Save payment method unsuccessfully!");
+            Optional<PTTTDTO> existingByTenDN = ptttService.getPTTTByTen(ptttDTO.getTenPTTT());
+            if (existingByTenDN.isPresent()) {
+                response.setMessage("Đã tồn tại phương thức thanh toán với tên " + ptttDTO.getTenPTTT());
                 response.setData(null);
-                response.setStatusCode(500);
-                return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+                response.setStatusCode(409);
+
+                return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+            } else {
+                Optional<PTTTDTO> savedPTTT = ptttService.addPTTT(ptttDTO);
+                if (savedPTTT.isPresent()) {
+                    response.setMessage("Save payment method successfully!");
+                    response.setData(savedPTTT.get());
+                    response.setStatusCode(200);
+                    return new ResponseEntity<>(response, HttpStatus.CREATED);
+                } else {
+                    response.setMessage("Save payment method unsuccessfully!");
+                    response.setData(null);
+                    response.setStatusCode(500);
+                    return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+                }
             }
         } else {
             response.setMessage("Invalid payment method data!");
@@ -128,4 +137,38 @@ public class PTTTController {
         }
     }
 
+    @GetMapping("/getPTTTByKeyWord")
+    public ResponseEntity<ResponseData> getPTTTByKeyWord(@RequestParam String keyWord) {
+        Iterable<PTTTDTO> listPTTTDTO = ptttService.findPhuongThucThanhToanByKeyWord(keyWord);
+        if(listPTTTDTO.iterator().hasNext()){
+            System.out.println("Searching for 1: " + keyWord);
+            response.setMessage("get list customers success!!");
+            response.setData(listPTTTDTO);
+            response.setStatusCode(200);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else {
+            System.out.println("Searching for 2: " + keyWord);
+            response.setMessage("get list customers unsuccess!!");
+            response.setData(listPTTTDTO);
+            response.setStatusCode(404);
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/getAllPTTTSorted")
+    public ResponseEntity<ResponseData> getAllPTTTSorted(@RequestParam(defaultValue = "idPhuongThucTT") String sortBy,
+                                                         @RequestParam(defaultValue = "asc") String order) {
+        Iterable<PTTTDTO> listPTTTDTO = ptttService.getAllPTTTSorted(sortBy, order);
+        if (listPTTTDTO.iterator().hasNext()) {
+            response.setMessage("get list pttt success!!");
+            response.setData(listPTTTDTO);
+            response.setStatusCode(200);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else {
+            response.setMessage("get list pttt unsuccess!!");
+            response.setData(null);
+            response.setStatusCode(204);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+    }
 }

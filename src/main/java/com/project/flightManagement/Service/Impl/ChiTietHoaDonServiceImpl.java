@@ -3,21 +3,20 @@ package com.project.flightManagement.Service.Impl;
 import com.project.flightManagement.DTO.ChiTietHoaDonDTO.ChiTietHoaDonDTO;
 import com.project.flightManagement.Mapper.ChiTietHoaDonMapper;
 import com.project.flightManagement.Model.ChiTietHoaDon;
-import com.project.flightManagement.Repository.ChiTietHoaDonReposity;
+import com.project.flightManagement.Repository.ChiTietHoaDonRepository;
 import com.project.flightManagement.Service.ChiTietHoaDonService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 @Service
 public class ChiTietHoaDonServiceImpl implements ChiTietHoaDonService {
 
     @Autowired
-    ChiTietHoaDonReposity chiTietHoaDonReposity;
+    ChiTietHoaDonRepository chiTietHoaDonReposity;
 
     @Override
     public Iterable<ChiTietHoaDonDTO> getAllChiTietHoaDon() {
