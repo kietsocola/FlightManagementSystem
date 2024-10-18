@@ -1,5 +1,7 @@
 package com.project.flightManagement.Model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.flightManagement.Enum.ActiveEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -31,9 +33,12 @@ public class TaiKhoan {
     @Column(name = "mat_khau", nullable = false)
     private String matKhau;
 
+    @JsonIgnore
     @OneToOne
     @JoinColumn(name = "id_khach_hang", nullable = false)
     private KhachHang khachHang;
+
+    @JsonIgnore
     @OneToOne
     @JoinColumn(name = "id_nhan_vien", nullable = false)
     private NhanVien nhanVien;

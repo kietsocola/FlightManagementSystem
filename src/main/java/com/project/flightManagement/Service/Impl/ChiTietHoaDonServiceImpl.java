@@ -6,10 +6,16 @@ import com.project.flightManagement.Model.ChiTietHoaDon;
 import com.project.flightManagement.Repository.ChiTietHoaDonRepository;
 import com.project.flightManagement.Service.ChiTietHoaDonService;
 
+import com.project.flightManagement.Service.HoaDonService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Service
@@ -17,7 +23,7 @@ public class ChiTietHoaDonServiceImpl implements ChiTietHoaDonService {
 
     @Autowired
     ChiTietHoaDonRepository chiTietHoaDonReposity;
-
+    HoaDonService hoaDonService;
     @Override
     public Iterable<ChiTietHoaDonDTO> getAllChiTietHoaDon() {
         try {
@@ -65,6 +71,36 @@ public class ChiTietHoaDonServiceImpl implements ChiTietHoaDonService {
         } else {
             System.err.println("Không tồn tại chi tiết hóa đơn!");
             return null;
+        }
+    }
+
+    @Override
+    public List<ChiTietHoaDonDTO> getListChiTietHoaDonByHoaDon(int idHoaDon) {
+        try {
+            List<ChiTietHoaDonDTO> chiTietHoaDonDTOList = hoaDonService.getChiTietHoaDon(idHoaDon);
+            if (chiTietHoaDonDTOList == null) {
+                return Collections.emptyList();
+            }
+            return chiTietHoaDonDTOList;
+        } catch (Exception e) {
+            System.err.println("Error: " + e);
+            return Collections.emptyList();
+        }
+    }
+
+    @Override
+    public List<ChiTietHoaDonDTO> getListChiTietHoaDonSorted(int idHoaDon, String sortBy, String direction) {
+        try {
+            List<ChiTietHoaDon> chiTietHoaDonListSorted;
+            if (direction.equals("asc")) {
+                chiTietHoaDonListSorted = chiTietHoaDonReposity.getListChiTietHoaDonSorted(idHoaDon, Sort.by(Sort.Direction.ASC, sortBy));
+            } else {
+                chiTietHoaDonListSorted = chiTietHoaDonReposity.getListChiTietHoaDonSorted(idHoaDon, Sort.by(Sort.Direction.DESC, sortBy));
+            }
+            return chiTietHoaDonListSorted.stream().map(ChiTietHoaDonMapper::toDTO).collect(Collectors.toList());
+        } catch (Exception e) {
+            System.err.println("Error: " + e);
+            return Collections.emptyList();
         }
     }
 }
