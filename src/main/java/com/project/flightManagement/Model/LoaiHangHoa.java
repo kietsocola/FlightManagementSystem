@@ -23,8 +23,8 @@ public class LoaiHangHoa {
     @Column(name = "ten_loai_hang_hoa", nullable = false)
     private String tenLoaiHangHoa;
 
-    @OneToMany(mappedBy = "loaiHangHoa")
-    private List<HangHoa> hangHoaList;
+//    @OneToMany(mappedBy = "loaiHangHoa")
+//    private List<HangHoa> hangHoaList;
 
     @Column(name = "gioi_han_kg", nullable = false)
     private double gioiHanKg;

@@ -46,4 +46,3 @@ public class QuyDinh {
     @Enumerated(EnumType.STRING)
     private ActiveEnum trangThaiActive;
 }
-

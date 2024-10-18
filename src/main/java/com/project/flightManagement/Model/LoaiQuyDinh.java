@@ -2,6 +2,7 @@ package com.project.flightManagement.Model;
 
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.flightManagement.Enum.ActiveEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -29,6 +30,7 @@ public class LoaiQuyDinh {
     private String moTaLoaiQuyDinh ;
 
     @OneToMany(mappedBy = "loaiQuyDinh")
+    @JsonIgnore
     private List<QuyDinh> quyDinhList;
 
     @Column(name = "active_status")

@@ -1,5 +1,6 @@
 package com.project.flightManagement.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.flightManagement.Enum.ActiveEnum;
 import com.project.flightManagement.Enum.ChucVuEnum;
 import com.project.flightManagement.Enum.GioiTinhEnum;
@@ -11,11 +12,13 @@ import lombok.NoArgsConstructor;
 import java.util.Date;
 import java.util.List;
 
-@Entity
-@Table(name = "nhanvien")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+
+@Entity
+@Table(name = "nhanvien")
+
 public class NhanVien {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,10 +42,11 @@ public class NhanVien {
     private String cccd;
 
     // Mối quan hệ 1-1 tùy chọn với Account
-    @OneToOne(mappedBy = "nhanVien", optional = true)
-    private TaiKhoan taiKhoan;
+//    @OneToOne(mappedBy = "nhanVien", optional = true)
+//    private TaiKhoan taiKhoan;
 
     @OneToMany(mappedBy = "nhanVien")
+    @JsonIgnore
     List<QuyDinh> quyDinhList;
 
     @Column(name = "gioi_tinh")

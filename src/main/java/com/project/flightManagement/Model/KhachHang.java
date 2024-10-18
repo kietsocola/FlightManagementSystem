@@ -39,9 +39,9 @@ public class KhachHang {
     @Column(name = "cccd")
     private String cccd;
 
-    // Mối quan hệ 1-1 tùy chọn với Account
-    @OneToOne(mappedBy = "khachHang", optional = true)
-    private TaiKhoan taiKhoan;
+//     Mối quan hệ 1-1 tùy chọn với Account
+//    @OneToOne(mappedBy = "khachHang", optional = true)
+//    private TaiKhoan taiKhoan;
 
     @Column(name = "gioi_tinh")
     @Enumerated(EnumType.STRING)

@@ -1,5 +1,6 @@
 package com.project.flightManagement.Model;
 
+import com.project.flightManagement.DTO.HangBayDTO.HangBayDTO;
 import com.project.flightManagement.Enum.ActiveEnum; // Giả sử bạn có enum StatusEnum
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -7,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Table(name = "hangbay")
@@ -33,6 +35,7 @@ public class HangBay {
     @Column(name = "active_status")
     private ActiveEnum trangThaiActive;
 
-    @OneToMany(mappedBy = "hangBay")
-    private List<MayBay> mayBayList;
+
+//    @OneToMany(mappedBy = "hangBay")
+//    private List<MayBay> mayBayList;
 }

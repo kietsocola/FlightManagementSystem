@@ -1,5 +1,6 @@
 package com.project.flightManagement.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.flightManagement.Enum.ActiveEnum; // Giả sử bạn có enum StatusEnum
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -7,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Table(name = "maybay")
@@ -24,10 +26,11 @@ public class MayBay {
     private String tenMayBay;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "id_hang_bay", referencedColumnName = "id_hang_bay") // Khóa ngoại đến bảng HangBay
     private HangBay hangBay;
 
-    @Column(name = "icao_may_bay", length = 4)
+    @Column(name = "icao_may_bay", length = 6)
     private String icaoMayBay;  // Mã ICAO có độ dài 4 ký tự
 
     @OneToMany(mappedBy = "mayBay")
@@ -41,6 +44,7 @@ public class MayBay {
 
     @Column(name = "nam_san_xuat")
     private int namSanXuat;
+
     @OneToMany(mappedBy = "mayBay")
     private List<ChoNgoi> choNgoiList;
 

@@ -1,5 +1,6 @@
 package com.project.flightManagement.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.flightManagement.Enum.ActiveEnum;
 import com.project.flightManagement.Enum.ChuyenBayEnum;
 import jakarta.persistence.*;
@@ -7,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -25,18 +27,20 @@ public class ChuyenBay {
     private int idChuyenBay;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "id_tuyen_bay", nullable = false)
     private TuyenBay tuyenBay;
 
-    @OneToMany(mappedBy = "chuyenBay")
-    private List<DanhGia> danhGiaList;
+//    @OneToMany(mappedBy = "chuyenBay")
+//    private List<DanhGia> danhGiaList;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "id_may_bay", nullable = false)
     private MayBay mayBay;
-
-    // 1 chuyến bay => 1 cổng
-    @OneToOne
+    
+    @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "id_cong", nullable = false)
     private Cong cong;
 
