@@ -8,7 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.sql.Date;
 import java.util.List;
 
 @Entity
@@ -27,7 +27,7 @@ public class KhachHang {
     private String hoTen;
 
     @Column(name = "ngay_sinh", nullable = false)
-    private Date ngaySinh;
+    private java.sql.Date ngaySinh;
 
 
     @Column(name = "email", nullable = false)

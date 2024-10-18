@@ -3,27 +3,30 @@ package com.project.flightManagement.Service.Impl;
 import com.project.flightManagement.DTO.ChuyenBayDTO.ChuyenBayDTO;
 import com.project.flightManagement.Mapper.ChuyenBayMapper;
 import com.project.flightManagement.Model.ChuyenBay;
-import com.project.flightManagement.Repository.ChuyenBayReposity;
+import com.project.flightManagement.Repository.ChuyenBayRepository;
 import com.project.flightManagement.Service.ChuyenBayService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-
-
 @Service
-
-public class ChuyenBayImpl implements ChuyenBayService {
-
+public class ChuyenBayServiceImpl implements ChuyenBayService {
     @Autowired
-    private ChuyenBayReposity repo;
+    private ChuyenBayRepository repo;
+    @Override
+    public List<ChuyenBayDTO> searchFlights(String departureCity, String arrivalCity, Date departureDate, int numberOfTickets) {
 
+        List<ChuyenBay> cb = repo.findFlightsOneWay(departureCity, arrivalCity, departureDate, numberOfTickets);
+        if(cb!=null) return cb.stream().map(ChuyenBayMapper::toDTO).collect(Collectors.toList());
+        return Collections.emptyList();
+    }
     @Override
     public Optional<ChuyenBayDTO> addChuyenBay(ChuyenBayDTO cbDTO) {
         ChuyenBay cb = ChuyenBayMapper.toEntity(cbDTO);
@@ -78,6 +81,4 @@ public class ChuyenBayImpl implements ChuyenBayService {
         Optional<ChuyenBay> cb = repo.findById(id);
         return cb.map(ChuyenBayMapper::toDTO);
     }
-    
-    
 }

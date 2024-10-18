@@ -1,26 +1,30 @@
 package com.project.flightManagement.Service.Impl;
 
 import com.project.flightManagement.DTO.ChoNgoiDTO.ChoNgoiDTO;
-import com.project.flightManagement.DTO.NhanVienDTO.NhanVienDTO;
 import com.project.flightManagement.Mapper.ChoNgoiMapper;
-import com.project.flightManagement.Mapper.NhanVienMapper;
 import com.project.flightManagement.Model.ChoNgoi;
 import com.project.flightManagement.Model.MayBay;
-import com.project.flightManagement.Model.NhanVien;
-import com.project.flightManagement.Repository.ChoNgoiReposity;
+import com.project.flightManagement.Repository.ChoNgoiRepository;
 import com.project.flightManagement.Service.ChoNgoiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Service
-public class ChoNgoiImpl implements ChoNgoiService {
-
+public class ChoNgoiServiceImpl implements ChoNgoiService {
     @Autowired
-    private ChoNgoiReposity repo;
-
+    ChoNgoiRepository repo;
+    @Override
+    public List<ChoNgoiDTO> getAllChoNgoiByIdChuyenBayandHangVe(int idCB, int hangVe) {
+        List<ChoNgoi> choNgoiList = repo.findByMayBay_ChuyenBayList_IdChuyenBayAndHangVe_IdHangVe(idCB, hangVe);
+        return choNgoiList.stream()
+                .map(ChoNgoiMapper::toDTO)
+                .collect(Collectors.toList());
+    }
     @Override
     public Iterable<ChoNgoiDTO> getAllChoNgoi() {
         try{
