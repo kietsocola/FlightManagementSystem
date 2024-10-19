@@ -19,7 +19,7 @@ public class MayBayDTO {
     private String tenMayBay;
     @Valid
     private HangBay hangBay;
-    @Pattern(regexp = "^[A-Z0-9]{4}$", message = "Mã ICAO phải có 6 kí tự chữ in hoa(3 kí tự đầu in hoa, 3 kí tự sau chữ số)")
+    @Pattern(regexp = "^[A-Z0-9]{4,6}$", message = "Mã ICAO phải có 4-6 kí tự chữ in hoa(1-3 kí tự đầu in hoa, 1-3 kí tự sau chữ số)")
     private String icaoMayBay;
     @Pattern(regexp = "^[A-Z]{6,10}", message = "Số hàng ghế thường ít nhất phải có 6 kí tự in hoa")
     private String soHangGheThuong;
