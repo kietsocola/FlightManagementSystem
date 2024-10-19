@@ -98,9 +98,4 @@ public class MayBay {
     @Enumerated(EnumType.STRING)
     private ActiveEnum trangThaiActive;
 
-    @Column(name = "max_row", nullable = false)
-    private String max_row;
-
-    @Column(name = "max_column", nullable = false)
-    private int max_column;
 }
