@@ -16,45 +16,6 @@ import java.util.Optional;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MayBay {
-
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    @Column(name = "id_may_bay")
-//    private int idMayBay;
-//
-//    @Column(name = "ten_may_bay", nullable = false)
-//    private String tenMayBay;
-//
-//    @ManyToOne
-//    @JoinColumn(name = "id_hang_bay", referencedColumnName = "id_hang_bay") // Khóa ngoại đến bảng HangBay
-//    private HangBay hangBay;
-//
-//    @Column(name = "icao_may_bay", length = 6)
-//    private String icaoMayBay;  // Mã ICAO có độ dài 4 ký tự
-//
-//    @OneToMany(mappedBy = "mayBay")
-//    @JsonIgnore
-//    private List<ChuyenBay> chuyenBayList;
-//
-//    @Column(name = "so_luong_ghe")
-//    private int soLuongGhe;
-//
-//    @Column(name = "so_hieu")
-//    private String soHieu;
-//
-//    @Column(name = "nam_san_xuat")
-//    private int namSanXuat;
-//    @OneToMany(mappedBy = "mayBay")
-//    private List<ChoNgoi> choNgoiList;
-//
-//    @Column(name = "active_status")
-//    @Enumerated(EnumType.STRING)
-//    private ActiveEnum trangThaiActive;
-//
-//    @Column(name = "max_row", nullable = false)
-//    private String max_row;
-//    @Column(name = "max_column", nullable = false)
-//    private int max_column;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_may_bay")
