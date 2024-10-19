@@ -28,8 +28,6 @@ import java.util.Optional;
 public class ChuyenBayController {
 
     @Autowired
-    private ChuyenBayService chuyenBayService;
-    @Autowired
     private ChuyenBayService cbservice;
     private ResponseData response =  new ResponseData();
     @GetMapping("/search")
@@ -40,9 +38,8 @@ public class ChuyenBayController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date returnDate,
             @RequestParam int numberOfTickets) {
         ResponseData response = new ResponseData();
-        List<ChuyenBayDTO> flightsDi = chuyenBayService.searchFlights(departureLocation, arrivalLocation, departureDate, numberOfTickets);
-        List<ChuyenBayDTO> flightsVe = chuyenBayService.searchFlights(arrivalLocation, departureLocation, returnDate, numberOfTickets);
-
+        List<ChuyenBayDTO> flightsDi = cbservice.searchFlights(departureLocation, arrivalLocation, departureDate, numberOfTickets);
+        List<ChuyenBayDTO> flightsVe = cbservice.searchFlights(arrivalLocation, departureLocation, returnDate, numberOfTickets);
 
         Map<String, Object> flightMap = new HashMap<>();
 
