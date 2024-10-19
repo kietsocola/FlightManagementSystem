@@ -1,6 +1,5 @@
 package com.project.flightManagement.Model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.flightManagement.Enum.ActiveEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -32,10 +31,10 @@ public class SanBay {
     private String diaChi;
 
     // Mapping to ThanhPho entity
-    @OneToOne
-    @JsonIgnore
-    @JoinColumn(name = "id_thanh_pho", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "id_thanh_pho",  referencedColumnName = "id_thanh_pho")
     private ThanhPho thanhPho;
+
     @Column(name = "active_status")
     @Enumerated(EnumType.STRING)
     private ActiveEnum trangThaiActive;

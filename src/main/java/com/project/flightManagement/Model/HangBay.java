@@ -36,6 +36,7 @@ public class HangBay {
     @Column(name = "active_status")
     private ActiveEnum trangThaiActive;
 
+
     @OneToMany(mappedBy = "hangBay")
     @JsonIgnore
     private List<MayBay> mayBayList;

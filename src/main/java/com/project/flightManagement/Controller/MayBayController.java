@@ -131,8 +131,6 @@ public class MayBayController {
     }
     @PostMapping("/addPlane")
     public ResponseEntity<ResponseData> addPlane(@Valid @RequestBody MayBayDTO mbDTO, BindingResult bindingResult) {
-//        ResponseData response = new ResponseData();
-
         if(bindingResult.hasErrors()){
             Map<String, String> fieldErrors = new HashMap<>();
             bindingResult.getFieldErrors().forEach(error ->
@@ -225,9 +223,9 @@ public class MayBayController {
     public ResponseEntity<ResponseData> checkExistSoHieu(String soHieu){
         Optional<MayBayDTO> existingMBBySoHieu = mayBayService.getMayBayBySoHieu(soHieu);
         if (existingMBBySoHieu.isPresent()) {
-            response.setMessage("Plane with this phone number already exists!!");
+            response.setMessage("Plane with this flight number already exists!!");
             Map<String, String> errorMessage = new HashMap<>();
-            errorMessage.put("So hieu", "Customer with this phone number already exists!!");
+            errorMessage.put("So hieu", "Customer with this flight number already exists!!");
             response.setData(errorMessage);
             response.setStatusCode(409); // Conflict
             return new ResponseEntity<>(response, HttpStatus.CONFLICT);
