@@ -1,5 +1,6 @@
 package com.project.flightManagement.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.flightManagement.Enum.ActiveEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -23,6 +24,7 @@ public class ChoNgoi {
     private HangVe hangVe;
 
     @OneToOne(mappedBy = "choNgoi")
+    @JsonIgnore
     private Ve ve;
 
     // Mapping to MayBay entity
