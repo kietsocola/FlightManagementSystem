@@ -1,10 +1,6 @@
 package com.project.flightManagement.Service;
 
 import com.project.flightManagement.DTO.ChuyenBayDTO.ChuyenBayDTO;
-import com.project.flightManagement.DTO.NhanVienDTO.NhanVienDTO;
-import com.project.flightManagement.Model.ChuyenBay;
-import com.project.flightManagement.Repository.ChuyenBayReposity;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;

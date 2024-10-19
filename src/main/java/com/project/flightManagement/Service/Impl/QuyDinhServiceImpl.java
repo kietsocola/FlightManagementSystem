@@ -1,7 +1,6 @@
 package com.project.flightManagement.Service.Impl;
 
 import com.project.flightManagement.DTO.QuyDinhDTO.QuyDinhDTO;
-import com.project.flightManagement.Mapper.ChuyenBayMapper;
 import com.project.flightManagement.Mapper.QuyDinhMapper;
 import com.project.flightManagement.Model.QuyDinh;
 import com.project.flightManagement.Repository.QuyDinhRepository;
@@ -14,7 +13,7 @@ import java.util.Optional;
 import java.util.stream.StreamSupport;
 
 @Service
-public class QuyDinhImpl implements QuyDinhService {
+public class QuyDinhServiceImpl implements QuyDinhService {
 
     @Autowired
     private QuyDinhRepository repo;

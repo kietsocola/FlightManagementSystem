@@ -1,11 +1,8 @@
 package com.project.flightManagement.Service.Impl;
 
 import com.project.flightManagement.DTO.LoaiQuyDinhDTO.LoaiQuyDinhDTO;
-import com.project.flightManagement.DTO.QuyDinhDTO.QuyDinhDTO;
 import com.project.flightManagement.Mapper.LoaiQuyDinhMapper;
-import com.project.flightManagement.Mapper.QuyDinhMapper;
 import com.project.flightManagement.Model.LoaiQuyDinh;
-import com.project.flightManagement.Model.QuyDinh;
 import com.project.flightManagement.Repository.LoaiQuyDinhRepository;
 import com.project.flightManagement.Service.LoaiQuyDinhService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +13,7 @@ import java.util.Optional;
 import java.util.stream.StreamSupport;
 
 @Service
-public class LoaiQuyDinhImpl implements LoaiQuyDinhService {
+public class LoaiQuyDinhServiceImpl implements LoaiQuyDinhService {
 
     @Autowired
     private LoaiQuyDinhRepository repo;

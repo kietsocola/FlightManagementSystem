@@ -17,7 +17,7 @@ import java.util.stream.StreamSupport;
 
 @Service
 
-public class NhanVienImpl implements NhanVienService {
+public class NhanVienServiceImpl implements NhanVienService {
 
     @Autowired
     private NhanVienRepository repo ;

@@ -1,13 +1,10 @@
 package com.project.flightManagement.Service.Impl;
 
 import com.project.flightManagement.DTO.CongDTO.CongDTO;
-import com.project.flightManagement.DTO.NhanVienDTO.NhanVienDTO;
 import com.project.flightManagement.Mapper.CongMapper;
-import com.project.flightManagement.Mapper.NhanVienMapper;
 import com.project.flightManagement.Model.Cong;
-import com.project.flightManagement.Model.NhanVien;
 import com.project.flightManagement.Model.SanBay;
-import com.project.flightManagement.Repository.CongReposity;
+import com.project.flightManagement.Repository.CongRepository;
 import com.project.flightManagement.Service.CongService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,10 +13,10 @@ import java.util.Optional;
 import java.util.stream.StreamSupport;
 
 @Service
-public class CongImpl implements CongService {
+public class CongServiceImpl implements CongService {
 
     @Autowired
-    private CongReposity repo;
+    private CongRepository repo;
 
     @Override
     public Iterable<CongDTO> getAllCong() {
