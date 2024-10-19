@@ -8,6 +8,7 @@ import com.project.flightManagement.Repository.HangHoaRepository;
 import com.project.flightManagement.Repository.LoaiHangHoaRepository;
 import com.project.flightManagement.Service.HangHoaService;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Service
+@Slf4j
 public class HangHoaServiceImpl implements HangHoaService {
 
     @Autowired
@@ -108,15 +110,15 @@ public class HangHoaServiceImpl implements HangHoaService {
 
     @Override
     public List<HangHoaDTO> findByTenHangHoa(String keyword) {
-        List<HangHoa> hangHoaList = hangHoaRepo.findByKeywordContainingIgnoreCase(keyword);
+        List<HangHoa> hangHoaList = hangHoaRepo.findByTenHangHoaContainingIgnoreCase(keyword);
         if (hangHoaList.isEmpty()) {
-            System.out.println("No product found with the keyword: " + keyword);
-            return Collections.emptyList();
-        } else {
-            return hangHoaList.stream()
-                    .map(HangHoaMapper::toDTO)
-                    .collect(Collectors.toList());
+            log.warn("No product found with the keyword: {}", keyword);
+            throw new EntityNotFoundException("No merchandise found for the keyword: " + keyword);
         }
+        log.info("Found {} products with the keyword: {}", hangHoaList.size(), keyword);
+        return hangHoaList.stream()
+                .map(HangHoaMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
 

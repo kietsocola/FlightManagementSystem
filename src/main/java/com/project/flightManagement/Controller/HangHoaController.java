@@ -179,12 +179,12 @@ public class HangHoaController {
         System.out.println("Searching for: " + keyword);
         Iterable<HangHoaDTO> listHangHoaDTO = HangHoaService.findByTenHangHoa(keyword);
         if (listHangHoaDTO.iterator().hasNext()) {
-            response.setMessage("Get merchandise by start airport success!!");
+            response.setMessage("Get merchandise by merchandise success!!");
             response.setData(listHangHoaDTO);
             response.setStatusCode(200);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
-            response.setMessage("No merchandise found for the start airport!!");
+            response.setMessage("No merchandise found for the merchandise!!");
             response.setData(null);
             response.setStatusCode(404);
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
