@@ -15,5 +15,5 @@ public interface ChiTietHoaDonService {
     public Optional<ChiTietHoaDonDTO> updateChiTietHoaDon(ChiTietHoaDonDTO chiTietHoaDonDTO);
     public List<ChiTietHoaDonDTO> getListChiTietHoaDonByHoaDon(int idHoaDon);
     public List<ChiTietHoaDonDTO> getListChiTietHoaDonSorted(int idHoaDon, String sortBy, String order);
-
+    public List<ChiTietHoaDonDTO> getListChiTietHoaDonByKeyWord(int idHoaDon, String keyWord);
 }

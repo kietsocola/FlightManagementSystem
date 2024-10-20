@@ -32,16 +32,17 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
     }
 
     @Override
-    public Optional<TaiKhoanDTO> getTaiKhoanByID(int idTaiKhoan) {
+    public Optional<TaiKhoanDTO> getTaiKhoanByID(int idTK) {
         try {
-            Optional<TaiKhoan> tk = tkRepo.findById(idTaiKhoan);
+            Optional<TaiKhoan> tk = tkRepo.findById(idTK);
+            System.out.println("id:" + idTK);
             System.out.println("tai khoan: " + tk);
             Optional<TaiKhoanDTO> tkDTO = tk.map(TaiKhoanMapper::toDTO);
             System.out.println("tk dto : " + tkDTO);
             return tkDTO;
         }catch (Exception e){
             System.err.println("Error occurred while get account: " + e.getMessage());
-            return null;
+            return Optional.empty();
         }
     }
 

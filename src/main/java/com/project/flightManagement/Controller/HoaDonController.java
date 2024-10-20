@@ -166,9 +166,9 @@ public class HoaDonController {
             return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
             response.setData(null);
-            response.setStatusCode(204);
+            response.setStatusCode(404);
             response.setMessage("Lấy không thành công danh sách hóa đơn");
-            return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
 

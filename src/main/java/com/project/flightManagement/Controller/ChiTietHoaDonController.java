@@ -1,6 +1,7 @@
 package com.project.flightManagement.Controller;
 
 import com.project.flightManagement.DTO.ChiTietHoaDonDTO.ChiTietHoaDonDTO;
+import com.project.flightManagement.DTO.HoaDonDTO.HoaDonDTO;
 import com.project.flightManagement.Payload.ResponseData;
 import com.project.flightManagement.Service.ChiTietHoaDonService;
 import jakarta.validation.Valid;
@@ -170,6 +171,22 @@ public class ChiTietHoaDonController {
             response.setData(chiTietHoaDonDTOList);
             response.setStatusCode(200);
             return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+    }
+
+    @GetMapping("/getListChiTietHoaDonByKeyWord/{idHoaDon}")
+    public ResponseEntity<ResponseData> getListChiTietHoaDonByKeyWord(@PathVariable("idHoaDon") int idHoaDon, @RequestParam String keyWord) {
+        Iterable<ChiTietHoaDonDTO> listCTHDDTO = chiTietHoaDonService.getListChiTietHoaDonByKeyWord(idHoaDon, keyWord);
+        if (listCTHDDTO.iterator().hasNext()) {
+            response.setStatusCode(200);
+            response.setMessage("Lấy thành công danh sách chi tiết hóa đơn");
+            response.setData(listCTHDDTO);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else {
+            response.setData(null);
+            response.setStatusCode(404);
+            response.setMessage("Lấy không thành công danh sách chi tiết hóa đơn");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
 }

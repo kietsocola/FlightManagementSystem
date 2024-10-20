@@ -1,8 +1,11 @@
 package com.project.flightManagement.Service.Impl;
 
 import com.project.flightManagement.DTO.ChiTietHoaDonDTO.ChiTietHoaDonDTO;
+import com.project.flightManagement.DTO.HoaDonDTO.HoaDonDTO;
 import com.project.flightManagement.Mapper.ChiTietHoaDonMapper;
+import com.project.flightManagement.Mapper.HoaDonMapper;
 import com.project.flightManagement.Model.ChiTietHoaDon;
+import com.project.flightManagement.Model.HoaDon;
 import com.project.flightManagement.Repository.ChiTietHoaDonRepository;
 import com.project.flightManagement.Service.ChiTietHoaDonService;
 
@@ -91,16 +94,32 @@ public class ChiTietHoaDonServiceImpl implements ChiTietHoaDonService {
     @Override
     public List<ChiTietHoaDonDTO> getListChiTietHoaDonSorted(int idHoaDon, String sortBy, String direction) {
         try {
-            List<ChiTietHoaDon> chiTietHoaDonListSorted;
-            if (direction.equals("asc")) {
-                chiTietHoaDonListSorted = chiTietHoaDonReposity.getListChiTietHoaDonSorted(idHoaDon, Sort.by(Sort.Direction.ASC, sortBy));
+            Sort.Direction sortDirection = Sort.Direction.fromString(direction);
+            Sort sort = Sort.by(sortDirection, sortBy);
+            List<ChiTietHoaDon> chiTietHoaDonListSorted = chiTietHoaDonReposity.getListChiTietHoaDonSorted(idHoaDon, sort);
+            return chiTietHoaDonListSorted.stream()
+                    .map(ChiTietHoaDonMapper::toDTO)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            System.err.println("Error while sorting ChiTietHoaDon: " + e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    @Override
+    public List<ChiTietHoaDonDTO> getListChiTietHoaDonByKeyWord(int idHoaDon, String keyWord) {
+        try {
+            List<ChiTietHoaDon> chiTietHoaDonList = chiTietHoaDonReposity.getChiTietHoaDonByKeyWord(idHoaDon, keyWord);
+            if (chiTietHoaDonList.isEmpty()) {
+                System.out.println("Không tìm thấy chi tiết hóa đơn");
             } else {
-                chiTietHoaDonListSorted = chiTietHoaDonReposity.getListChiTietHoaDonSorted(idHoaDon, Sort.by(Sort.Direction.DESC, sortBy));
+                System.out.println("Tìm thấy chi tiết hóa đơn");
             }
-            return chiTietHoaDonListSorted.stream().map(ChiTietHoaDonMapper::toDTO).collect(Collectors.toList());
+            List<ChiTietHoaDonDTO> chiTietHoaDonDTOList = chiTietHoaDonList.stream().map(ChiTietHoaDonMapper::toDTO).collect(Collectors.toList());
+            return chiTietHoaDonDTOList;
         } catch (Exception e) {
             System.err.println("Error: " + e);
-            return Collections.emptyList();
+            return null;
         }
     }
 }
