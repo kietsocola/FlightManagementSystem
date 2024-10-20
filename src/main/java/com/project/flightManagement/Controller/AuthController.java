@@ -1,11 +1,12 @@
 package com.project.flightManagement.Controller;
 
-import com.project.flightManagement.DTO.AuthDTO.LoginDTO;
-import com.project.flightManagement.DTO.AuthDTO.LogoutDTO;
-import com.project.flightManagement.DTO.AuthDTO.SignupDTO;
+import com.project.flightManagement.DTO.AuthDTO.*;
 import com.project.flightManagement.DTO.InvalidToken.InvalidTokenDTO;
+import com.project.flightManagement.Model.Email;
+import com.project.flightManagement.Model.TaiKhoan;
 import com.project.flightManagement.Payload.ResponseData;
 import com.project.flightManagement.Security.JwtTokenProvider;
+import com.project.flightManagement.Service.EmailService;
 import com.project.flightManagement.Service.InvalidTokenService;
 import com.project.flightManagement.Service.KhachHangService;
 import com.project.flightManagement.Service.TaiKhoanService;
@@ -21,7 +22,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 
 @Controller
@@ -35,6 +39,8 @@ public class AuthController {
     private JwtTokenProvider jwtTokenProvider;
     @Autowired
     private InvalidTokenService invalidTokenService;
+    @Autowired
+    private EmailService emailService;
 
     @PostMapping("/login")
     public ResponseEntity<ResponseData> login(@RequestBody LoginDTO loginDTO) {
@@ -203,6 +209,93 @@ public class AuthController {
             responseData.setMessage("Refresh token is invalid or expired");
             responseData.setData("");
             return new ResponseEntity<>(responseData, HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+
+    @PostMapping("/forgot_password")
+    public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordDTO forgotPasswordDTO) {
+        ResponseData responseData = new ResponseData();
+        String email = forgotPasswordDTO.getEmail();
+        Optional<TaiKhoan> taiKhoanOptional = taiKhoanService.getTaiKhoanByEmail(email);
+        if (taiKhoanOptional.isEmpty()) {
+            responseData.setStatusCode(404);
+            responseData.setMessage("tai khoang khong co voi " + email);
+            responseData.setData("");
+            return new ResponseEntity<>(responseData, HttpStatus.NOT_FOUND);
+        }
+
+        String refreshTokenPassword = taiKhoanService.createPasswordResetToken(email);
+        String resetLink = "http://localhost:5173/reset_password?token=" + refreshTokenPassword;
+        Email emailSend = new Email();
+        emailSend.setToEmail(email);
+        emailSend.setSubject("Reset Your Password");
+        emailSend.setMessageBody(resetLink);
+        emailService.sendTextEmail(emailSend);
+        responseData.setStatusCode(200);
+        responseData.setMessage("Reset password link has been sent to your email");
+        responseData.setData("");
+        return new ResponseEntity<>(responseData, HttpStatus.OK);
+    }
+
+    @PostMapping("/reset_password")
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordDTO resetPasswordDTO) {
+
+        ResponseData responseData = new ResponseData();
+        String refreshPasswordToken = resetPasswordDTO.getRefreshPasswordToken();
+        String idRefreshPasswordToken = jwtTokenProvider.getIdTokenFromJwtToken(refreshPasswordToken);
+
+        // Kiểm tra token có hợp lệ không
+        if (refreshPasswordToken == null || !jwtTokenProvider.validateJwtToken(refreshPasswordToken) || invalidTokenService.existsByIdToken(refreshPasswordToken)) {
+            responseData.setStatusCode(400);
+            responseData.setMessage("Invalid token");
+            responseData.setData("");
+            return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
+        }
+
+        // Lấy email từ token
+        String email = jwtTokenProvider.getUserNameFromJwtToken(refreshPasswordToken);
+
+        // Lấy thời gian hết hạn của token và chuyển từ Date sang LocalDateTime
+        Date expirationDate = jwtTokenProvider.getExpirationTimeTokenFromJwtToken(refreshPasswordToken);
+        LocalDateTime expirationTime = expirationDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+
+        // So sánh thời gian hết hạn với thời gian hiện tại
+        if (expirationTime.isBefore(LocalDateTime.now())) {
+            responseData.setStatusCode(400);
+            responseData.setMessage("Token has expired");
+            responseData.setData("");
+            return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
+        }
+
+        // Tìm tài khoản dựa trên email
+        Optional<TaiKhoan> taiKhoanOptional = taiKhoanService.getTaiKhoanByEmail(email);
+        if (taiKhoanOptional.isEmpty()) {
+            responseData.setStatusCode(404);
+            responseData.setMessage("User not found");
+            responseData.setData("");
+            return new ResponseEntity<>(responseData, HttpStatus.NOT_FOUND);
+        }
+
+        // Lấy tài khoản và cập nhật mật khẩu mới
+        TaiKhoan taiKhoan = taiKhoanOptional.get();
+        taiKhoan.setMatKhau(resetPasswordDTO.getNewPassword());
+
+        // Cập nhật tài khoản với mật khẩu mới
+        boolean isSuccess = taiKhoanService.updateTaiKhoan_RefreshPassword(taiKhoan);
+        // Loai bo token
+        InvalidTokenDTO invalidTokenDTO = new InvalidTokenDTO(idRefreshPasswordToken, expirationDate);
+        invalidTokenService.saveInvalidTokenIntoDatabase(invalidTokenDTO);
+        if (isSuccess) {
+            responseData.setStatusCode(200);
+            responseData.setMessage("Password has been reset successfully");
+            responseData.setData("");
+            return new ResponseEntity<>(responseData, HttpStatus.OK);
+        } else {
+            responseData.setStatusCode(500);
+            responseData.setMessage("Failed to reset password");
+            responseData.setData("");
+            return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

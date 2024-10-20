@@ -18,7 +18,7 @@ import java.util.UUID;
 public class JwtTokenProvider {
     @Value("${jwt.secret}")
     private String secretKey;
-    private final long JWT_EXPIRATION = 15 * 1000L; // 15 phút
+    private final long JWT_EXPIRATION = 15 * 60 * 1000L; // 15 phút
     private final long JWT_REFRESH_EXPIRATION =  60 * 60 * 24 * 7 * 1000L; // 7 ngày
 
 
