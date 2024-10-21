@@ -46,6 +46,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((request) -> request
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/taikhoan/me").hasAuthority("quản lí tài khoản_VIEW")
+                        .requestMatchers("/quyen").hasAuthority("quản lí quyền_VIEW")
                         .anyRequest().permitAll());
         http.sessionManagement(session ->session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS));

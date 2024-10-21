@@ -139,10 +139,22 @@ public class AuthController {
     public ResponseEntity<?> logout(HttpServletRequest request, @RequestBody LogoutDTO logoutDTO) {
         ResponseData responseData = new ResponseData();
         try {
-            String idToken = jwtTokenProvider.getIdTokenFromJwtToken(logoutDTO.getToken());
-            Date expirationTime = jwtTokenProvider.getExpirationTimeTokenFromJwtToken(logoutDTO.getToken());
-            InvalidTokenDTO invalidTokenDTO = new InvalidTokenDTO(idToken, expirationTime);
+            String accessToken = logoutDTO.getToken();
+
+            // Kiểm tra xem token có hết hạn không trước khi xử lý
+            if (!jwtTokenProvider.validateJwtToken(accessToken)) {
+                responseData.setStatusCode(400);
+                responseData.setMessage("Token đã hết hạn.");
+                responseData.setData("");
+                return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
+            }
+
+            // Lưu token không hợp lệ nếu token hợp lệ
+            Date expirationTime = jwtTokenProvider.getExpirationTimeTokenFromJwtToken(accessToken);
+            InvalidTokenDTO invalidTokenDTO = new InvalidTokenDTO(jwtTokenProvider.getIdTokenFromJwtToken(accessToken), expirationTime);
             invalidTokenService.saveInvalidTokenIntoDatabase(invalidTokenDTO);
+
+            // Xử lý refresh token từ cookie
             String refreshToken = "";
             Cookie[] cookies = request.getCookies();
             if (cookies != null) {
@@ -150,13 +162,19 @@ public class AuthController {
                     if (cookie.getName().equals("refreshToken")) {
                         refreshToken = cookie.getValue();
                         System.out.println("refreshToken: " + refreshToken);
+                        break; // Tìm thấy refresh token thì dừng vòng lặp
                     }
                 }
             }
-            if(refreshToken != "")  {
-                invalidTokenService.saveInvalidTokenIntoDatabase(new InvalidTokenDTO(jwtTokenProvider.getIdTokenFromJwtToken(refreshToken),jwtTokenProvider.getExpirationTimeTokenFromJwtToken(refreshToken)));
+
+            // Nếu refresh token không rỗng và hợp lệ, lưu vào cơ sở dữ liệu
+            if (!refreshToken.isEmpty() && jwtTokenProvider.validateJwtToken(accessToken)) {
+                invalidTokenService.saveInvalidTokenIntoDatabase(
+                        new InvalidTokenDTO(jwtTokenProvider.getIdTokenFromJwtToken(refreshToken), jwtTokenProvider.getExpirationTimeTokenFromJwtToken(refreshToken))
+                );
             }
 
+            // Xóa cookie refresh token
             ResponseCookie deleteCookie = ResponseCookie.from("refreshToken", null)
                     .httpOnly(true)
                     .secure(true)
@@ -164,16 +182,17 @@ public class AuthController {
                     .maxAge(0) // Xóa cookie
                     .build();
 
-            // Lấy refresh token từ cookie
-
-
+            // Trả về phản hồi thành công
             responseData.setStatusCode(200);
-            responseData.setMessage("dang xuat thanh cong");
+            responseData.setMessage("Đăng xuất thành công");
             responseData.setData("");
-            return new ResponseEntity<>(responseData, HttpStatus.OK);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
+                    .body(responseData);
         } catch (Exception e) {
+            // Xử lý lỗi
             responseData.setStatusCode(500);
-            responseData.setMessage("dang xuat that bai" + e);
+            responseData.setMessage("Đăng xuất thất bại: " + e.getMessage());
             responseData.setData("");
             return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
         }
