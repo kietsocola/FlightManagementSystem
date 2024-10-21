@@ -28,7 +28,7 @@ public class GlobalExceptionHandler {
         // Create a custom error response
         ResponseData errorDetails = new ResponseData();
         errorDetails.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        errorDetails.setMessage(ex.getMessage());
+        errorDetails.setMessage("hehehehe:" + ex.getMessage());
 
         return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
     }
