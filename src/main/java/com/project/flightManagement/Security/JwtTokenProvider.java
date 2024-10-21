@@ -1,10 +1,13 @@
 package com.project.flightManagement.Security;
 
 import com.project.flightManagement.Service.InvalidTokenService;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -61,6 +64,50 @@ public class JwtTokenProvider {
     public String getIdTokenFromJwtToken(String token) {
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getId();
     }
+
+    public String getIdTokenFromExpiredJwtToken(String token) {
+        try {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(secretKey) // Secret key để ký token
+                    .build()
+                    .parseClaimsJws(token)     // Parse JWT nhưng bỏ qua expiration
+                    .getBody();
+            return claims.getId(); // Trả về ID từ token
+
+        } catch (ExpiredJwtException expiredException) {
+            // Token hết hạn nhưng vẫn giải mã được phần Claims
+            System.out.println("Token hết hạn, nhưng vẫn lấy được dữ liệu");
+            return expiredException.getClaims().getId(); // Lấy thông tin từ phần Claims của token đã hết hạn
+
+        } catch (SignatureException e) {
+            // Token không hợp lệ về mặt chữ ký
+            System.out.println("Token không hợp lệ: " + e.getMessage());
+            return null;
+        }
+    }
+
+    public Date getExpirationTimeFromExpiredJwtToken(String token) {
+        try {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(secretKey) // Secret key để ký token
+                    .build()
+                    .parseClaimsJws(token)     // Parse JWT nhưng bỏ qua expiration
+                    .getBody();
+
+            return claims.getExpiration();
+
+        } catch (ExpiredJwtException expiredException) {
+            // Token hết hạn nhưng vẫn giải mã được phần Claims
+            System.out.println("Token hết hạn, nhưng vẫn lấy được dữ liệu");
+            return expiredException.getClaims().getExpiration(); // Lấy thông tin từ phần Claims của token đã hết hạn
+
+        } catch (SignatureException e) {
+            // Token không hợp lệ về mặt chữ ký
+            System.out.println("Token không hợp lệ: " + e.getMessage());
+            return null;
+        }
+    }
+
     public Date getExpirationTimeTokenFromJwtToken(String token) {
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getExpiration();
     }

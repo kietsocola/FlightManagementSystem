@@ -140,18 +140,9 @@ public class AuthController {
         ResponseData responseData = new ResponseData();
         try {
             String accessToken = logoutDTO.getToken();
-
-            // Kiểm tra xem token có hết hạn không trước khi xử lý
-            if (!jwtTokenProvider.validateJwtToken(accessToken)) {
-                responseData.setStatusCode(400);
-                responseData.setMessage("Token đã hết hạn.");
-                responseData.setData("");
-                return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
-            }
-
-            // Lưu token không hợp lệ nếu token hợp lệ
-            Date expirationTime = jwtTokenProvider.getExpirationTimeTokenFromJwtToken(accessToken);
-            InvalidTokenDTO invalidTokenDTO = new InvalidTokenDTO(jwtTokenProvider.getIdTokenFromJwtToken(accessToken), expirationTime);
+            String idToken = jwtTokenProvider.getIdTokenFromExpiredJwtToken(accessToken);
+            Date expirationTime = jwtTokenProvider.getExpirationTimeFromExpiredJwtToken(accessToken);
+            InvalidTokenDTO invalidTokenDTO = new InvalidTokenDTO(idToken, expirationTime);
             invalidTokenService.saveInvalidTokenIntoDatabase(invalidTokenDTO);
 
             // Xử lý refresh token từ cookie
@@ -168,9 +159,9 @@ public class AuthController {
             }
 
             // Nếu refresh token không rỗng và hợp lệ, lưu vào cơ sở dữ liệu
-            if (!refreshToken.isEmpty() && jwtTokenProvider.validateJwtToken(accessToken)) {
+            if (!refreshToken.isEmpty()) {
                 invalidTokenService.saveInvalidTokenIntoDatabase(
-                        new InvalidTokenDTO(jwtTokenProvider.getIdTokenFromJwtToken(refreshToken), jwtTokenProvider.getExpirationTimeTokenFromJwtToken(refreshToken))
+                        new InvalidTokenDTO(idToken, expirationTime)
                 );
             }
 
@@ -190,7 +181,6 @@ public class AuthController {
                     .header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
                     .body(responseData);
         } catch (Exception e) {
-            // Xử lý lỗi
             responseData.setStatusCode(500);
             responseData.setMessage("Đăng xuất thất bại: " + e.getMessage());
             responseData.setData("");
@@ -224,7 +214,7 @@ public class AuthController {
             responseData.setData(newAccessToken);
             return new ResponseEntity<>(responseData, HttpStatus.OK);
         } else {
-            responseData.setStatusCode(401);
+            responseData.setStatusCode(999);
             responseData.setMessage("Refresh token is invalid or expired");
             responseData.setData("");
             return new ResponseEntity<>(responseData, HttpStatus.UNAUTHORIZED);
