@@ -16,7 +16,6 @@ import java.util.Optional;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MayBay {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_may_bay")
@@ -37,8 +36,15 @@ public class MayBay {
     @JsonIgnore
     private List<ChuyenBay> chuyenBayList;
 
-    @Column(name = "so_luong_ghe")
-    private int soLuongGhe;
+    @Column(name = "so_hang_ghe_thuong", nullable = false)
+    private String soHangGheThuong;
+    @Column(name = "so_hang_ghe_vip", nullable = false)
+    private String soHangGheVip;
+
+    @Column(name = "so_cot_ghe_thuong", nullable = false)
+    private int soCotGheThuong;
+    @Column(name = "so_cot_ghe_vip", nullable = false)
+    private int soCotGheVip;
 
     @Column(name = "so_hieu")
     private String soHieu;
@@ -53,9 +59,4 @@ public class MayBay {
     @Enumerated(EnumType.STRING)
     private ActiveEnum trangThaiActive;
 
-    @Column(name = "max_row", nullable = false)
-    private String max_row;
-
-    @Column(name = "max_column", nullable = false)
-    private int max_column;
 }

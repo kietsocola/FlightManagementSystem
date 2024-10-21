@@ -3,6 +3,7 @@ package com.project.flightManagement.Controller;
 import com.project.flightManagement.DTO.MayBayDTO.MayBayDTO;
 import com.project.flightManagement.DTO.SanBayDTO.SanBayDTO;
 import com.project.flightManagement.DTO.ThanhPhoDTO.ThanhPhoDTO;
+import com.project.flightManagement.Enum.ActiveEnum;
 import com.project.flightManagement.Mapper.ThanhPhoMapper;
 import com.project.flightManagement.Model.ThanhPho;
 import com.project.flightManagement.Payload.ResponseData;
@@ -72,7 +73,7 @@ public class SanBayController {
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
-    @GetMapping("/getAllSanBaySorted")
+    @GetMapping("/getAllAirportSorted")
     public ResponseEntity<ResponseData> getAllSanBaySorted(@RequestParam(defaultValue = "idSanBay") String sortBy,
                                                            @RequestParam(defaultValue = "asc") String order) {
         List<SanBayDTO> sanBayDTOList = sanBayService.getAllSanBaySorted(sortBy, order);
@@ -136,7 +137,7 @@ public class SanBayController {
         }
         return null;
     }
-    @PostMapping("/addNewAirport")
+    @PostMapping("/addAirport")
     public ResponseEntity<ResponseData> addNewSanBay(@Valid @RequestBody SanBayDTO sbDTO, BindingResult bindingResult){
         if(bindingResult.hasErrors()){
             Map<String, String> fieldErrors = new HashMap<>();
@@ -228,6 +229,46 @@ public class SanBayController {
             response.setData(null);
             response.setStatusCode(400); // Bad Request
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+    }
+    @PutMapping("/blockAirport/{idSanBay}")
+    public ResponseEntity<ResponseData> blockMayBay(@PathVariable int idSanBay){
+        Optional<SanBayDTO> existingSB = sanBayService.getSanBayById(idSanBay);
+        if(existingSB.isPresent()){
+            if(existingSB.get().getTrangThaiActive() == ActiveEnum.ACTIVE){
+                Optional<SanBayDTO> blockSB = sanBayService.blockSanBay(existingSB.get().getIdSanBay());
+                if(blockSB.isPresent()){
+                    response.setMessage("Block airport successfully!!");
+                    response.setData(blockSB.get());
+                    response.setStatusCode(200); // OK
+                    return new ResponseEntity<>(response, HttpStatus.OK);
+                } else {
+                    // Xử lý lỗi khi cập nhật không thành công
+                    response.setMessage("Block airport unsuccessfully!!");
+                    response.setData(null);
+                    response.setStatusCode(500); // Internal Server Error
+                    return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            } else {
+                Optional<SanBayDTO> blockSB = sanBayService.unblockSanBay(existingSB.get().getIdSanBay());
+                if(blockSB.isPresent()){
+                    response.setMessage("Block airport successfully!!");
+                    response.setData(blockSB.get());
+                    response.setStatusCode(200); // OK
+                    return new ResponseEntity<>(response, HttpStatus.OK);
+                } else {
+                    // Xử lý lỗi khi cập nhật không thành công
+                    response.setMessage("Block airport unsuccessfully!!");
+                    response.setData(null);
+                    response.setStatusCode(500); // Internal Server Error
+                    return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            }
+        } else {
+            response.setMessage("Airport not found!!");
+            response.setData(null);
+            response.setStatusCode(404); // Not Found
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
 }

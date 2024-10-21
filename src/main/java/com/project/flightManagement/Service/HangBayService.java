@@ -9,4 +9,5 @@ import java.util.Optional;
 public interface HangBayService {
     public Optional<HangBayDTO> getHangBayById(int id);
     public Iterable<HangBayDTO> getAllHangBay();
+    public Iterable<HangBayDTO> findHangBayByKeyWord(String keyword);
 }

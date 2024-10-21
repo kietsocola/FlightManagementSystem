@@ -17,4 +17,6 @@ public interface SanBayService {
     public Optional<SanBayDTO> updateSanBay(SanBayDTO sanBayDTO);
     public Optional<SanBayDTO> getSanBayByIcaoSanBay(String icaoSanBay);
     public Optional<SanBayDTO> getSanBayByIataSanBay(String iataSanBay);
+    public Optional<SanBayDTO> blockSanBay(int id);
+    public Optional<SanBayDTO> unblockSanBay(int id);
 }
