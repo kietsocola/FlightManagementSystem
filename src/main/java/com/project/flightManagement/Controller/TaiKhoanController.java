@@ -96,7 +96,7 @@ public class TaiKhoanController {
                 responseData.setStatusCode(404);
                 responseData.setData("");
                 responseData.setMessage("Tài khoản với ID " + userName + " không tồn tại.");
-                return new ResponseEntity<>(responseData, HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(responseData, HttpStatus.OK);
             }
 
             // Nếu tồn tại tài khoản
@@ -109,7 +109,7 @@ public class TaiKhoanController {
             responseData.setStatusCode(404);
             responseData.setData("");
             responseData.setMessage("Tài khoản không tồn tại.");
-            return new ResponseEntity<>(responseData, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(responseData, HttpStatus.OK);
 
         } catch (Exception e) {
             responseData.setStatusCode(500);

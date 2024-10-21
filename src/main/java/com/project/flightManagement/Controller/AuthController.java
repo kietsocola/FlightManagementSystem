@@ -69,7 +69,7 @@ public class AuthController {
             } else {
                 responseData.setStatusCode(401);
                 responseData.setMessage("Login failed: Invalid credentials");
-                return new ResponseEntity<>(responseData, HttpStatus.UNAUTHORIZED);
+                return new ResponseEntity<>(responseData, HttpStatus.OK);
             }
         } catch (Exception e) {
             responseData.setStatusCode(500);
@@ -217,7 +217,7 @@ public class AuthController {
             responseData.setStatusCode(999);
             responseData.setMessage("Refresh token is invalid or expired");
             responseData.setData("");
-            return new ResponseEntity<>(responseData, HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(responseData, HttpStatus.OK);
         }
     }
 
@@ -259,7 +259,7 @@ public class AuthController {
             responseData.setStatusCode(400);
             responseData.setMessage("Invalid token");
             responseData.setData("");
-            return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(responseData, HttpStatus.OK);
         }
 
         // Lấy email từ token
