@@ -52,29 +52,41 @@ public class AuthController {
                 // Tạo access token và refresh token
                 String accessToken = jwtTokenProvider.generateToken(loginDTO.getUserName());
                 String refreshToken = jwtTokenProvider.generateRefreshToken(loginDTO.getUserName());
-                RefreshTokenDTO refreshTokenDTO = new RefreshTokenDTO(jwtTokenProvider.getIdTokenFromJwtToken(refreshToken), jwtTokenProvider.getExpirationTimeTokenFromJwtToken(refreshToken), taiKhoanService.getTaiKhoanByTenDangNhap(loginDTO.getUserName()).get().getIdTaiKhoan(), ActiveEnum.ACTIVE);
-                refreshTokenService.saveRefreshTokenIntoDatabase(refreshTokenDTO);
 
-                responseData.setStatusCode(200);
+                System.out.println("re token: " + refreshToken);
+                // Lưu refresh token vào cơ sở dữ liệu
+                RefreshTokenDTO refreshTokenDTO = new RefreshTokenDTO(
+                        jwtTokenProvider.getIdTokenFromJwtToken(refreshToken),
+                        jwtTokenProvider.getExpirationTimeTokenFromJwtToken(refreshToken),
+                        taiKhoanService.getTaiKhoanByTenDangNhap(loginDTO.getUserName()).get().getIdTaiKhoan(),
+                        ActiveEnum.ACTIVE
+                );
+                refreshTokenService.saveRefreshTokenIntoDatabase(refreshTokenDTO);
+                System.out.println("da luu re token: " + refreshToken);
+
+                // Thiết lập phản hồi thành công
+                responseData.setStatusCode(200);  // Mã trạng thái tùy chỉnh
                 responseData.setMessage("Login success");
                 responseData.setData(accessToken);
-                return new ResponseEntity<>(responseData, HttpStatus.OK);
+                return new ResponseEntity<>(responseData, HttpStatus.OK);  // HTTP 200 OK
             } else {
-                responseData.setStatusCode(401);
+                // Đăng nhập thất bại: Sai thông tin xác thực
+                responseData.setStatusCode(401);  // Mã trạng thái tùy chỉnh
                 responseData.setMessage("Login failed: Invalid credentials");
-                return new ResponseEntity<>(responseData, HttpStatus.UNAUTHORIZED);
+                return new ResponseEntity<>(responseData, HttpStatus.UNAUTHORIZED);  // HTTP 401 Unauthorized
             }
         } catch (Exception e) {
-            responseData.setStatusCode(500);
+            // Lỗi máy chủ
+            responseData.setStatusCode(500);  // Mã trạng thái tùy chỉnh
             responseData.setMessage("Login failed: " + e.getMessage());
-            return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);  // HTTP 500 Internal Server Error
         }
     }
 
     @PostMapping("/signup")
     public ResponseEntity<ResponseData> signup(@Valid @RequestBody SignupDTO signupDTO) {
         ResponseData responseData = new ResponseData();
-        Map<String, String> errorMap = new HashMap<>(); // Thay đổi List thành Map để gán label cho từng lỗi
+        Map<String, String> errorMap = new HashMap<>(); // Gán label cho từng lỗi
         boolean isError = false;
 
         try {
@@ -104,6 +116,7 @@ public class AuthController {
 
             // Nếu có lỗi, trả về thông báo với danh sách lỗi
             if (isError) {
+                responseData.setStatusCode(409); // Mã tùy chỉnh, thể hiện lỗi trùng lặp
                 responseData.setMessage("Đăng ký không thành công");
                 responseData.setData(errorMap); // Gán Map chứa các lỗi vào response
                 return new ResponseEntity<>(responseData, HttpStatus.CONFLICT);
@@ -112,47 +125,88 @@ public class AuthController {
             // Tạo tài khoản mới
             boolean created = taiKhoanService.createTaiKhoan(signupDTO);
             if (created) {
-                responseData.setStatusCode(200);
+                responseData.setStatusCode(200);  // Mã tùy chỉnh cho thành công
                 responseData.setMessage("Đăng ký thành công");
                 return new ResponseEntity<>(responseData, HttpStatus.OK);
             } else {
-                responseData.setStatusCode(500);
+                responseData.setStatusCode(500);  // Mã tùy chỉnh cho lỗi server
                 responseData.setMessage("Đăng ký không thành công: Không thể tạo tài khoản");
                 return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
         } catch (Exception e) {
-            responseData.setStatusCode(500);
+            // Xử lý lỗi ngoại lệ
+            responseData.setStatusCode(500);  // Mã tùy chỉnh cho lỗi server
             responseData.setMessage("Đăng ký không thành công: " + e.getMessage());
             return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(@RequestBody LogoutDTO logoutDTO) {
+    public ResponseEntity<ResponseData> logout(HttpServletRequest request, @RequestBody LogoutDTO logoutDTO) {
         ResponseData responseData = new ResponseData();
         try {
+            // Lấy idToken từ token đăng xuất
             String idToken = jwtTokenProvider.getIdTokenFromJwtToken(logoutDTO.getToken());
-            String userName = jwtTokenProvider.getUserNameFromJwtToken(logoutDTO.getToken());
+            String refreshToken = getRefreshTokenFromRequest(request);
+            String idRefreshToken = jwtTokenProvider.getIdTokenFromJwtToken(refreshToken);
+
+            // Lấy thời gian hết hạn của token
             Date expirationTime = jwtTokenProvider.getExpirationTimeTokenFromJwtToken(logoutDTO.getToken());
+
+            // Lưu token vào danh sách token không hợp lệ
             InvalidTokenDTO invalidTokenDTO = new InvalidTokenDTO(idToken, expirationTime);
             invalidTokenService.saveInvalidTokenIntoDatabase(invalidTokenDTO);
-//            refreshTokenService.deactivateToken()
 
+            // Vô hiệu hóa refresh token
+            refreshTokenService.deactivateToken(idRefreshToken);
 
+            // Phản hồi đăng xuất thành công
             responseData.setStatusCode(200);
-            responseData.setMessage("dang xuat thanh cong");
+            responseData.setMessage("Đăng xuất thành công");
             responseData.setData("");
             return new ResponseEntity<>(responseData, HttpStatus.OK);
+
         } catch (Exception e) {
+            // Xử lý lỗi khi có ngoại lệ
             responseData.setStatusCode(500);
-            responseData.setMessage("dang xuat that bai" + e);
+            responseData.setMessage("Đăng xuất thất bại: " + e.getMessage());
             responseData.setData("");
             return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PostMapping("/refresh_token")
-    public ResponseEntity<?> refreshToken(HttpServletRequest request) {
+    public ResponseEntity<ResponseData> refreshToken(HttpServletRequest request) {
+        String refreshToken = getRefreshTokenFromRequest(request);
+        System.out.println("re token_api_refresh:" + refreshToken);
+        ResponseData responseData = new ResponseData();
+
+        try {
+            // Kiểm tra refresh token có hợp lệ
+            if (refreshToken != null && jwtTokenProvider.validateJwtToken(refreshToken)) {
+                String username = jwtTokenProvider.getUserNameFromJwtToken(refreshToken);
+                String newAccessToken = jwtTokenProvider.generateToken(username);
+
+                responseData.setStatusCode(200);
+                responseData.setMessage("Tạo mới access token thành công");
+                responseData.setData(newAccessToken);
+                return new ResponseEntity<>(responseData, HttpStatus.OK);
+            } else {
+                // Token không hợp lệ hoặc hết hạn
+                responseData.setStatusCode(401);
+                responseData.setMessage("Refresh token không hợp lệ hoặc đã hết hạn");
+                responseData.setData("");
+                return new ResponseEntity<>(responseData, HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            // Xử lý lỗi khi có ngoại lệ
+            responseData.setStatusCode(500);
+            responseData.setMessage("Có lỗi xảy ra: " + e.getMessage());
+            responseData.setData("");
+            return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    private String getRefreshTokenFromRequest(HttpServletRequest request) {
         String refreshToken = null;
 
         ResponseData responseData = new ResponseData();
@@ -166,20 +220,6 @@ public class AuthController {
                 }
             }
         }
-
-        // Kiểm tra refresh token có hợp lệ không
-        if (refreshToken != null && jwtTokenProvider.validateJwtToken(refreshToken)) {
-            String username = jwtTokenProvider.getUserNameFromJwtToken(refreshToken);
-            String newAccessToken = jwtTokenProvider.generateToken(username);
-            responseData.setStatusCode(200);
-            responseData.setMessage("tao moi access token thanh cong");
-            responseData.setData(newAccessToken);
-            return new ResponseEntity<>(responseData, HttpStatus.OK);
-        } else {
-            responseData.setStatusCode(401);
-            responseData.setMessage("Refresh token is invalid or expired");
-            responseData.setData("");
-            return new ResponseEntity<>(responseData, HttpStatus.FORBIDDEN);
-        }
+        return refreshToken;
     }
 }

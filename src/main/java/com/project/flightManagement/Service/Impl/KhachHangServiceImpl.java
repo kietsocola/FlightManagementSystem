@@ -23,7 +23,6 @@ import java.util.stream.StreamSupport;
 public class KhachHangServiceImpl implements KhachHangService {
     @Autowired
     private KhachHangRepository khRepo;
-    @Autowired
     private KhachHangMapper khachHangMapper;
 
     @Override

@@ -32,7 +32,6 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
     private TaiKhoanRepository taiKhoanRepository;
     @Autowired
     private KhachHangService khachHangService;
-    @Autowired
     private KhachHangMapper khachHangMapper;
     @Autowired
     @Lazy
