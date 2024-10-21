@@ -1,10 +1,14 @@
 package com.project.flightManagement.Service.Impl;
 
 import com.project.flightManagement.DTO.KhachHangDTO.KhachHangDTO;
+import com.project.flightManagement.DTO.KhachHangDTO.KhachHangBasicDTO;
+import com.project.flightManagement.DTO.KhachHangDTO.KhachHangCreateDTO;
+import com.project.flightManagement.Enum.ActiveEnum;
 import com.project.flightManagement.Mapper.KhachHangMapper;
 import com.project.flightManagement.Model.KhachHang;
 import com.project.flightManagement.Repository.KhachHangRepository;
 import com.project.flightManagement.Service.KhachHangService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -19,6 +23,9 @@ import java.util.stream.StreamSupport;
 public class KhachHangServiceImpl implements KhachHangService {
     @Autowired
     private KhachHangRepository khRepo;
+    @Autowired
+    private KhachHangMapper khachHangMapper;
+
     @Override
     public Iterable<KhachHangDTO> getAllKhachHang() {
         try {
@@ -147,5 +154,42 @@ public class KhachHangServiceImpl implements KhachHangService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public KhachHang createKhachHang(KhachHangCreateDTO khachHangCreateDTO) {
+        try {
+            KhachHang khachHang = khachHangMapper.toKhachHang(khachHangCreateDTO);
+            khachHang.setTrangThaiActive(ActiveEnum.ACTIVE);
+            return khRepo.save(khachHang);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public boolean existsKhachHangByEmail(String email) {
+        if(khRepo.existsKhachHangByEmail(email)) {
+            return true;
+        }
+        return false;
+    }
+    @Override
+    public boolean existsKhachHangByCccd(String cccd) {
+        if(khRepo.existsKhachHangByCccd(cccd)) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public KhachHangBasicDTO getKhachHangByIdKhachHang_BASIC(int idKhachHang) {
+        Optional<KhachHang> khachHangOptional = khRepo.findKhachHangByIdKhachHang(idKhachHang);
+        if (khachHangOptional.isPresent()) {
+            KhachHang khachHang = khachHangOptional.get();
+            KhachHangBasicDTO khachHangBasicDTO = khachHangMapper.toKhachHangBasicDTO(khachHang);
+            return khachHangBasicDTO;
+        }
+        throw new EntityNotFoundException("Khách hàng với ID " + idKhachHang + " không tồn tại.");
+    }
 
 }

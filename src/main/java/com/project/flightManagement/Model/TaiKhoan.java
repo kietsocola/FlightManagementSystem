@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "taikhoan")
@@ -32,13 +33,16 @@ public class TaiKhoan {
     private String matKhau;
 
     @OneToOne
-    @JoinColumn(name = "id_khach_hang", nullable = false)
+    @JoinColumn(name = "id_khach_hang", nullable = true)
     private KhachHang khachHang;
     @OneToOne
-    @JoinColumn(name = "id_nhan_vien", nullable = false)
+    @JoinColumn(name = "id_nhan_vien", nullable = true)
     private NhanVien nhanVien;
     @Column(name = "thoi_gian_tao", nullable = false)
     private LocalDateTime thoiGianTao;
+
+    @OneToMany(mappedBy = "taiKhoan")
+    private List<RefreshToken> refreshTokenList;
 
     @Column(name = "active_status")
     @Enumerated(EnumType.STRING)

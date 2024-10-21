@@ -1,6 +1,8 @@
 package com.project.flightManagement.Service;
 
 import com.project.flightManagement.DTO.KhachHangDTO.KhachHangDTO;
+import com.project.flightManagement.DTO.KhachHangDTO.KhachHangBasicDTO;
+import com.project.flightManagement.DTO.KhachHangDTO.KhachHangCreateDTO;
 import com.project.flightManagement.Model.KhachHang;
 import org.springframework.stereotype.Service;
 
@@ -21,4 +23,8 @@ public interface KhachHangService {
     public Optional<KhachHangDTO> getKhachHangByCccd(String cccd);
     public Iterable<KhachHangDTO> getAllKhachHangSorted(String sortBy, String direction);
     public List<KhachHangDTO> findByHoTen(String keyword);
+    KhachHang createKhachHang(KhachHangCreateDTO khachHangCreateDTO);
+    boolean existsKhachHangByEmail(String email);
+    boolean existsKhachHangByCccd(String cccd);
+    KhachHangBasicDTO getKhachHangByIdKhachHang_BASIC(int idKhachHang);
 }

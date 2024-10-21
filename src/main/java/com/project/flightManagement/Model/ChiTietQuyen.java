@@ -1,5 +1,6 @@
 package com.project.flightManagement.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.flightManagement.Enum.ActiveEnum;
 import com.project.flightManagement.Enum.ChiTietQuyenActionEnum;
 import jakarta.persistence.*;
@@ -21,6 +22,7 @@ public class ChiTietQuyen {
 
     @ManyToOne
     @JoinColumn(name = "id_quyen", nullable = false)
+    @JsonIgnore
     private Quyen quyen;
 
     @ManyToOne
@@ -30,5 +32,6 @@ public class ChiTietQuyen {
     @Column(name = "hanh_dong")
     @Enumerated(EnumType.STRING)
     private ChiTietQuyenActionEnum hanhDong;
+
 }
 

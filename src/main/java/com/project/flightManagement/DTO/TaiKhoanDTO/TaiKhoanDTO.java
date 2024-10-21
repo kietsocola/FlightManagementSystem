@@ -1,37 +1,30 @@
 package com.project.flightManagement.DTO.TaiKhoanDTO;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.project.flightManagement.DTO.KhachHangDTO.KhachHangBasicDTO;
+import com.project.flightManagement.DTO.NhanVienDTO.NhanVienDTO;
+import com.project.flightManagement.DTO.QuyenDTO.QuyenBasicDTO;
 import com.project.flightManagement.Enum.ActiveEnum;
-import com.project.flightManagement.Model.KhachHang;
 import com.project.flightManagement.Model.NhanVien;
 import com.project.flightManagement.Model.Quyen;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-
+//@JsonInclude(JsonInclude.Include.NON_NULL)
 public class TaiKhoanDTO {
-    private  int idTaiKhoan;
-
-    @NotBlank(message = "Tên đăng nhập không được bỏ trống")
-    private  String tenDangNhap;
-
-    private Quyen idQuyen;
-
-    @NotBlank(message = "Mật khẩu không được bỏ trống")
-    private  String matKhau;
-
-    private KhachHang idKH;
-
-    private NhanVien idNV;
-
+    private int idTaiKhoan;
+    private String tenDangNhap;
+    private String matKhau;
+    private QuyenBasicDTO quyen;
+    private KhachHangBasicDTO khachHang;
+    private NhanVienDTO nhanVien;
     private LocalDateTime thoiGianTao;
-
-    private ActiveEnum status;
+    private ActiveEnum trangThaiActive;
 }
