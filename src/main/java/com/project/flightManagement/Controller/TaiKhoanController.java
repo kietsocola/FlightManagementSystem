@@ -18,7 +18,6 @@ import java.util.Optional;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
-//@RequestMapping("admin/taikhoan")
 public class TaiKhoanController {
     @Autowired
     private TaiKhoanService tkService;

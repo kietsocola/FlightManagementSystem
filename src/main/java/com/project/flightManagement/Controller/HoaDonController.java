@@ -21,7 +21,6 @@ import java.util.Optional;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
-//@RequestMapping("admin/hoadon")
 public class HoaDonController {
     @Autowired
     private HoaDonService hoaDonService;

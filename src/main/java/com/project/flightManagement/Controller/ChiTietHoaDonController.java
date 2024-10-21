@@ -18,7 +18,6 @@ import java.util.Optional;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
-//@RequestMapping("admin/chitiethoadon")
 public class ChiTietHoaDonController {
     @Autowired
     ChiTietHoaDonService chiTietHoaDonService;
