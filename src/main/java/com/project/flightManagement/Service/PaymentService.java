@@ -1,9 +1,12 @@
 package com.project.flightManagement.Service;
 
-import com.project.flightManagement.DTO.HanhKhachDTO.HanhKhachDTO;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
+
+import java.net.URL;
+import java.util.SortedMap;
 
 @Service
 public interface PaymentService {
-    public boolean checkPaymentStatus(HanhKhachDTO hanhKhach);
+    public URL createPaymentUrl(int amount, String orderInfo, HttpServletRequest request)throws Exception;
 }

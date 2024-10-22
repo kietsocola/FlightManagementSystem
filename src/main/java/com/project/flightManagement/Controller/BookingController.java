@@ -11,15 +11,14 @@ import com.project.flightManagement.Service.ChoNgoiService;
 import com.project.flightManagement.Service.HoldSeatService;
 import com.project.flightManagement.Service.PaymentService;
 import com.project.flightManagement.Service.SocketIOService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.net.URL;
+import java.util.*;
 
 @RestController
 public class BookingController {
@@ -98,62 +97,74 @@ public class BookingController {
     }
 
     @PostMapping("/confirmBooking")
-    public ResponseEntity<ResponseData> confirmBooking(@RequestBody HanhKhachDTO hanhKhach) {
+    public ResponseEntity<ResponseData> confirmBooking(@RequestBody List<HanhKhachDTO> hanhKhachList, HttpServletRequest request) {
         ResponseData response = new ResponseData();
-
-        // Kiểm tra nếu idVe bị null hoặc không hợp lệ
-        if (hanhKhach.getIdVe() == null) {
-            response.setMessage("Dữ liệu không hợp lệ: idVe không được để trống");
-            response.setStatusCode(400); // Bad Request
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-        }
-        Map<String, Object> responseData = new HashMap<>();
+        int totalAmount = 0;  // Tổng số tiền cho tất cả các vé
+        StringBuilder orderInfo = new StringBuilder("Thanh toan cho cac ve: ");
+        List<String> passengerNames = new ArrayList<>();
 
         try {
-            // Kiểm tra xem vé có tồn tại không
-            Optional<Ve> optionalVe = veRepo.findById(hanhKhach.getIdVe());
-            if (!optionalVe.isPresent()) {
-                response.setMessage("Vé không tồn tại: " + hanhKhach.getIdVe());
-                response.setStatusCode(404); // Not Found
-                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            // Loop through each passenger in the list
+            for (HanhKhachDTO hanhKhach : hanhKhachList) {
+                // Kiểm tra nếu idVe bị null hoặc không hợp lệ
+                if (hanhKhach.getIdVe() == null) {
+                    response.setMessage("Dữ liệu không hợp lệ: idVe không được để trống cho hành khách: " + hanhKhach.getHoTen());
+                    response.setStatusCode(400); // Bad Request
+                    return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+                }
+
+                // Kiểm tra xem vé có tồn tại không
+                Optional<Ve> optionalVe = veRepo.findById(hanhKhach.getIdVe());
+                if (!optionalVe.isPresent()) {
+                    response.setMessage("Vé không tồn tại: " + hanhKhach.getIdVe() + " cho hành khách: " + hanhKhach.getHoTen());
+                    response.setStatusCode(404); // Not Found
+                    return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+                }
+
+                Ve ve = optionalVe.get();
+
+                // Kiểm tra xem vé đã được đặt chưa
+                if (ve.getTrangThai().equals(VeEnum.BOOKED)) {
+                    response.setMessage("Vé này đã được đặt cho hành khách: " + hanhKhach.getHoTen());
+                    response.setStatusCode(400);
+                    return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+                }
+
+                // Cộng dồn giá vé
+                totalAmount += ve.getGiaVe();
+                passengerNames.add(hanhKhach.getHoTen());
+
+                // Thêm thông tin vé vào orderInfo
+                orderInfo.append(ve.getIdVe()).append(", ");
+
+                // Lưu thông tin hành khách trong session (tùy chọn)
+                request.getSession().setAttribute("hanhKhach_" + hanhKhach.getIdVe(), hanhKhach);
             }
 
-            Ve ve = optionalVe.get();
-            // Kiểm tra trạng thái vé (phải là BOOKED để tiếp tục)
-            if (ve.getTrangThai() != VeEnum.HOLD) {
-                response.setMessage("Vé không ở trạng thái BOOKED, không thể xác nhận đặt vé");
-                response.setStatusCode(400); // Bad Request
-                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            // Xóa dấu phẩy cuối cùng trong orderInfo
+            if (orderInfo.length() > 0) {
+                orderInfo.setLength(orderInfo.length() - 2);
             }
 
-            // Xác nhận đặt vé
-            boolean isPaymentSuccessful = paymentService.checkPaymentStatus(hanhKhach);
-            if (isPaymentSuccessful) {
-                // Xác nhận đặt vé khi thanh toán thành công
-                holdSeatService.confirmBooking(hanhKhach);
-                responseData.put("payment", true);
-                // Cập nhật thông báo cho client
-                response.setMessage("Đã đặt vé thành công cho vé " + hanhKhach.getIdVe());
-                response.setData(responseData);
-                response.setStatusCode(200); // OK
-                return new ResponseEntity<>(response, HttpStatus.OK);
-            } else {
-                responseData.put("payment", false);
-                // Nếu thanh toán thất bại, thông báo lỗi
-                response.setMessage("Thanh toán không thành công, không thể xác nhận vé.");
-                response.setData(responseData);
-                response.setStatusCode(400); // Bad Request
-                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-            }
+            // Tạo một URL thanh toán với tổng số tiền
+            URL paymentUrl = paymentService.createPaymentUrl(totalAmount, orderInfo.toString(), request);
+
+            // Trả về URL thanh toán duy nhất cho tất cả hành khách
+            response.setMessage("Hãy thanh toán qua VNPay để xác nhận đặt vé cho tất cả hành khách.");
+            Map<String, Object> responseData = new HashMap<>();
+            responseData.put("paymentUrl", paymentUrl);
+            responseData.put("totalAmount", totalAmount);
+            responseData.put("passengers", passengerNames);
+            response.setData(responseData);
+            response.setStatusCode(200); // OK
+            return new ResponseEntity<>(response, HttpStatus.OK);
 
         } catch (Exception e) {
-            responseData.put("booking", false);
-            // Bắt các lỗi ngoại lệ và trả về thông báo lỗi
-            response.setData(responseData);
-            response.setMessage("Đặt vé thất bại cho vé " + hanhKhach.getIdVe() + ": " + e.getMessage());
-            response.setStatusCode(400); // Bad Request
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            response.setMessage("Đặt vé thất bại: " + e.getMessage());
+            response.setStatusCode(500); // Internal Server Error
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 
 }
