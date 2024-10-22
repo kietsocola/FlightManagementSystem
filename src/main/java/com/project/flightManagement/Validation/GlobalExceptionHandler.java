@@ -32,4 +32,16 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<ResponseData> handleException(Exception ex, WebRequest request) {
+//        // Log the exception details
+//        System.err.println(ex.getMessage());
+//
+//        // Create a custom error response
+//        ResponseData errorDetails = new ResponseData();
+//        errorDetails.setStatusCode(HttpStatus.OK.value()); // Trả về mã 200
+//        errorDetails.setMessage("Token đã hết hạn hoặc lỗi khác: " + ex.getMessage());
+//
+//        return new ResponseEntity<>(errorDetails, HttpStatus.OK); // Trả về mã 200 OK
+//    }
 }

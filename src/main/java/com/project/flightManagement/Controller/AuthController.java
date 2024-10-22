@@ -9,6 +9,9 @@ import com.project.flightManagement.Model.TaiKhoan;
 import com.project.flightManagement.Payload.ResponseData;
 import com.project.flightManagement.Security.JwtTokenProvider;
 import com.project.flightManagement.Service.*;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -165,15 +168,19 @@ public class AuthController {
 
             // Xử lý refresh token từ cookie
             String refreshToken = getRefreshTokenFromRequest(request);
-            String idRefreshToken = jwtTokenProvider.getIdTokenFromJwtToken(refreshToken);
 
-            // Vô hiệu hóa refresh token
-            refreshTokenService.deactivateToken(idRefreshToken);
-
-            // Lưu lại token đã bị vô hiệu hóa
-            invalidTokenService.saveInvalidTokenIntoDatabase(
-                    new InvalidTokenDTO(idToken, expirationTime)
-            );
+            try {
+                String idRefreshToken = jwtTokenProvider.getIdTokenFromJwtToken(refreshToken);
+                // Vô hiệu hóa refresh token
+                refreshTokenService.deactivateToken(idRefreshToken);
+                // Lưu lại refresh token đã bị vô hiệu hóa
+                invalidTokenService.saveInvalidTokenIntoDatabase(
+                        new InvalidTokenDTO(idRefreshToken, expirationTime)
+                );
+            } catch (ExpiredJwtException e) {
+                // Token hết hạn thì bỏ qua lỗi này và tiếp tục đăng xuất
+                System.out.println("Refresh token đã hết hạn, vẫn tiếp tục đăng xuất.");
+            }
 
             // Xóa cookie refresh token
             ResponseCookie deleteCookie = ResponseCookie.from("refreshToken", null)
@@ -191,29 +198,64 @@ public class AuthController {
                     .header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
                     .body(responseData);
         } catch (Exception e) {
+            // Nếu có lỗi không mong muốn khác xảy ra, trả về lỗi 500
             responseData.setStatusCode(500);
             responseData.setMessage("Đăng xuất thất bại: " + e.getMessage());
             responseData.setData("");
-            return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(responseData, HttpStatus.OK);
         }
     }
 
     @PostMapping("/refresh_token")
     public ResponseEntity<?> refreshToken(HttpServletRequest request) {
         String refreshToken = getRefreshTokenFromRequest(request);
-        String idRefreshToken = jwtTokenProvider.getIdTokenFromJwtToken(refreshToken);
         ResponseData responseData = new ResponseData();
-        System.out.println("abc");
-        if(refreshToken != null && jwtTokenProvider.validateJwtToken(refreshToken) && refreshTokenService.isTokenActive(idRefreshToken)) {
-            String username = jwtTokenProvider.getUserNameFromJwtToken(refreshToken);
-            String newAccessToken = jwtTokenProvider.generateToken(username);
-            responseData.setStatusCode(200);
-            responseData.setMessage("tao moi access token thanh cong");
-            responseData.setData(newAccessToken);
-            return new ResponseEntity<>(responseData, HttpStatus.OK);
+
+        if (refreshToken != null) {
+            String idRefreshToken = null;
+            try {
+                // Lấy ID từ refresh token
+                idRefreshToken = jwtTokenProvider.getIdTokenFromJwtToken(refreshToken);
+            } catch (ExpiredJwtException e) {
+                // Token đã hết hạn
+                responseData.setStatusCode(999);
+                responseData.setMessage("Refresh token đã hết hạn");
+                responseData.setData("");
+                return new ResponseEntity<>(responseData, HttpStatus.UNAUTHORIZED);
+            } catch (SignatureException e) {
+                // Lỗi chữ ký không khớp (Signature does not match)
+                responseData.setStatusCode(999);
+                responseData.setMessage("Lỗi chữ ký JWT không hợp lệ");
+                responseData.setData("");
+                return new ResponseEntity<>(responseData, HttpStatus.UNAUTHORIZED);
+            } catch (JwtException e) {
+                // Bắt các lỗi JWT khác (bao gồm signature, format lỗi, không hợp lệ, v.v.)
+                responseData.setStatusCode(999);
+                responseData.setMessage("Token không hợp lệ: " + e.getMessage());
+                responseData.setData("");
+                return new ResponseEntity<>(responseData, HttpStatus.UNAUTHORIZED);
+            }
+
+            // Kiểm tra token có hợp lệ và active hay không
+            if (jwtTokenProvider.validateJwtToken(refreshToken) && refreshTokenService.isTokenActive(idRefreshToken)) {
+                // Lấy username từ token và tạo access token mới
+                String username = jwtTokenProvider.getUserNameFromJwtToken(refreshToken);
+                String newAccessToken = jwtTokenProvider.generateToken(username);
+                responseData.setStatusCode(200); // Nội bộ báo thành công
+                responseData.setMessage("Tạo mới access token thành công");
+                responseData.setData(newAccessToken);
+                return new ResponseEntity<>(responseData, HttpStatus.OK); // Trả về 200 OK
+            } else {
+                // Token không hợp lệ hoặc đã bị vô hiệu hóa
+                responseData.setStatusCode(999);
+                responseData.setMessage("Refresh token không hợp lệ hoặc đã bị vô hiệu hóa");
+                responseData.setData("");
+                return new ResponseEntity<>(responseData, HttpStatus.UNAUTHORIZED);
+            }
         } else {
+            // Không tìm thấy refresh token
             responseData.setStatusCode(999);
-            responseData.setMessage("Refresh token is invalid or expired");
+            responseData.setMessage("Không tìm thấy refresh token");
             responseData.setData("");
             return new ResponseEntity<>(responseData, HttpStatus.OK);
         }
@@ -308,7 +350,7 @@ public class AuthController {
 
     private String getRefreshTokenFromRequest(HttpServletRequest httpServletRequest) {
         String refreshToken = null;
-        
+
         // Lấy refresh token từ cookie
         Cookie[] cookies = httpServletRequest.getCookies();
         if (cookies != null) {
