@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 
 import java.sql.Time;
 import java.time.LocalDateTime;
-import java.util.Date;
+import java.sql.Date;
 
 @Data
 @NoArgsConstructor
@@ -28,13 +28,13 @@ public class ChuyenBayDTO {
     @NotNull(message = "ID chuyến bay không được để trống")
     private int idChuyenBay;
 
-    @NotNull(message = "ID tuyến bay không được để trống")
+    @NotNull(message = "Tuyến bay không được để trống")
     private TuyenBayDTO tuyenBay;
 
-    @NotNull(message = "ID máy bay không được để trống")
+    @NotNull(message = "Máy bay không được để trống")
     private MayBayDTO mayBay;
 
-    @NotNull(message = "ID cổng không được để trống")
+    @NotNull(message = "Cổng không được để trống")
     private CongDTO cong;
 
     @NotNull(message = "Thời gian bắt đầu dự tính không được để trống")
@@ -52,12 +52,14 @@ public class ChuyenBayDTO {
     private LocalDateTime thoiGianBatDauThucTe;
     private LocalDateTime thoiGianKetThucThucTe;
 
+    @NotNull(message = "Thời gian trễ không được để trống")
     @Min(value = 0, message = "Delay không được nhỏ hơn 0")
     private int delay;
 
     @NotNull(message = "Ngày bay không được để trống")
     private Date ngayBay;
 
+    @NotNull(message = "Sôá ghế không được để trống")
     @Min(value = 1, message = "Số ghế phải lớn hơn 0")
     private int soGhe;
 
