@@ -1,19 +1,15 @@
-package com.project.flightManagement.DTO.RefreshTokenDTO;
+package com.project.flightManagement.DTO.LoaiVeDTO;
 
 import com.project.flightManagement.Enum.ActiveEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Date;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RefreshTokenDTO {
-    private String idRefreshToken;
-    private Date expiryDate;
-    private int idTaiKhoan;
+public class LoaiVeDTO {
+    private int idLoaiVe;
+    private String tenLoaiVe;
+    private String moTa;
     private ActiveEnum trangThaiActive;
 }
-

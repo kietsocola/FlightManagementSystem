@@ -22,7 +22,7 @@ public class Ve {
     private int idVe;
 
     @Column(name = "ma_ve", nullable = false)
-    private String codeVe;
+    private String maVe;
 
     @ManyToOne
     @JoinColumn(name = "id_chuyen_bay", nullable = false)
@@ -50,7 +50,4 @@ public class Ve {
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private VeEnum trangThai;
-
-
-
 }

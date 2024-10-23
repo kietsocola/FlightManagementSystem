@@ -13,20 +13,24 @@ import java.util.Optional;
 
 @Service
 public class RefreshTokenServiceImpl implements RefreshTokenService {
-    @Autowired
-    private RefreshTokenMapper refreshTokenMapper;
+    private RefreshTokenMapper refreshTokenMapper = new RefreshTokenMapper();
 
     @Autowired
     private RefreshTokenRepository refreshTokenRepository;
 
     @Override
-    public void saveRefreshTokenIntoDatabase(RefreshTokenDTO refreshTokenDTO) {
-        RefreshToken refreshToken = refreshTokenMapper.toRefreshToken(refreshTokenDTO);
-        refreshTokenRepository.save(refreshToken);
+    public boolean saveRefreshTokenIntoDatabase(RefreshTokenDTO refreshTokenDTO) {
+        try {
+            RefreshToken refreshToken = refreshTokenMapper.toRefreshToken(refreshTokenDTO);
+            refreshTokenRepository.save(refreshToken);
+            return true;
+        }catch (Exception e) {
+            System.out.println(e);
+            return false;
+        }
     }
 
     @Override
-
     public boolean isTokenActive(String idRefreshToken) {
         Optional<RefreshToken> tokenOpt = refreshTokenRepository.findByIdRefreshTokenAndTrangThaiActive(idRefreshToken, ActiveEnum.ACTIVE);
         return tokenOpt.isPresent();

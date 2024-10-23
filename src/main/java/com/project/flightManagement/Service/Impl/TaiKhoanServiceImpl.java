@@ -12,6 +12,7 @@ import com.project.flightManagement.Model.KhachHang;
 import com.project.flightManagement.Model.Quyen;
 import com.project.flightManagement.Model.TaiKhoan;
 import com.project.flightManagement.Repository.TaiKhoanRepository;
+import com.project.flightManagement.Security.JwtTokenProvider;
 import com.project.flightManagement.Service.KhachHangService;
 import com.project.flightManagement.Service.TaiKhoanService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,9 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
     private TaiKhoanMapper taiKhoanMapper;
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JwtTokenProvider tokenProvider;
     @Override
     public boolean checkLogin(LoginDTO loginDTO) {
         Optional<TaiKhoan> optionalTaiKhoan = taiKhoanRepository.findTaiKhoanByTenDangNhap(loginDTO.getUserName());
@@ -55,6 +59,11 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
     @Override
     public Optional<TaiKhoan> getTaiKhoanByTenDangNhap(String userName) {
         return taiKhoanRepository.findTaiKhoanByTenDangNhap(userName);
+    }
+
+    @Override
+    public Optional<TaiKhoan> getTaiKhoanByEmail(String email) {
+        return taiKhoanRepository.findByKhachHang_Email(email);
     }
 
     @Override
@@ -76,12 +85,38 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
     }
 
     @Override
+    public String createPasswordResetToken(String email) {
+        Optional<TaiKhoan> taiKhoanOptional = taiKhoanRepository.findByKhachHang_Email(email);
+        if (taiKhoanOptional.isEmpty()) {
+            throw new RuntimeException("tai khoang khong co voi " + email);
+        }
+
+        String tokenRefreshPassword = tokenProvider.generateToken(email);
+        TaiKhoan taiKhoan = taiKhoanOptional.get();
+        taiKhoan.setRefreshPasswordToken(tokenRefreshPassword);
+        taiKhoanRepository.save(taiKhoan);
+        return tokenRefreshPassword;
+    }
+
+    @Override
     public boolean updateTaiKhoan(String userName, TaiKhoanUpdateNguoiDungDTO taiKhoanUpdateNguoiDungDTO) {
         Optional<TaiKhoan> optionalTaiKhoan = taiKhoanRepository.findTaiKhoanByTenDangNhap(userName);
         if (optionalTaiKhoan.isPresent()) {
             TaiKhoan taiKhoan = optionalTaiKhoan.get();
             taiKhoan.setMatKhau(passwordEncoder.encode(taiKhoanUpdateNguoiDungDTO.getMatKhau()));
             taiKhoanRepository.save(taiKhoan);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean updateTaiKhoan_RefreshPassword(TaiKhoan taiKhoan) {
+        Optional<TaiKhoan> optionalTaiKhoan = taiKhoanRepository.findTaiKhoanByTenDangNhap(taiKhoan.getTenDangNhap());
+        if (optionalTaiKhoan.isPresent()) {
+            TaiKhoan taiKhoanNew = optionalTaiKhoan.get();
+            taiKhoanNew.setMatKhau(passwordEncoder.encode(taiKhoan.getMatKhau()));
+            taiKhoanRepository.save(taiKhoanNew);
             return true;
         }
         return false;

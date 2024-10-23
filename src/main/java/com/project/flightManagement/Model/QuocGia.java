@@ -1,6 +1,5 @@
 package com.project.flightManagement.Model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.flightManagement.Enum.ActiveEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -24,8 +23,7 @@ public class QuocGia {
     @Column(name = "ten_quoc_gia" , nullable = false)
     private String tenQuocGia;
 
-    @OneToMany(mappedBy = "quocGia")
-    @JsonIgnore
+    @OneToMany(mappedBy = "quocGia", fetch = FetchType.EAGER)
     private List<ThanhPho> thanhPhoList;
 
     @Column(name = "active_status")
