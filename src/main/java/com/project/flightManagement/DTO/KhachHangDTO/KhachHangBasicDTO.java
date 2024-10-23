@@ -19,5 +19,4 @@ public class KhachHangBasicDTO {
     private Date ngaySinh;
     private String soDienThoai;
     private ActiveEnum trangThai;
-
 }

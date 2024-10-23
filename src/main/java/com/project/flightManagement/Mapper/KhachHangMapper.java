@@ -5,8 +5,14 @@ import com.project.flightManagement.DTO.KhachHangDTO.KhachHangBasicDTO;
 import com.project.flightManagement.DTO.KhachHangDTO.KhachHangCreateDTO;
 import com.project.flightManagement.DTO.KhachHangDTO.KhachHangDTO;
 import com.project.flightManagement.Model.KhachHang;
+import com.project.flightManagement.Service.KhachHangService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class KhachHangMapper {
+    @Autowired
+    private KhachHangService khachHangService;
     public static KhachHangDTO toDTO(KhachHang kh){
         KhachHangDTO khDTO = new KhachHangDTO();
         khDTO.setIdKhachHang(kh.getIdKhachHang());
@@ -33,7 +39,7 @@ public class KhachHangMapper {
     }
 
 
-    public KhachHang toKhachHang(KhachHangCreateDTO khachHangCreateDTO) {
+    public static KhachHang toKhachHang(KhachHangCreateDTO khachHangCreateDTO) {
         if ( khachHangCreateDTO == null ) {
             return null;
         }
@@ -49,7 +55,7 @@ public class KhachHangMapper {
         return khachHang;
     }
 
-    public KhachHangCreateDTO toKhachHangCreateDTO(KhachHang khachHang) {
+    public static KhachHangCreateDTO toKhachHangCreateDTO(KhachHang khachHang) {
         if ( khachHang == null ) {
             return null;
         }
@@ -65,7 +71,7 @@ public class KhachHangMapper {
         return khachHangCreateDTO;
     }
 
-    public KhachHangCreateDTO toKhachHangCreateDTO(SignupDTO signupDTO) {
+    public static KhachHangCreateDTO toKhachHangCreateDTO(SignupDTO signupDTO) {
         if ( signupDTO == null ) {
             return null;
         }
@@ -82,16 +88,16 @@ public class KhachHangMapper {
         return khachHangCreateDTO;
     }
 
-    public KhachHangBasicDTO toKhachHangBasicDTO(KhachHang khachHang) {
+    public static KhachHangBasicDTO toKhachHangBasicDTO(KhachHang khachHang) {
         if ( khachHang == null ) {
             return null;
         }
-
         KhachHangBasicDTO khachHangBasicDTO = new KhachHangBasicDTO();
 
         khachHangBasicDTO.setTrangThai( khachHang.getTrangThaiActive() );
         khachHangBasicDTO.setIdKhachHang( khachHang.getIdKhachHang() );
         khachHangBasicDTO.setCccd( khachHang.getCccd() );
+        khachHangBasicDTO.setGioiTinh(String.valueOf(khachHang.getGioiTinhEnum()));
         khachHangBasicDTO.setEmail( khachHang.getEmail() );
         khachHangBasicDTO.setHoTen( khachHang.getHoTen() );
         khachHangBasicDTO.setNgaySinh( khachHang.getNgaySinh() );

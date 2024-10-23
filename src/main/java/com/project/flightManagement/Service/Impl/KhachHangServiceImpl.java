@@ -23,7 +23,6 @@ import java.util.stream.StreamSupport;
 public class KhachHangServiceImpl implements KhachHangService {
     @Autowired
     private KhachHangRepository khRepo;
-    private KhachHangMapper khachHangMapper;
 
     @Override
     public Iterable<KhachHangDTO> getAllKhachHang() {
@@ -156,7 +155,7 @@ public class KhachHangServiceImpl implements KhachHangService {
     @Override
     public KhachHang createKhachHang(KhachHangCreateDTO khachHangCreateDTO) {
         try {
-            KhachHang khachHang = khachHangMapper.toKhachHang(khachHangCreateDTO);
+            KhachHang khachHang = KhachHangMapper.toKhachHang(khachHangCreateDTO);
             khachHang.setTrangThaiActive(ActiveEnum.ACTIVE);
             return khRepo.save(khachHang);
         } catch (Exception e) {
@@ -182,10 +181,10 @@ public class KhachHangServiceImpl implements KhachHangService {
 
     @Override
     public KhachHangBasicDTO getKhachHangByIdKhachHang_BASIC(int idKhachHang) {
-        Optional<KhachHang> khachHangOptional = khRepo.findKhachHangByIdKhachHang(idKhachHang);
+        Optional<KhachHang> khachHangOptional = khRepo.findById(idKhachHang);
         if (khachHangOptional.isPresent()) {
             KhachHang khachHang = khachHangOptional.get();
-            KhachHangBasicDTO khachHangBasicDTO = khachHangMapper.toKhachHangBasicDTO(khachHang);
+            KhachHangBasicDTO khachHangBasicDTO = KhachHangMapper.toKhachHangBasicDTO(khachHang);
             return khachHangBasicDTO;
         }
         throw new EntityNotFoundException("Khách hàng với ID " + idKhachHang + " không tồn tại.");

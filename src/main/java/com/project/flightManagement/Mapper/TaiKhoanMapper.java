@@ -4,6 +4,7 @@ import com.project.flightManagement.DTO.KhachHangDTO.KhachHangBasicDTO;
 import com.project.flightManagement.DTO.NhanVienDTO.NhanVienDTO;
 import com.project.flightManagement.DTO.QuyenDTO.QuyenBasicDTO;
 import com.project.flightManagement.DTO.TaiKhoanDTO.TaiKhoanDTO;
+import com.project.flightManagement.DTO.TaiKhoanDTO.TaiKhoanResponseDTO;
 import com.project.flightManagement.Model.KhachHang;
 import com.project.flightManagement.Model.NhanVien;
 import com.project.flightManagement.Model.Quyen;
@@ -14,14 +15,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
-
 @Component
 public class TaiKhoanMapper {
     @Autowired
     private KhachHangService khachHangService;
     @Autowired
     private QuyenService quyenService;
-    public TaiKhoan toTaiKhoan(TaiKhoanDTO taiKhoanDTO) {
+    public static TaiKhoan toTaiKhoan(TaiKhoanDTO taiKhoanDTO) {
         TaiKhoan taiKhoan = new TaiKhoan();
         taiKhoan.setIdTaiKhoan(taiKhoanDTO.getIdTaiKhoan());
 
@@ -85,6 +85,37 @@ public class TaiKhoanMapper {
         }
         return taiKhoanDTO;
     }
+    public TaiKhoanResponseDTO toTaiKhoanResponseDTO(TaiKhoan taiKhoan) {
+        TaiKhoanResponseDTO taiKhoanDTO = new TaiKhoanResponseDTO();
+        taiKhoanDTO.setIdTaiKhoan(taiKhoan.getIdTaiKhoan());
 
+        // Ánh xạ KhachHang
+        KhachHang khachHang = taiKhoan.getKhachHang();
+        if (khachHang != null) {
+            KhachHangBasicDTO khachHangBasicDTO = khachHangService.getKhachHangByIdKhachHang_BASIC(taiKhoan.getKhachHang().getIdKhachHang());
+            taiKhoanDTO.setKhachHang(khachHangBasicDTO);
+        }
 
+        taiKhoanDTO.setTenDangNhap(taiKhoan.getTenDangNhap());
+        taiKhoanDTO.setThoiGianTao(taiKhoan.getThoiGianTao());
+        taiKhoanDTO.setTrangThaiActive(taiKhoan.getTrangThaiActive());
+
+        // Ánh xạ NhanVien
+        NhanVien nhanVien = taiKhoan.getNhanVien();
+        if (nhanVien != null) {
+            NhanVienDTO nhanVienDTO = new NhanVienDTO();
+            nhanVienDTO.setIdNhanVien(taiKhoan.getNhanVien().getIdNhanVien());
+            taiKhoan.setNhanVien(nhanVien);
+        }
+
+        // Ánh xạ Quyen
+        Quyen quyen = taiKhoan.getQuyen();
+        if (quyen != null) {
+            Optional<QuyenBasicDTO> optionalQuyenBasicDTO = quyenService.getQuyenByIdQuyen(quyen.getIdQuyen());
+            if(optionalQuyenBasicDTO.isPresent()) {
+                taiKhoanDTO.setQuyen(optionalQuyenBasicDTO.get());
+            }
+        }
+        return taiKhoanDTO;
+    }
 }

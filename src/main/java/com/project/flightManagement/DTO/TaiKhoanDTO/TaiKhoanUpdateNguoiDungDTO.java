@@ -12,6 +12,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TaiKhoanUpdateNguoiDungDTO {
+    @NotBlank(message = "Access token is required")
+    private String accessToken;
+
     @NotBlank(message = "Password is required")
     private String matKhauCu;
 

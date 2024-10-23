@@ -18,8 +18,8 @@ import java.util.UUID;
 public class JwtTokenProvider {
     @Value("${jwt.secret}")
     private String secretKey;
-    private final long JWT_EXPIRATION = 15 * 1000L; // 15 phút
-    private final long JWT_REFRESH_EXPIRATION = 45 * 1000L; // 7 ngày
+    private final long JWT_EXPIRATION = 15 * 60 * 1000L; // 15 phút
+    private final long JWT_REFRESH_EXPIRATION = 45 * 60 * 1000L; // 7 ngày
 
 
     @Autowired
@@ -109,20 +109,6 @@ public class JwtTokenProvider {
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getExpiration();
     }
 
-    // Xác thực JWT
-//    public boolean validateJwtToken(String token) {
-//        try {
-//            String tokenId = getIdTokenFromJwtToken(token);
-//            if(invalidTokenService.existsByIdToken(tokenId)) {
-//                return false; // token nay da bi thu hoi. (dang duoc luu trong db)
-//            }
-//            Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
-//            return true;
-//        } catch (JwtException | IllegalArgumentException e) {
-//            System.out.println("Invalid JWT token: " + e.getMessage());
-//            return false;
-//        }
-//    }
     public boolean validateJwtToken(String token) {
         try {
             // Kiểm tra token có hợp lệ không

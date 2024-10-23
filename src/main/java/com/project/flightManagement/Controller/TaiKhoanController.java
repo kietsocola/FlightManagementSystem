@@ -1,9 +1,11 @@
 package com.project.flightManagement.Controller;
 
 import com.project.flightManagement.DTO.TaiKhoanDTO.TaiKhoanDTO;
+import com.project.flightManagement.DTO.TaiKhoanDTO.TaiKhoanResponseDTO;
 import com.project.flightManagement.DTO.TaiKhoanDTO.TaiKhoanUpdateNguoiDungDTO;
 import com.project.flightManagement.Model.TaiKhoan;
 import com.project.flightManagement.Payload.ResponseData;
+import com.project.flightManagement.Security.JwtTokenProvider;
 import com.project.flightManagement.Service.TaiKhoanService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Controller
 @RequestMapping("/taikhoan")
@@ -26,6 +26,8 @@ public class TaiKhoanController {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private TaiKhoanService taiKhoanService;
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
     @GetMapping // Đây là ánh xạ cho yêu cầu GET đến /review
     public ResponseEntity<?> getAllTaiKhoan(@RequestParam(defaultValue = "0") int page,
                                            @RequestParam(defaultValue = "10") int size) {
@@ -54,7 +56,7 @@ public class TaiKhoanController {
 
         try {
             // Lấy thông tin tài khoản theo id
-            TaiKhoanDTO taiKhoan = taiKhoanService.getTaiKhoanByIdTaiKhoan(idTaiKhoan);
+            TaiKhoanResponseDTO taiKhoan = taiKhoanService.getTaiKhoanByIdTaiKhoan(idTaiKhoan);
 
             // Kiểm tra nếu tài khoản không tồn tại
             if (taiKhoan == null) {
@@ -87,11 +89,16 @@ public class TaiKhoanController {
     public ResponseEntity<?> getMyInfo(Authentication authentication) {
         ResponseData responseData = new ResponseData();
         String userName = authentication.getName();
-
+        TaiKhoanResponseDTO taiKhoan = new TaiKhoanResponseDTO();
         try {
             Optional<TaiKhoan> taiKhoanOptional = taiKhoanService.getTaiKhoanByTenDangNhap(userName);
-            // Lấy thông tin tài khoản theo id
-            TaiKhoanDTO taiKhoan = taiKhoanService.getTaiKhoanByIdTaiKhoan(taiKhoanOptional.get().getIdTaiKhoan());
+            if(taiKhoanOptional.isPresent()) {
+                // Lấy thông tin tài khoản theo id
+                taiKhoan = taiKhoanService.getTaiKhoanByIdTaiKhoan(taiKhoanOptional.get().getIdTaiKhoan());
+            }else {
+                System.out.println("khong co tai khoan");
+            }
+
             if (taiKhoan == null) {
                 responseData.setStatusCode(404);
                 responseData.setData("");
@@ -119,15 +126,17 @@ public class TaiKhoanController {
         }
     }
     @PutMapping("/update_password")
-    public ResponseEntity<?> updatePassword(
-            Authentication authentication,
-            @RequestBody TaiKhoanUpdateNguoiDungDTO taiKhoanUpdateNguoiDungDTO) {
+    public ResponseEntity<?> updatePassword(@RequestBody TaiKhoanUpdateNguoiDungDTO taiKhoanUpdateNguoiDungDTO) {
         ResponseData responseData = new ResponseData();
-        List<String> errorList = new ArrayList<>();
+        Map<String, String> errorMap = new HashMap<>();
         boolean isError = false;
 
         // Lấy tên đăng nhập từ Authentication
-        String userName = authentication.getName();
+        String accessToken = taiKhoanUpdateNguoiDungDTO.getAccessToken();
+        String userName = "";
+        if (jwtTokenProvider.validateJwtToken(accessToken)) {
+            userName = jwtTokenProvider.getUserNameFromJwtToken(accessToken);
+        }
 
         // Kiểm tra mật khẩu cũ có chính xác không
         Optional<TaiKhoan> optionalTaiKhoan = taiKhoanService.getTaiKhoanByTenDangNhap(userName);
@@ -139,25 +148,29 @@ public class TaiKhoanController {
         }
 
         TaiKhoan taiKhoan = optionalTaiKhoan.get();
+
+        // Kiểm tra mật khẩu cũ
         if (!passwordEncoder.matches(taiKhoanUpdateNguoiDungDTO.getMatKhauCu(), taiKhoan.getMatKhau())) {
-            errorList.add("Mật khẩu cũ không chính xác");
+            errorMap.put("matKhauCu", "Mật khẩu cũ không chính xác");
             isError = true;
         }
 
         // Kiểm tra mật khẩu mới và re_password có khớp không
         if (!taiKhoanUpdateNguoiDungDTO.getMatKhau().equals(taiKhoanUpdateNguoiDungDTO.getReMatKhau())) {
-            errorList.add("Mật khẩu mới không khớp");
+            errorMap.put("matKhauMoi", "Mật khẩu mới không khớp");
             isError = true;
         }
-        if(isError) {
+
+        // Nếu có lỗi
+        if (isError) {
             responseData.setStatusCode(409);
-            responseData.setMessage("Đổi mật không thành công");
-            responseData.setData(errorList);
+            responseData.setMessage("Đổi mật khẩu không thành công");
+            responseData.setData(errorMap); // Trả về errorMap chứa các lỗi
             return new ResponseEntity<>(responseData, HttpStatus.CONFLICT);
         }
 
-        // Nếu mọi thứ đều ổn, gọi Service để cập nhật mật khẩu
-        taiKhoanService.updateTaiKhoan(userName ,taiKhoanUpdateNguoiDungDTO);
+        // Nếu không có lỗi, gọi Service để cập nhật mật khẩu
+        taiKhoanService.updateTaiKhoan(userName, taiKhoanUpdateNguoiDungDTO);
         responseData.setStatusCode(200);
         responseData.setMessage("Đổi mật khẩu thành công!");
         responseData.setData("");

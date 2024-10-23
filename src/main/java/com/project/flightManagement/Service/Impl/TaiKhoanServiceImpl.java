@@ -4,6 +4,7 @@ import com.project.flightManagement.DTO.AuthDTO.LoginDTO;
 import com.project.flightManagement.DTO.AuthDTO.SignupDTO;
 import com.project.flightManagement.DTO.KhachHangDTO.KhachHangCreateDTO;
 import com.project.flightManagement.DTO.TaiKhoanDTO.TaiKhoanDTO;
+import com.project.flightManagement.DTO.TaiKhoanDTO.TaiKhoanResponseDTO;
 import com.project.flightManagement.DTO.TaiKhoanDTO.TaiKhoanUpdateNguoiDungDTO;
 import com.project.flightManagement.Enum.ActiveEnum;
 import com.project.flightManagement.Mapper.KhachHangMapper;
@@ -16,11 +17,9 @@ import com.project.flightManagement.Security.JwtTokenProvider;
 import com.project.flightManagement.Service.KhachHangService;
 import com.project.flightManagement.Service.TaiKhoanService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -33,15 +32,12 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
     private TaiKhoanRepository taiKhoanRepository;
     @Autowired
     private KhachHangService khachHangService;
-    private KhachHangMapper khachHangMapper;
-    @Autowired
-    @Lazy
-    private TaiKhoanMapper taiKhoanMapper;
     @Autowired
     private PasswordEncoder passwordEncoder;
-
     @Autowired
     private JwtTokenProvider tokenProvider;
+    @Autowired
+    private TaiKhoanMapper taiKhoanMapper;
     @Override
     public boolean checkLogin(LoginDTO loginDTO) {
         Optional<TaiKhoan> optionalTaiKhoan = taiKhoanRepository.findTaiKhoanByTenDangNhap(loginDTO.getUserName());
@@ -67,13 +63,13 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
     }
 
     @Override
-    public TaiKhoanDTO getTaiKhoanByIdTaiKhoan(int idTaiKhoan) {
+    public TaiKhoanResponseDTO getTaiKhoanByIdTaiKhoan(int idTaiKhoan) {
         Optional<TaiKhoan> taiKhoanOptional = taiKhoanRepository.findTaiKhoanByIdTaiKhoan(idTaiKhoan);
         if(taiKhoanOptional.isEmpty()) {
             return null;
         }
         TaiKhoan taiKhoan = taiKhoanOptional.get();
-        return taiKhoanMapper.toTaiKhoanDTO(taiKhoan);
+        return taiKhoanMapper.toTaiKhoanResponseDTO(taiKhoan);
     }
 
     @Override
@@ -125,7 +121,7 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
     @Override
     public boolean createTaiKhoan(SignupDTO signupDTO) {
         try{
-            KhachHangCreateDTO khachHangCreateDTO = khachHangMapper.toKhachHangCreateDTO(signupDTO);
+            KhachHangCreateDTO khachHangCreateDTO = KhachHangMapper.toKhachHangCreateDTO(signupDTO);
             KhachHang khachHangNew = khachHangService.createKhachHang(khachHangCreateDTO);
             TaiKhoan taiKhoan = new TaiKhoan();
             taiKhoan.setTenDangNhap(signupDTO.getUserName());
