@@ -1,10 +1,12 @@
 package com.project.flightManagement.Validation;
 
+import com.project.flightManagement.Payload.ResponseData;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.WebRequest;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,4 +20,28 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<?> handleException(Exception ex, WebRequest request) {
+        // Log the exception details
+        System.err.println(ex.getMessage());
+
+        // Create a custom error response
+        ResponseData errorDetails = new ResponseData();
+        errorDetails.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        errorDetails.setMessage("hehehehe:" + ex.getMessage());
+
+        return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<ResponseData> handleException(Exception ex, WebRequest request) {
+//        // Log the exception details
+//        System.err.println(ex.getMessage());
+//
+//        // Create a custom error response
+//        ResponseData errorDetails = new ResponseData();
+//        errorDetails.setStatusCode(HttpStatus.OK.value()); // Trả về mã 200
+//        errorDetails.setMessage("Token đã hết hạn hoặc lỗi khác: " + ex.getMessage());
+//
+//        return new ResponseEntity<>(errorDetails, HttpStatus.OK); // Trả về mã 200 OK
+//    }
 }

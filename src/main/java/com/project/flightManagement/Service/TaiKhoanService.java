@@ -20,5 +20,12 @@ public interface TaiKhoanService {
     TaiKhoanDTO getTaiKhoanByIdTaiKhoan(int idTaiKhoan);
     Page<TaiKhoanDTO> getAllTaiKhoan(int page, int size);
 
+    String createPasswordResetToken(String email);
+    Optional<TaiKhoan> getTaiKhoanByEmail(String email);
+
     boolean updateTaiKhoan(String userName, TaiKhoanUpdateNguoiDungDTO taiKhoanUpdateNguoiDungDTO);
+
+    boolean updateTaiKhoan_RefreshPassword(TaiKhoan taiKhoan);
+
+
 }

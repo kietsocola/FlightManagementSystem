@@ -47,4 +47,7 @@ public class TaiKhoan {
     @Column(name = "active_status")
     @Enumerated(EnumType.STRING)
     private ActiveEnum trangThaiActive;
+
+    @Column(name="refresh_password_token")
+    private String refreshPasswordToken;
 }
