@@ -1,5 +1,6 @@
 package com.project.flightManagement.Model;
 
+import jakarta.activation.DataSource;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -15,5 +16,5 @@ public class Email {
     private String toEmail;
     private String subject;
     private String messageBody;
-    private String attachment;
+    private DataSource attachment;
 }

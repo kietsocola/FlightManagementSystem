@@ -9,5 +9,5 @@ public interface EmailService {
 
     String sendTextEmail(Email email);
     String sendHtmlEMail(Email email);
-    String sendEmailAttachmentEmail(Email email);
+    String sendEmailWithAttachment(Email email);
 }

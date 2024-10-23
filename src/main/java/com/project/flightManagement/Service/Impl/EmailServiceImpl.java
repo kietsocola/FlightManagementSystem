@@ -1,5 +1,6 @@
 package com.project.flightManagement.Service.Impl;
 
+import com.project.flightManagement.Config.ThymeleafConfig;
 import com.project.flightManagement.Model.Email;
 import com.project.flightManagement.Service.EmailService;
 import jakarta.mail.MessagingException;
@@ -10,6 +11,8 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 @Service
 public class EmailServiceImpl implements EmailService {
@@ -18,6 +21,8 @@ public class EmailServiceImpl implements EmailService {
     private String email_host;
     @Autowired
     private JavaMailSender javaMailSender;
+    @Autowired
+    private TemplateEngine templateEngine;
     @Override
     public String sendTextEmail(Email email) {
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
@@ -38,24 +43,49 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public String sendHtmlEMail(Email email) {
         try {
+            // Create Thymeleaf context and add variables
+            Context context = new Context();
+            context.setVariable("name", email.getSubject());
+
+            // Process HTML template with Thymeleaf
+            String emailContent = templateEngine.process("email/quenMatKhau", context);
+
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
             mimeMessageHelper.setTo(email.getToEmail());
             mimeMessageHelper.setSubject(email.getSubject());
-            mimeMessageHelper.setText(email.getMessageBody(), true);
 
+            // Set the processed HTML content
+            mimeMessageHelper.setText(emailContent, true);
             mimeMessageHelper.setFrom(email_host);
 
             javaMailSender.send(mimeMessage);
-            return "Email sent htmls successfuly";
-        } catch (MessagingException e) {
-            System.out.println("Sent email fail");
+            return "Email sent with Thymeleaf template successfully";
+        } catch (Exception e) {
+            System.out.println("Failed to send email with Thymeleaf HTML");
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public String sendEmailAttachmentEmail(Email email) {
-        return null;
+    public String sendEmailWithAttachment(Email email) {
+        try {
+            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
+
+            mimeMessageHelper.setTo(email.getToEmail());
+            mimeMessageHelper.setSubject(email.getSubject());
+            mimeMessageHelper.setText(email.getMessageBody(), true);
+            mimeMessageHelper.setFrom(email_host);
+
+            // Adding attachment
+            mimeMessageHelper.addAttachment("Attachment", email.getAttachment());
+
+            javaMailSender.send(mimeMessage);
+            return "Email with attachment sent successfully";
+        } catch (MessagingException e) {
+            System.out.println("Failed to send email with attachment");
+            throw new RuntimeException(e);
+        }
     }
 }
