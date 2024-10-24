@@ -1,6 +1,7 @@
 package com.project.flightManagement.Mapper;
 
 import com.project.flightManagement.DTO.MayBayDTO.MayBayDTO;
+import com.project.flightManagement.DTO.MayBayDTO.MayBay_VeDTO;
 import com.project.flightManagement.Model.MayBay;
 
 public class MayBayMapper {
@@ -33,6 +34,17 @@ public class MayBayMapper {
         mb.setNamSanXuat(mbDTO.getNamSanXuat());
         mb.setTrangThaiActive(mbDTO.getTrangThaiActive());
         return mb;
+    }
+
+    public static MayBay_VeDTO toMayBay_VeDTO(MayBay mb){
+        MayBay_VeDTO mbDTO = new MayBay_VeDTO();
+        mbDTO.setIdMayBay(mb.getIdMayBay());
+        mbDTO.setTenMayBay(mb.getTenMayBay());
+        mbDTO.setHangBay(HangBayMapper.toDTO(mb.getHangBay()));
+        mbDTO.setIcaoMayBay(mb.getIcaoMayBay());
+        mbDTO.setSoHieu(mb.getSoHieu());
+        mbDTO.setTrangThaiActive(mb.getTrangThaiActive());
+        return mbDTO;
     }
 
 }

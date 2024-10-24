@@ -1,6 +1,7 @@
 package com.project.flightManagement.Mapper;
 
 import com.project.flightManagement.DTO.CongDTO.CongDTO;
+import com.project.flightManagement.DTO.CongDTO.Cong_VeDTO;
 import com.project.flightManagement.Model.Cong;
 import com.project.flightManagement.Model.SanBay;
 
@@ -25,6 +26,14 @@ public class CongMapper {
         congDTO.setTrangThaiActive(cong.getTrangThaiActive());
         congDTO.setSanBay(SanBayMapper.toDTO(cong.getSanBay()));
 
+        return congDTO;
+    }
+
+    public static Cong_VeDTO toCong_VeDTO(Cong cong) {
+        Cong_VeDTO congDTO = new Cong_VeDTO();
+        congDTO.setIdCong(cong.getIdCong());
+        congDTO.setTenCong(cong.getTenCong());
+        congDTO.setTrangThaiActive(cong.getTrangThaiActive());
         return congDTO;
     }
 }

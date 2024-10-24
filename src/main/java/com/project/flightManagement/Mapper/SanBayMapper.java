@@ -1,8 +1,8 @@
 package com.project.flightManagement.Mapper;
 
 import com.project.flightManagement.DTO.SanBayDTO.SanBayDTO;
+import com.project.flightManagement.DTO.SanBayDTO.SanBay_VeDTO;
 import com.project.flightManagement.Model.SanBay;
-
 public class SanBayMapper {
     public static SanBay toEntity(SanBayDTO sanBayDTO) {
         SanBay sanBay = new SanBay();
@@ -23,6 +23,18 @@ public class SanBayMapper {
         sanBayDTO.setIcaoSanBay(sanBay.getIcaoSanBay());
         sanBayDTO.setDiaChi(sanBay.getDiaChi());
         sanBayDTO.setThanhPho(sanBay.getThanhPho());
+        sanBayDTO.setTrangThaiActive(sanBay.getTrangThaiActive());
+        return sanBayDTO;
+    }
+
+    public static SanBay_VeDTO toSanBay_veDTO(SanBay sanBay) {
+        SanBay_VeDTO sanBayDTO = new SanBay_VeDTO();
+        sanBayDTO.setIdSanBay(sanBay.getIdSanBay());
+        sanBayDTO.setTenSanBay(sanBay.getTenSanBay());
+        sanBayDTO.setIataSanBay(sanBay.getIataSanBay());
+        sanBayDTO.setIcaoSanBay(sanBay.getIcaoSanBay());
+        sanBayDTO.setDiaChi(sanBay.getDiaChi());
+        sanBayDTO.setThanhPho(ThanhPhoMapper.toThanhPho_VeDTO(sanBay.getThanhPho()));
         sanBayDTO.setTrangThaiActive(sanBay.getTrangThaiActive());
         return sanBayDTO;
     }

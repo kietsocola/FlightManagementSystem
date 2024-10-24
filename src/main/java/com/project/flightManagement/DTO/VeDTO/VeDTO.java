@@ -1,5 +1,7 @@
 package com.project.flightManagement.DTO.VeDTO;
 
+import com.project.flightManagement.DTO.ChuyenBayDTO.ChuyenBay_VeDTO;
+import com.project.flightManagement.DTO.HanhKhachDTO.HanhKhach_VeDTO;
 import com.project.flightManagement.DTO.LoaiVeDTO.LoaiVeDTO;
 import com.project.flightManagement.Enum.ActiveEnum;
 import com.project.flightManagement.Enum.VeEnum;
@@ -18,10 +20,10 @@ import lombok.NoArgsConstructor;
 public class VeDTO {
     private int idVe;
     private String maVe;
-    private int idChuyenBay;
+    private ChuyenBay_VeDTO chuyenBay;
     private double giaVe;
     private int idChoNgoi;
-    private int idHanhKhach;
+    private HanhKhach_VeDTO hanhKhach;
     private LoaiVeDTO loaiVe;
     private ActiveEnum trangThaiActive;
     private VeEnum trangThai;

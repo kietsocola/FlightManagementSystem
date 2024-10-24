@@ -1,9 +1,13 @@
 package com.project.flightManagement.Enum;
 
-public enum VeEnum {
+public enum VeEnum { // trang thai tam thoi truoc mat la the nay, se con thay doi!
     BOOKED,
     HOLD,
-    CHANGED,
+    EMPTY,
     CANCELED,
-    EMPTY
+    REFUNDED,
+    PENDING,
+    CONFIRM,
+    USED
+
 }

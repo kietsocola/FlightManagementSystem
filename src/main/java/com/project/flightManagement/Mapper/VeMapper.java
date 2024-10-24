@@ -1,5 +1,6 @@
 package com.project.flightManagement.Mapper;
 
+import com.project.flightManagement.DTO.ChuyenBayDTO.ChuyenBay_VeDTO;
 import com.project.flightManagement.DTO.VeDTO.VeDTO;
 import com.project.flightManagement.Model.Ve;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,8 @@ import org.springframework.stereotype.Component;
 public class VeMapper {
     @Autowired
     private LoaiVeMapper loaiVeMapper;
+    @Autowired
+    private ChuyenBayMapper chuyenBayMapper;
     public VeDTO toDto(Ve ve) {
         if (ve == null) {
             return null;
@@ -16,11 +19,11 @@ public class VeMapper {
         VeDTO veDTO = new VeDTO();
         veDTO.setIdVe(ve.getIdVe());
         veDTO.setMaVe(ve.getMaVe());
-        veDTO.setIdChuyenBay(ve.getChuyenBay().getIdChuyenBay());
+        veDTO.setChuyenBay(chuyenBayMapper.toChuyenBay_VeDTO(ve.getChuyenBay()));
         veDTO.setGiaVe(ve.getGiaVe());
         veDTO.setIdChoNgoi(ve.getChoNgoi().getIdChoNgoi());
         if(ve.getHanhKhach() != null) {
-            veDTO.setIdHanhKhach(ve.getHanhKhach().getIdHanhKhach());
+            veDTO.setHanhKhach(HanhKhachMapper.toHanhKhach_VeDTO(ve.getHanhKhach()));
         }
         veDTO.setLoaiVe(loaiVeMapper.toDto(ve.getLoaiVe()));
         veDTO.setTrangThaiActive(ve.getTrangThaiActive());

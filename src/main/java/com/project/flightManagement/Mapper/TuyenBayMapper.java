@@ -1,6 +1,7 @@
 package com.project.flightManagement.Mapper;
 
 import com.project.flightManagement.DTO.TuyenBayDTO.TuyenBayDTO;
+import com.project.flightManagement.DTO.TuyenBayDTO.TuyenBay_VeDTO;
 import com.project.flightManagement.Model.TuyenBay;
 import java.sql.Timestamp;
 import java.time.LocalTime;
@@ -42,5 +43,23 @@ public class TuyenBayMapper {
         tb.setTrangThaiActive(tbDTO.getStatus());
 
         return tb;
+    }
+
+    public static TuyenBay_VeDTO toTuyenBay_VeDTO(TuyenBay tb) {
+        TuyenBay_VeDTO tbDTO = new TuyenBay_VeDTO();
+
+        tbDTO.setIdTuyenBay(tb.getIdTuyenBay());
+        tbDTO.setSanBayBatDau(SanBayMapper.toSanBay_veDTO(tb.getSanBayBatDau()));
+        tbDTO.setSanBayKetThuc(SanBayMapper.toSanBay_veDTO(tb.getSanBayKetThuc()));
+
+        if (tb.getThoiGianChuyenBay() != null) {
+            LocalTime thoiGianChuyenBay = tb.getThoiGianChuyenBay().toLocalDateTime().toLocalTime();
+            tbDTO.setThoiGianChuyenBay(thoiGianChuyenBay);
+        }
+
+        tbDTO.setKhoangCach(tb.getKhoangCach());
+        tbDTO.setStatus(tb.getTrangThaiActive());
+
+        return tbDTO;
     }
 }

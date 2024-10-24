@@ -1,9 +1,12 @@
 package com.project.flightManagement.Mapper;
 
 import com.project.flightManagement.DTO.ChuyenBayDTO.ChuyenBayDTO;
+import com.project.flightManagement.DTO.ChuyenBayDTO.ChuyenBay_VeDTO;
 import com.project.flightManagement.Model.ChuyenBay;
 import com.project.flightManagement.Model.TuyenBay;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ChuyenBayMapper {
 
     public static ChuyenBayDTO toDTO(ChuyenBay chuyenBay) {
@@ -46,6 +49,25 @@ public class ChuyenBayMapper {
         chuyenBay.setTrangThaiActive(dto.getTrangThaiActive());
 
         return chuyenBay;
+    }
+
+    public ChuyenBay_VeDTO toChuyenBay_VeDTO (ChuyenBay chuyenBay) {
+        ChuyenBay_VeDTO dto = new ChuyenBay_VeDTO();
+        dto.setIdChuyenBay(chuyenBay.getIdChuyenBay());
+        dto.setTuyenBay(TuyenBayMapper.toTuyenBay_VeDTO(chuyenBay.getTuyenBay()));
+        dto.setMayBay(MayBayMapper.toMayBay_VeDTO(chuyenBay.getMayBay()));
+        dto.setCong(CongMapper.toCong_VeDTO(chuyenBay.getCong()));
+        dto.setThoiGianBatDauDuTinh(chuyenBay.getThoiGianBatDauDuTinh());
+        dto.setThoiGianKetThucDuTinh(chuyenBay.getThoiGianKetThucDuTinh());
+        dto.setIataChuyenBay(chuyenBay.getIataChuyenBay());
+        dto.setIcaoChuyenBay(chuyenBay.getIcaoChuyenBay());
+        dto.setThoiGianBatDauThucTe(chuyenBay.getThoiGianBatDauThucTe());
+        dto.setThoiGianKetThucThucTe(chuyenBay.getThoiGianKetThucThucTe());
+        dto.setDelay(chuyenBay.getDelay());
+        dto.setNgayBay(chuyenBay.getNgayBay());
+        dto.setTrangThai(chuyenBay.getTrangThai());
+        dto.setTrangThaiActive(chuyenBay.getTrangThaiActive());
+        return dto;
     }
 
 }
