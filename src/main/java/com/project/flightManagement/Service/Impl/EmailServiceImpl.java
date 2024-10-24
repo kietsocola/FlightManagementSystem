@@ -41,11 +41,12 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public String sendHtmlEMail(Email email) {
+    public String sendHtmlEMail(Email email, String resetLink, String userName) {
         try {
             // Create Thymeleaf context and add variables
             Context context = new Context();
-            context.setVariable("name", email.getSubject());
+            context.setVariable("name", userName);
+            context.setVariable("resetLink", resetLink);
 
             // Process HTML template with Thymeleaf
             String emailContent = templateEngine.process("email/quenMatKhau", context);

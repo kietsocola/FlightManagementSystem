@@ -37,23 +37,23 @@ public class EmailController {
         }
     }
 
-    @PostMapping("/html")
-    public ResponseEntity<?> sendHtmlEmail(@RequestBody Email email) {
-
-        ResponseData responseData = new ResponseData();
-        try {
-            emailService.sendHtmlEMail(email);
-            responseData.setStatusCode(200);
-            responseData.setMessage("gui email thanh cong");
-            responseData.setData("");
-            return new ResponseEntity<>(responseData, HttpStatus.OK);
-        } catch (Exception e) {
-            responseData.setStatusCode(500);
-            responseData.setData("");
-            responseData.setMessage("gui email thanh cong");
-            System.out.println("gui email that bai: " + e);
-            return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+//    @PostMapping("/html")
+//    public ResponseEntity<?> sendHtmlEmail(@RequestBody Email email) {
+//
+//        ResponseData responseData = new ResponseData();
+//        try {
+//            emailService.sendHtmlEMail(email, );
+//            responseData.setStatusCode(200);
+//            responseData.setMessage("gui email thanh cong");
+//            responseData.setData("");
+//            return new ResponseEntity<>(responseData, HttpStatus.OK);
+//        } catch (Exception e) {
+//            responseData.setStatusCode(500);
+//            responseData.setData("");
+//            responseData.setMessage("gui email thanh cong");
+//            System.out.println("gui email that bai: " + e);
+//            return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
 
 }

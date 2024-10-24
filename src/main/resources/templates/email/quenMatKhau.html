@@ -1,23 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Email Template</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px;
+          font-family: Arial, sans-serif;
+          background-color: #f4f4f4;
+          margin: 0;
+          padding: 20px;
         }
-        h1 {
-            color: red;
+        .title {
+          font-size: 24px;
+          color: #333;
+        }
+        .btn {
+          display: inline-block;
+          margin-top: 15px;
+          padding: 10px 25px;
+          background-color: #ff8c00;
+          font-size: 20px;
+          color: #fff !important; /* Ensures the text stays white */
+          border-radius: 8px;
+          text-decoration: none; /* Removes the underline */
+          cursor: pointer;
+        }
+        .btn:hover {
+          background-color: #e67e22; /* Adds a hover effect */
+        }
+        p {
+          margin-top: 8px;
+          color: #333;
+          font-size: 16px;
+        }
+        span {
+          margin-top: 8px;
+          color: #494949;
+        }
+        .block {
+            display: block;
+        }
+        .separate {
+          width: 100%;
+          height: 1px;
+          background-color: #333;
+          margin-top: 10px;
         }
     </style>
 </head>
 <body>
-<h1>Hello, <span th:text="${name}"></span>!</h1>
-<p>This is your event invitation.</p>
+<h1 class="title">This won't take long</h1>
+<p>Hi, <span th:text="${name}"></span>!</p>
+<p>
+    We’ve received a request to reset your Bamboo account password. You can
+    now do so by clicking on the button below. This link will expire in 15
+    minutes.
+</p>
+
+<a th:href="${resetLink}" class="btn">Reset password</a>
+
+<span class="block">
+    If you didn’t request this change or if you’d no longer like to create a
+      new password, you can safely ignore this email.</span>
+
+<div class="separate"></div>
+<span class="block">Have a question? You can reach out to us via service@quandoo.com</span>
+<span class="block">This is the content of the email reset message. It has a simple layout
+      with a personalized greeting, a link expiration message, and a
+      call-to-action button to reset the password, along with a contact option
+      for support.</span>
 </body>
 </html>

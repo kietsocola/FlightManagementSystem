@@ -279,8 +279,7 @@ public class AuthController {
         Email emailSend = new Email();
         emailSend.setToEmail(email);
         emailSend.setSubject("Reset Your Password");
-        emailSend.setMessageBody(resetLink);
-        emailService.sendTextEmail(emailSend);
+        emailService.sendHtmlEMail(emailSend, resetLink, taiKhoanOptional.get().getTenDangNhap());
         responseData.setStatusCode(200);
         responseData.setMessage("Reset password link has been sent to your email");
         responseData.setData("");

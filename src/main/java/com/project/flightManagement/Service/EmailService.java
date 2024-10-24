@@ -8,6 +8,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 public interface EmailService {
 
     String sendTextEmail(Email email);
-    String sendHtmlEMail(Email email);
+    String sendHtmlEMail(Email email, String resetLink, String userName);
     String sendEmailWithAttachment(Email email);
 }
