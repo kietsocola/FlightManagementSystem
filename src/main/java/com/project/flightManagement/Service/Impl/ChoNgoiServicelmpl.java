@@ -54,13 +54,21 @@ public class ChoNgoiServicelmpl implements ChoNgoiService {
         }
     }
     @Override
-    public Optional<ChoNgoiDTO> deleteChoNgoi(ChoNgoiDTO choNgoiDTO) {
+    public void deleteChoNgoi(ChoNgoiDTO choNgoiDTO) {
         try {
             ChoNgoi cn = ChoNgoiMapper.toEntity(choNgoiDTO);
             cnRepo.delete(cn);
-            return Optional.of(ChoNgoiMapper.toDTO(cn));
         } catch (Exception e) {
             System.out.println("Delete seat failed!!");
+        }
+    }
+    @Override
+    public Optional<ChoNgoiDTO> getChoNgoiById(int id) {
+        try {
+            Optional<ChoNgoi> cn = cnRepo.findById(id);
+            return cn.map(ChoNgoiMapper::toDTO);
+        } catch (Exception e) {
+            System.out.println("Get seat by id failed!!");
             return Optional.empty();
         }
     }

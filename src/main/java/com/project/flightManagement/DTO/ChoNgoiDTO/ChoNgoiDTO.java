@@ -18,4 +18,12 @@ public class ChoNgoiDTO {
     private char rowIndex;
     private int columnIndex;
     private ActiveEnum trangThaiActive;
+
+    public ChoNgoiDTO(HangVe hv, MayBay mb, char rowIndex, int columnIndex, ActiveEnum trangThaiActive) {
+        this.hangVe = hv;
+        this.mayBay = mb;
+        this.rowIndex = rowIndex;
+        this.columnIndex = columnIndex;
+        this.trangThaiActive = trangThaiActive;
+    }
 }

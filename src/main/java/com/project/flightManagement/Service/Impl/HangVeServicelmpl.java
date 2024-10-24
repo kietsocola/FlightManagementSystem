@@ -8,6 +8,7 @@ import com.project.flightManagement.Service.HangVeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -23,6 +24,16 @@ public class HangVeServicelmpl implements HangVeService {
             return hvDTOList;
         } catch (Exception e) {
             return null;
+        }
+    }
+    @Override
+    public Optional<HangVeDTO> getHangVeById(int id) {
+        try {
+            Optional<HangVe> hv = hvRepo.findById(id);
+            return hv.map(HangVeMapper::toDTO);
+        } catch (Exception e) {
+            System.out.println("Get HangVe by id failed");
+            return Optional.empty();
         }
     }
 }
