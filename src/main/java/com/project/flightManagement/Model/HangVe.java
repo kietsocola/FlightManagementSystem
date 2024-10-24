@@ -1,5 +1,6 @@
 package com.project.flightManagement.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.flightManagement.Enum.ActiveEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -27,6 +28,7 @@ public class HangVe {
     private String moTa;
 
     @OneToMany(mappedBy = "hangVe")
+    @JsonIgnore
     private List<ChoNgoi> choNgoiList;
     @Column(name = "active_status")
     @Enumerated(EnumType.STRING)

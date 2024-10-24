@@ -11,10 +11,12 @@ import com.project.flightManagement.Model.KhachHang;
 import com.project.flightManagement.Model.MayBay;
 import com.project.flightManagement.Payload.ResponseData;
 import com.project.flightManagement.Repository.HangBayRepository;
+import com.project.flightManagement.Service.ChoNgoiService;
 import com.project.flightManagement.Service.HangBayService;
 import com.project.flightManagement.Service.MayBayService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -31,6 +33,9 @@ public class MayBayController {
     @Autowired
     private HangBayService hangBayService;
     private ResponseData response = new ResponseData();
+    @Qualifier("choNgoiService")
+    @Autowired
+    private ChoNgoiService choNgoiService;
 
     @GetMapping("/getPlane/{id}")
     public ResponseEntity<ResponseData> getPlaneById(@PathVariable int id) {
@@ -100,10 +105,6 @@ public class MayBayController {
     }
     @GetMapping("/getPlaneByAirline/{idHangBay}")
     public ResponseEntity<ResponseData> getPlaneByAirLine(@PathVariable int idHangBay) {
-//        response.setMessage("hello");
-//        response.setStatusCode(200);
-//        response.setData(null);
-//        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         Optional<HangBayDTO> hangBayDTO = hangBayService.getHangBayById(idHangBay);
         if (hangBayDTO.isPresent()) {
             HangBay hangBay = hangBayDTO.map(HangBayMapper::toEntity).get();
@@ -140,19 +141,20 @@ public class MayBayController {
             response.setMessage("There are some fields invalid");
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
-        // Kiểm tra xem khDTO có khác null và có ít nhất một trường thông tin cần thiết không
         if (mbDTO != null && mbDTO.getSoHieu()!= null) {
             ResponseEntity<ResponseData> rs = checkExistSoHieu(mbDTO.getSoHieu());
             if(rs!=null){
                 return rs;
             }
-
-
-            // Nếu không có thông tin nào tồn tại, tiến hành lưu khách hàng mới
             Optional<MayBayDTO> savedMB = mayBayService.addNewMayBay(mbDTO);
+            for(int iE = 0 ; iE < savedMB.get().getSoCotGheThuong() ; iE++){
+                for (int jE = 0 ; jE < savedMB.get().getSoHangGheThuong().length() ; jE++){
+
+                }
+            }
             if (savedMB.isPresent()) {
                 response.setMessage("Save plane successfully!!");
-                response.setData(savedMB.get()); // Trả về dữ liệu của khách hàng đã lưu
+                response.setData(savedMB.get());
                 response.setStatusCode(201); // Created
                 return new ResponseEntity<>(response, HttpStatus.CREATED);
             } else {
@@ -163,7 +165,6 @@ public class MayBayController {
                 return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
             }
         } else {
-            // Xử lý trường hợp dữ liệu khách hàng không hợp lệ
             response.setMessage("Invalid plane data!!");
             response.setData(null);
             response.setStatusCode(400); // Bad Request
@@ -200,7 +201,6 @@ public class MayBayController {
                     response.setStatusCode(200); // OK
                     return new ResponseEntity<>(response, HttpStatus.OK);
                 } else {
-                    // Xử lý lỗi khi cập nhật không thành công
                     response.setMessage("Update plane unsuccessfully!!");
                     response.setData(null);
                     response.setStatusCode(500); // Internal Server Error

@@ -22,16 +22,16 @@ public class ChoNgoi {
     @JoinColumn(name = "id_hang_ve",nullable = false)
     private HangVe hangVe;
 
-    @OneToOne(mappedBy = "choNgoi")
-    private Ve ve;
-
     // Mapping to MayBay entity
     @ManyToOne
     @JoinColumn(name = "id_may_bay", nullable = false)
     private MayBay mayBay;
 
-    @Column(name = "vi_tri", nullable = false)
-    private String viTri;
+    @Column(name = "row_index", nullable = false)
+    private char rowIndex;
+
+    @Column(name = "column_index", nullable = false)
+    private int columnIndex;
 
     @Column(name = "active_status")
     @Enumerated(EnumType.STRING)
