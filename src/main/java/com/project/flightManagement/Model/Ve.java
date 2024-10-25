@@ -36,12 +36,16 @@ public class Ve {
     private ChoNgoi choNgoi;
 
     @ManyToOne
-    @JoinColumn(name="id_hanh_khach")
+    @JoinColumn(name = "id_hanh_khach", nullable = true)
     private HanhKhach hanhKhach;
 
     @ManyToOne
     @JoinColumn(name = "idLoaiVe", referencedColumnName = "id_loai_ve", nullable = false)
     private LoaiVe loaiVe;
+
+    @ManyToOne
+    @JoinColumn(name = "id_hang_ve")
+    private HangVe hangVe;
 
     @Column(name = "active_status")
     @Enumerated(EnumType.STRING)

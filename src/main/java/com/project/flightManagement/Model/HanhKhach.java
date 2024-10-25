@@ -42,8 +42,8 @@ public class HanhKhach {
     private String cccd;
     @Column(name = "ho_chieu")
     private String hoChieu;
-//    @OneToMany(mappedBy = "hanhKhach")
-//    private List<Ve> ve;
+    @OneToMany(mappedBy = "hanhKhach")
+    private List<Ve> ve;
     @Column(name = "gioi_tinh")
     @Enumerated(EnumType.STRING)
     private GioiTinhEnum gioiTinhEnum;
