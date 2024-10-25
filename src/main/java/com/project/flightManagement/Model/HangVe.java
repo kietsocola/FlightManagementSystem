@@ -27,7 +27,11 @@ public class HangVe {
     private String moTa;
 
 //    @OneToMany(mappedBy = "hangVe")
-//    private List<ChoNgoi> choNgoiList;
+//    private List<ChoNgoi> choNgoiList; // bo, khong can
+
+    @OneToMany(mappedBy = "hangVe")
+    private List<Ve> veList;
+
     @Column(name = "active_status")
     @Enumerated(EnumType.STRING)
     private ActiveEnum trangThaiActive;

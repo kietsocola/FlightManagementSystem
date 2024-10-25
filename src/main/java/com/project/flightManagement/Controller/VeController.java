@@ -2,8 +2,13 @@ package com.project.flightManagement.Controller;
 
 import com.project.flightManagement.DTO.LoaiVeDTO.LoaiVeDTO;
 import com.project.flightManagement.DTO.VeDTO.VeDTO;
+import com.project.flightManagement.DTO.VeDTO.VeUpdateDTO;
+import com.project.flightManagement.Exception.IdMismatchException;
+import com.project.flightManagement.Exception.NoUpdateRequiredException;
+import com.project.flightManagement.Exception.ResourceNotFoundException;
 import com.project.flightManagement.Payload.ResponseData;
 import com.project.flightManagement.Service.VeService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -57,18 +62,32 @@ public class VeController {
         return ResponseEntity.ok(responseData);
     }
     @PutMapping("/{idVe}")
-    public ResponseEntity<ResponseData> updateVe(@PathVariable int idVe, @RequestBody VeDTO veDTO) {
+    public ResponseEntity<ResponseData> updateVe(@PathVariable int idVe,@Valid @RequestBody VeUpdateDTO veUpdateDTO) {
+
         ResponseData responseData = new ResponseData();
 
-        boolean isUpdated = veService.updateVe(idVe, veDTO);
-        if (isUpdated) {
+        try {
+            veService.updateVe(idVe, veUpdateDTO);
             responseData.setStatusCode(200);
             responseData.setMessage("Ve updated successfully.");
             return ResponseEntity.ok(responseData);
-        } else {
+        } catch (IdMismatchException e) {
+            responseData.setStatusCode(400);
+            responseData.setMessage(e.getMessage());
+            return ResponseEntity.badRequest().body(responseData);
+        } catch (ResourceNotFoundException e) {
+            responseData.setStatusCode(404);
+            responseData.setMessage(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseData);
+        } catch (NoUpdateRequiredException e) {
+            responseData.setStatusCode(200); // Still a successful request
+            responseData.setMessage(e.getMessage());
+            return ResponseEntity.ok(responseData);
+        } catch (Exception e) {
             responseData.setStatusCode(500);
-            responseData.setMessage("Failed to update Ve.");
+            responseData.setMessage("Failed to update Ve due to an unexpected error.");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
         }
     }
+
 }

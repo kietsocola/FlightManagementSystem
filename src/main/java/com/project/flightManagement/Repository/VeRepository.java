@@ -10,4 +10,6 @@ import org.springframework.stereotype.Repository;
 public interface VeRepository extends JpaRepository<Ve, Integer> {
     Page<Ve> findAll(Pageable pageable);
     Page<Ve> findByChuyenBay_IdChuyenBay(int idChuyenBay, Pageable pageable);
+
+    boolean existsByHanhKhach_IdHanhKhach(int idHanhKhach);
 }
