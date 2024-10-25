@@ -42,9 +42,11 @@ public class NhanVien {
     private String cccd;
 
     // Mối quan hệ 1-1 tùy chọn với Account
-//    @OneToOne(mappedBy = "nhanVien", optional = true)
-//    private TaiKhoan taiKhoan;
+    @JsonIgnore
+    @OneToOne(mappedBy = "nhanVien", optional = true)
+    private TaiKhoan taiKhoan;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "nhanVien")
     @JsonIgnore
     List<QuyDinh> quyDinhList;

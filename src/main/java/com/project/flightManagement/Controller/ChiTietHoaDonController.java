@@ -1,6 +1,7 @@
 package com.project.flightManagement.Controller;
 
 import com.project.flightManagement.DTO.ChiTietHoaDonDTO.ChiTietHoaDonDTO;
+import com.project.flightManagement.DTO.HoaDonDTO.HoaDonDTO;
 import com.project.flightManagement.Payload.ResponseData;
 import com.project.flightManagement.Service.ChiTietHoaDonService;
 import jakarta.validation.Valid;
@@ -11,12 +12,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
-@RequestMapping("admin/chitiethoadon")
 public class ChiTietHoaDonController {
     @Autowired
     ChiTietHoaDonService chiTietHoaDonService;
@@ -135,6 +136,56 @@ public class ChiTietHoaDonController {
             response.setStatusCode(400); // Bad Request
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
+    }
 
+    @GetMapping("/getListChiTietHoaDonByHoaDon")
+    public ResponseEntity<ResponseData> getListChiTietHoaDonByHoaDon(int idHoaDon) {
+        List<ChiTietHoaDonDTO> chiTietHoaDonDTOList = chiTietHoaDonService.getListChiTietHoaDonByHoaDon(idHoaDon);
+        if (chiTietHoaDonDTOList.isEmpty()) {
+            response.setMessage("Hóa đơn không tồn tại chi tiết hóa đơn");
+            response.setData(null);
+            response.setStatusCode(204);
+
+            return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
+        } else {
+            response.setMessage("Lấy thành công danh sách chi tiết hóa đơn của hóa đơn " + idHoaDon);
+            response.setData(chiTietHoaDonDTOList);
+            response.setStatusCode(200);
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+    }
+
+    @GetMapping("/getListChiTietHoaDonSorted/{idHoaDon}")
+    public ResponseEntity<ResponseData> getListCTHDSorted(@PathVariable("idHoaDon") int idHoaDon, @RequestParam(defaultValue = "idChiTietHoaDon") String sortBy, @RequestParam(defaultValue = "asc") String direction) {
+        List<ChiTietHoaDonDTO> chiTietHoaDonDTOList = chiTietHoaDonService.getListChiTietHoaDonSorted(idHoaDon, sortBy, direction);
+        if (chiTietHoaDonDTOList.isEmpty()) {
+            response.setMessage("Lấy không thành công danh sách chi tiết hóa đơn");
+            response.setData(null);
+            response.setStatusCode(204);
+
+            return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
+        } else {
+            response.setMessage("Lấy thành công danh sách chi tiết hóa đơn");
+            response.setData(chiTietHoaDonDTOList);
+            response.setStatusCode(200);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+    }
+
+    @GetMapping("/getListChiTietHoaDonByKeyWord/{idHoaDon}")
+    public ResponseEntity<ResponseData> getListChiTietHoaDonByKeyWord(@PathVariable("idHoaDon") int idHoaDon, @RequestParam String keyWord) {
+        Iterable<ChiTietHoaDonDTO> listCTHDDTO = chiTietHoaDonService.getListChiTietHoaDonByKeyWord(idHoaDon, keyWord);
+        if (listCTHDDTO.iterator().hasNext()) {
+            response.setStatusCode(200);
+            response.setMessage("Lấy thành công danh sách chi tiết hóa đơn");
+            response.setData(listCTHDDTO);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else {
+            response.setData(null);
+            response.setStatusCode(404);
+            response.setMessage("Lấy không thành công danh sách chi tiết hóa đơn");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
     }
 }

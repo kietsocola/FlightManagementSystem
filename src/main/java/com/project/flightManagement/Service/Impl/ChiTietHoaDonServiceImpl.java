@@ -1,24 +1,32 @@
 package com.project.flightManagement.Service.Impl;
 
 import com.project.flightManagement.DTO.ChiTietHoaDonDTO.ChiTietHoaDonDTO;
+import com.project.flightManagement.DTO.HoaDonDTO.HoaDonDTO;
 import com.project.flightManagement.Mapper.ChiTietHoaDonMapper;
+import com.project.flightManagement.Mapper.HoaDonMapper;
 import com.project.flightManagement.Model.ChiTietHoaDon;
-import com.project.flightManagement.Repository.ChiTietHoaDonReposity;
+import com.project.flightManagement.Model.HoaDon;
+import com.project.flightManagement.Repository.ChiTietHoaDonRepository;
 import com.project.flightManagement.Service.ChiTietHoaDonService;
 
+import com.project.flightManagement.Service.HoaDonService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Service
 public class ChiTietHoaDonServiceImpl implements ChiTietHoaDonService {
 
     @Autowired
-    ChiTietHoaDonReposity chiTietHoaDonReposity;
-
+    ChiTietHoaDonRepository chiTietHoaDonReposity;
+    HoaDonService hoaDonService;
     @Override
     public Iterable<ChiTietHoaDonDTO> getAllChiTietHoaDon() {
         try {
@@ -65,6 +73,52 @@ public class ChiTietHoaDonServiceImpl implements ChiTietHoaDonService {
             return Optional.of(ChiTietHoaDonMapper.toDTO(updatedCTHD));
         } else {
             System.err.println("Không tồn tại chi tiết hóa đơn!");
+            return null;
+        }
+    }
+
+    @Override
+    public List<ChiTietHoaDonDTO> getListChiTietHoaDonByHoaDon(int idHoaDon) {
+        try {
+            List<ChiTietHoaDonDTO> chiTietHoaDonDTOList = hoaDonService.getChiTietHoaDon(idHoaDon);
+            if (chiTietHoaDonDTOList == null) {
+                return Collections.emptyList();
+            }
+            return chiTietHoaDonDTOList;
+        } catch (Exception e) {
+            System.err.println("Error: " + e);
+            return Collections.emptyList();
+        }
+    }
+
+    @Override
+    public List<ChiTietHoaDonDTO> getListChiTietHoaDonSorted(int idHoaDon, String sortBy, String direction) {
+        try {
+            Sort.Direction sortDirection = Sort.Direction.fromString(direction);
+            Sort sort = Sort.by(sortDirection, sortBy);
+            List<ChiTietHoaDon> chiTietHoaDonListSorted = chiTietHoaDonReposity.getListChiTietHoaDonSorted(idHoaDon, sort);
+            return chiTietHoaDonListSorted.stream()
+                    .map(ChiTietHoaDonMapper::toDTO)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            System.err.println("Error while sorting ChiTietHoaDon: " + e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    @Override
+    public List<ChiTietHoaDonDTO> getListChiTietHoaDonByKeyWord(int idHoaDon, String keyWord) {
+        try {
+            List<ChiTietHoaDon> chiTietHoaDonList = chiTietHoaDonReposity.getChiTietHoaDonByKeyWord(idHoaDon, keyWord);
+            if (chiTietHoaDonList.isEmpty()) {
+                System.out.println("Không tìm thấy chi tiết hóa đơn");
+            } else {
+                System.out.println("Tìm thấy chi tiết hóa đơn");
+            }
+            List<ChiTietHoaDonDTO> chiTietHoaDonDTOList = chiTietHoaDonList.stream().map(ChiTietHoaDonMapper::toDTO).collect(Collectors.toList());
+            return chiTietHoaDonDTOList;
+        } catch (Exception e) {
+            System.err.println("Error: " + e);
             return null;
         }
     }
