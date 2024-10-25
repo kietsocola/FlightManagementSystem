@@ -17,8 +17,19 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
             "CAST(hd.soLuongVe AS string) LIKE CONCAT('%', :keyWord, '%') OR " +
             "CAST(hd.tongTien AS string) LIKE CONCAT('%', :keyWord, '%')")
     List<HoaDon> getHoaDonByKeyWord(@Param("keyWord") String keyWord);
-//    Iterable<HoaDon> findHoaDonByNhanVien(int idNV);
-//    Iterable<HoaDon> findHoaDonByKhachHang(int idKH);
-//    Iterable<HoaDon> findHoaDonByPTTT(int idPTTT);
-//    Iterable<HoaDon> findHoaDonByLoaiHD(int idLoaiHD);
+
+    @Query("SELECT hd from HoaDon hd WHERE " +
+            "hd.nhanVien.idNhanVien = :idNV")
+    List<HoaDon> findHoaDonByNhanVien(int idNV);
+
+    @Query("SELECT hd from HoaDon hd WHERE " +
+            "hd.khachHang.idKhachHang = :idKH")
+    List<HoaDon> findHoaDonByKhachHang(int idKH);
+
+    @Query("SELECT hd from HoaDon hd WHERE " +
+            "hd.phuongThucTT.idPhuongThucTT = :idPTTT")
+    List<HoaDon> findHoaDonByPTTT(int idPTTT);
+    @Query("SELECT hd from HoaDon hd WHERE " +
+            "hd.loaiHoaDon.idLoaiHoaDon = :idLoaiHD")
+    List<HoaDon> findHoaDonByLoaiHD(int idLoaiHD);
 }

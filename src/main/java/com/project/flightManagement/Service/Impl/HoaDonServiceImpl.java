@@ -130,7 +130,6 @@ public class HoaDonServiceImpl implements HoaDonService {
             List<HoaDonDTO> hoaDonListDTO = hoaDonList.stream()
                     .map(HoaDonMapper::toDTO)
                     .collect(Collectors.toList());
-
             return hoaDonListDTO;
 
         } catch (IllegalArgumentException e) {
@@ -144,58 +143,58 @@ public class HoaDonServiceImpl implements HoaDonService {
             return Collections.emptyList(); // Trả về danh sách rỗng nếu có lỗi
         }
     }
-//    @Override
-//    public Iterable<HoaDonDTO> getHoaDonByNV(int idNV) {
-//        try {
-//            Iterable<HoaDon> listHD = hdRepo.findHoaDonByNhanVien(idNV);
-//            Iterable<HoaDonDTO> listHDDTO = StreamSupport.stream(listHD.spliterator(), false)
-//                    .map(HoaDonMapper::toDTO)
-//                    .toList();
-//            return listHDDTO;
-//        } catch (Exception e) {
-//            System.err.println("Error occurred while get Hoa Don by ID NV");
-//            return null;
-//        }
-//    }
-//
-//    @Override
-//    public Iterable<HoaDonDTO> getHoaDonByKH(int idKH) {
-//        try {
-//            Iterable<HoaDon> listHD = hdRepo.findHoaDonByKhachHang(idKH);
-//            Iterable<HoaDonDTO> listHDDTO = StreamSupport.stream(listHD.spliterator(), false).
-//                    map(HoaDonMapper::toDTO).
-//                    toList();
-//            return listHDDTO;
-//        } catch (Exception e) {
-//            System.err.println("Error occurred while get Hoa Don by Id KH");
-//            return null;
-//        }
-//    }
-//
-//    @Override
-//    public Iterable<HoaDonDTO> getHoaDonByPTTT(int idPTTT) {
-//        try {
-//            Iterable<HoaDon> listHD = hdRepo.findHoaDonByPTTT(idPTTT);
-//            Iterable<HoaDonDTO> listHDDTO = StreamSupport.stream(listHD.spliterator(), false).
-//                    map(HoaDonMapper::toDTO).toList();
-//            return listHDDTO;
-//        } catch (Exception e) {
-//            System.err.println("Error occurred while get Hoa Don by ID PTTT");
-//            return null;
-//        }
-//    }
-//
-//    @Override
-//    public Iterable<HoaDonDTO> getHoaDonByLoaiHD(int idLoaiHD) {
-//        try {
-//            Iterable<HoaDon> listHD = hdRepo.findHoaDonByLoaiHD(idLoaiHD);
-//            Iterable<HoaDonDTO> listHDDTO = StreamSupport.stream(listHD.spliterator(), false).
-//                    map(HoaDonMapper::toDTO).toList();
-//            return listHDDTO;
-//        } catch (Exception e) {
-//            System.err.println("Error occurred while get Hoa Don by ID PTTT");
-//            return null;
-//        }
-//    }
+    @Override
+    public List<HoaDonDTO> getHoaDonByNV(int idNV) {
+        try {
+            List<HoaDon> listHD = hdRepo.findHoaDonByNhanVien(idNV);
+            List<HoaDonDTO> listHDDTO = StreamSupport.stream(listHD.spliterator(), false)
+                    .map(HoaDonMapper::toDTO)
+                    .toList();
+            return listHDDTO;
+        } catch (Exception e) {
+            System.err.println("Error occurred while get Hoa Don by ID NV");
+            return Collections.emptyList();
+        }
+    }
+
+    @Override
+    public List<HoaDonDTO> getHoaDonByKH(int idKH) {
+        try {
+            List<HoaDon> listHD = hdRepo.findHoaDonByKhachHang(idKH);
+            List<HoaDonDTO> listHDDTO = StreamSupport.stream(listHD.spliterator(), false).
+                    map(HoaDonMapper::toDTO).
+                    toList();
+            return listHDDTO;
+        } catch (Exception e) {
+            System.err.println("Error occurred while get Hoa Don by Id KH");
+            return Collections.emptyList();
+        }
+    }
+
+    @Override
+    public List<HoaDonDTO> getHoaDonByPTTT(int idPTTT) {
+        try {
+            List<HoaDon> listHD = hdRepo.findHoaDonByPTTT(idPTTT);
+            List<HoaDonDTO> listHDDTO = StreamSupport.stream(listHD.spliterator(), false).
+                    map(HoaDonMapper::toDTO).toList();
+            return listHDDTO;
+        } catch (Exception e) {
+            System.err.println("Error occurred while get Hoa Don by ID PTTT");
+            return Collections.emptyList();
+        }
+    }
+
+    @Override
+    public List<HoaDonDTO> getHoaDonByLoaiHD(int idLoaiHD) {
+        try {
+            List<HoaDon> listHD = hdRepo.findHoaDonByLoaiHD(idLoaiHD);
+            List<HoaDonDTO> listHDDTO = StreamSupport.stream(listHD.spliterator(), false).
+                    map(HoaDonMapper::toDTO).toList();
+            return listHDDTO;
+        } catch (Exception e) {
+            System.err.println("Error occurred while get Hoa Don by ID PTTT");
+            return Collections.emptyList();
+        }
+    }
 
 }

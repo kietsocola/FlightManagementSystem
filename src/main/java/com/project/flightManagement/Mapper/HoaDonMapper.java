@@ -12,7 +12,7 @@ public class HoaDonMapper {
         hdDTO.setLoaiHoaDon(hoaDon.getLoaiHoaDon());
         hdDTO.setSoLuongVe(hoaDon.getSoLuongVe());
         hdDTO.setTongTien(hoaDon.getTongTien());
-        hdDTO.setStatus(hoaDon.getTrangThaiActive());
+        hdDTO.setStatus(hoaDon.getStatus());
         hdDTO.setThoiGianLap(hoaDon.getThoiGianLap());
         hdDTO.setPhuongThucThanhToan(hoaDon.getPhuongThucTT());
 
@@ -29,7 +29,7 @@ public class HoaDonMapper {
         hd.setTongTien(hdDTO.getTongTien());
         hd.setThoiGianLap(hdDTO.getThoiGianLap());
         hd.setPhuongThucTT(hdDTO.getPhuongThucThanhToan());
-        hd.setTrangThaiActive(hdDTO.getStatus());
+        hd.setStatus(hdDTO.getStatus());
 
         return hd;
     }

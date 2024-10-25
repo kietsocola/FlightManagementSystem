@@ -16,9 +16,9 @@ public interface HoaDonService {
     public List<ChiTietHoaDonDTO> getChiTietHoaDon(int idHD);
     public List<HoaDonDTO> getHoaDonByKeyWord(String keyWord);
     public Iterable<HoaDonDTO> getAllHoaDonSorted(String sortBy, String direction);
-//    public Iterable<HoaDonDTO> getHoaDonByNV(int idNV);
-//    public Iterable<HoaDonDTO> getHoaDonByKH(int idKH);
-//    public Iterable<HoaDonDTO> getHoaDonByPTTT(int idPTTT);
-//    public Iterable<HoaDonDTO> getHoaDonByLoaiHD(int idLoaiHD);
+    public List<HoaDonDTO> getHoaDonByNV(int idNV);
+    public List<HoaDonDTO> getHoaDonByKH(int idKH);
+    public List<HoaDonDTO> getHoaDonByPTTT(int idPTTT);
+    public List<HoaDonDTO> getHoaDonByLoaiHD(int idLoaiHD);
 
 }
