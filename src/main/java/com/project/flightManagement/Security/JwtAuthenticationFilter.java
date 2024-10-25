@@ -25,6 +25,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = getJwtFromRequest(request);
+        System.out.println("Token: "+token);
 
         if (token != null) {
             if (jwtTokenProvider.validateJwtToken(token)) {
@@ -48,7 +49,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // Ghi log hoặc xử lý khi không có token
             System.out.println("No JWT token found in request");
         }
-
+        System.out.println(request.getRequestURI());
         filterChain.doFilter(request, response);
     }
     private String getJwtFromRequest(HttpServletRequest request) {

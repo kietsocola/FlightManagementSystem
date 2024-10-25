@@ -11,10 +11,11 @@ public class ChoNgoiMapper {
 
         return new ChoNgoiDTO(
                 choNgoi.getIdChoNgoi(),
-                choNgoi.getVe().getIdVe(),
+                choNgoi.getHangVe(),
+                choNgoi.getMayBay(),
                 choNgoi.getRowIndex(),
                 choNgoi.getColumnIndex(),
-                choNgoi.getVe().getTrangThai()
+                choNgoi.getTrangThaiActive()
         );
     }
 
@@ -26,10 +27,11 @@ public class ChoNgoiMapper {
 
         ChoNgoi choNgoi = new ChoNgoi();
         choNgoi.setIdChoNgoi(choNgoiDTO.getIdChoNgoi());
-        choNgoi.setRowIndex(choNgoiDTO.getRow());
-        choNgoi.setColumnIndex(choNgoiDTO.getColumn());
-        choNgoi.getVe().setTrangThai(choNgoiDTO.getTrangThaiChoNgoi());
-
+        choNgoi.setHangVe(choNgoiDTO.getHangVe());
+        choNgoi.setMayBay(choNgoiDTO.getMayBay());
+        choNgoi.setRowIndex(choNgoiDTO.getRowIndex());
+        choNgoi.setColumnIndex(choNgoiDTO.getColumnIndex());
+        choNgoi.setTrangThaiActive(choNgoiDTO.getTrangThaiActive());
         return choNgoi;
     }
 }
