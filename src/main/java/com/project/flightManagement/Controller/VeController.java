@@ -56,6 +56,7 @@ public class VeController {
         responseData.setMessage("Successfully retrieved all ve for the given chuyen bay.");
         return ResponseEntity.ok(responseData);
     }
+
     @PutMapping("/{idVe}")
     public ResponseEntity<ResponseData> updateVe(@PathVariable int idVe, @RequestBody VeDTO veDTO) {
         ResponseData responseData = new ResponseData();

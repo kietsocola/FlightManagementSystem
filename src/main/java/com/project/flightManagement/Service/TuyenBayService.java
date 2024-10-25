@@ -14,7 +14,7 @@ public interface TuyenBayService {
 
     public Optional<TuyenBayDTO> addNewTuyenBay(TuyenBayDTO tuyenBayDTO);
 
-    public Optional<TuyenBayDTO> updateTuyenBay(TuyenBayDTO tuyenBayDTO);
+    public Optional<TuyenBayDTO> updateTuyenBay(Integer idTuyenBay, TuyenBayDTO tuyenBayDTO);
 
     public Iterable<TuyenBayDTO> getAllTuyenBaySorted(String sortBy, String direction);
 

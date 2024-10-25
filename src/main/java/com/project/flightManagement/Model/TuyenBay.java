@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Timestamp;
 import java.util.List;
 
 @Entity
@@ -16,7 +15,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TuyenBay {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Khóa chính tự động tăng
     @Column(name = "id_tuyen_bay")
@@ -31,19 +29,19 @@ public class TuyenBay {
     private SanBay sanBayKetThuc;
 
     @Column(name = "thoi_gian_chuyen_bay")
-    private Timestamp thoiGianChuyenBay;
+    private int thoiGianChuyenBay;
 
     @Column(name = "khoang_cach")
     private int khoangCach;
+
+    @Column(name = "active_status")
+    @Enumerated(EnumType.STRING)
+    private ActiveEnum status;
 
     @OneToMany(mappedBy = "tuyenBay")
     @JsonIgnore
     private List<ChuyenBay> chuyenBayList;
 
-    // Mối quan hệ 1-1 với Transit là tùy chọn (có thể không có Transit)
-    @OneToOne(mappedBy = "tuyenBay", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
-    private QuaCanh quaCanh; // Tuyến bay có thể không có quá cảnh
-    @Column(name = "active_status")
-    @Enumerated(EnumType.STRING)
-    private ActiveEnum trangThaiActive;
+
+
 }
