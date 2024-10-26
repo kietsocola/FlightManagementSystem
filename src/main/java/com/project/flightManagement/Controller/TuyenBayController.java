@@ -78,23 +78,42 @@ public class TuyenBayController {
     @PostMapping("/addNewRoute")
     public ResponseEntity<ResponseData> addNewTuyenBay(@Valid @RequestBody TuyenBayDTO tuyenBayDTO, BindingResult bindingResult) {
         ResponseData response = new ResponseData();
+
+        // Handle validation errors
         if (bindingResult.hasErrors()) {
-            Map<String, String> fieldErrors = new HashMap<>();
-            bindingResult.getFieldErrors().forEach(error -> fieldErrors.put(error.getField(), error.getDefaultMessage()));
+            Map<String, String> errors = new HashMap<>();
+            bindingResult.getFieldErrors().forEach(error ->
+                    errors.put(error.getField(), error.getDefaultMessage()) // Lấy thông báo lỗi cụ thể từ validation
+            );
+            response.setData(errors);
             response.setStatusCode(400);
-            response.setData(fieldErrors);
-            response.setMessage("There are some fields invalid");
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
 
-        Optional<TuyenBayDTO> savedRoute = tuyenBayService.addNewTuyenBay(tuyenBayDTO);
-        if (savedRoute.isPresent()) {
-            response.setMessage("Save route successfully!!");
-            response.setData(savedRoute.get());
-            response.setStatusCode(201);
-            return new ResponseEntity<>(response, HttpStatus.CREATED);
-        } else {
-            response.setMessage("Save route unsuccessfully!!");
+        // Add new route
+        try {
+            Optional<TuyenBayDTO> savedRoute = tuyenBayService.addNewTuyenBay(tuyenBayDTO);
+
+            if(tuyenBayDTO.getIdSanBayBatDau()== tuyenBayDTO.getIdSanBayKetThuc()){
+                response.setMessage("No duplicate arrival and departure.");
+                response.setData(null);
+                response.setStatusCode(500);
+                return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
+            if (savedRoute.isPresent()) {
+                response.setMessage("Route saved successfully!");
+                response.setData(savedRoute.get());
+                response.setStatusCode(201);
+                return new ResponseEntity<>(response, HttpStatus.CREATED);
+            } else {
+                response.setMessage("Route saving failed due to unknown reasons.");
+                response.setData(null);
+                response.setStatusCode(500);
+                return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } catch (Exception e) {
+            response.setMessage("Error saving route: " + e.getMessage());
             response.setData(null);
             response.setStatusCode(500);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -104,28 +123,49 @@ public class TuyenBayController {
     @PutMapping("/updateRoute/{idTuyenBay}")
     public ResponseEntity<ResponseData> updateTuyenBay(@PathVariable("idTuyenBay") Integer idTuyenBay, @Valid @RequestBody TuyenBayDTO tuyenBayDTO, BindingResult bindingResult) {
         ResponseData response = new ResponseData();
+
+        // Handle validation errors
         if (bindingResult.hasErrors()) {
-            Map<String, String> fieldErrors = new HashMap<>();
-            bindingResult.getFieldErrors().forEach(error -> fieldErrors.put(error.getField(), error.getDefaultMessage()));
+            Map<String, String> errors = new HashMap<>();
+            bindingResult.getFieldErrors().forEach(error ->
+                    errors.put(error.getField(), error.getDefaultMessage()) // Lấy thông báo lỗi cụ thể từ validation
+            );
+            response.setData(errors);
+            response.setMessage("Validation failed for the provided data."); // Thông báo chung cho lỗi
             response.setStatusCode(400);
-            response.setData(fieldErrors);
-            response.setMessage("There are some fields invalid");
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
 
-        Optional<TuyenBayDTO> updatedRoute = tuyenBayService.updateTuyenBay(tuyenBayDTO);
-        if (updatedRoute.isPresent()) {
-            response.setMessage("Update route successfully!!");
-            response.setData(updatedRoute.get());// Trả về thông tin tuến bay đã cập
-            response.setStatusCode(200); //ok
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } else {
-            response.setMessage("Route not found!!");
+        // Update existing route
+        try {
+            Optional<TuyenBayDTO> updatedRoute = tuyenBayService.updateTuyenBay(idTuyenBay, tuyenBayDTO);
+
+            if(tuyenBayDTO.getIdSanBayBatDau()== tuyenBayDTO.getIdSanBayKetThuc()){
+                response.setMessage("No duplicate arrival and departure.");
+                response.setData(null);
+                response.setStatusCode(500);
+                return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
+            if (updatedRoute.isPresent()) {
+                response.setMessage("Route updated successfully!");
+                response.setData(updatedRoute.get());
+                response.setStatusCode(200); // OK
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                response.setMessage("Route with ID " + idTuyenBay + " not found!"); // Cung cấp ID cụ thể
+                response.setData(null);
+                response.setStatusCode(404); // Not Found
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            response.setMessage("Error updating route: " + e.getMessage());
             response.setData(null);
-            response.setStatusCode(404);
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            response.setStatusCode(500);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 
     @DeleteMapping("/deleteRoute/{idTB}")
     public ResponseEntity<ResponseData> deleteTuyenBay(@PathVariable int idTB) {

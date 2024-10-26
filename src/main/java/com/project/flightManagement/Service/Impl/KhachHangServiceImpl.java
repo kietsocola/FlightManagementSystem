@@ -23,7 +23,6 @@ import java.util.stream.StreamSupport;
 public class KhachHangServiceImpl implements KhachHangService {
     @Autowired
     private KhachHangRepository khRepo;
-
     @Override
     public Iterable<KhachHangDTO> getAllKhachHang() {
         try {

@@ -1,17 +1,34 @@
 package com.project.flightManagement.Service.Impl;
 
+import com.project.flightManagement.DTO.HanhKhachDTO.HanhKhachCreateDTO;
+import com.project.flightManagement.DTO.HanhKhachDTO.HanhKhachUpdateDTO;
 import com.project.flightManagement.DTO.VeDTO.VeDTO;
+import com.project.flightManagement.DTO.VeDTO.VeUpdateDTO;
+import com.project.flightManagement.Exception.IdMismatchException;
+import com.project.flightManagement.Exception.NoUpdateRequiredException;
+import com.project.flightManagement.Exception.ResourceNotFoundException;
+import com.project.flightManagement.Mapper.HanhKhachMapper;
+import com.project.flightManagement.Mapper.KhachHangMapper;
 import com.project.flightManagement.Mapper.LoaiVeMapper;
 import com.project.flightManagement.Mapper.VeMapper;
+import com.project.flightManagement.Model.HanhKhach;
+import com.project.flightManagement.Model.KhachHang;
 import com.project.flightManagement.Model.LoaiVe;
 import com.project.flightManagement.Model.Ve;
+import com.project.flightManagement.Repository.HanhKhachRepository;
+import com.project.flightManagement.Repository.KhachHangRepository;
 import com.project.flightManagement.Repository.VeRepository;
+import com.project.flightManagement.Service.HanhKhachService;
+import com.project.flightManagement.Service.KhachHangService;
 import com.project.flightManagement.Service.VeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class VeServiceImpl implements VeService {
@@ -19,6 +36,16 @@ public class VeServiceImpl implements VeService {
     private VeRepository veRepository;
     @Autowired
     private VeMapper veMapper;
+    @Autowired
+    private KhachHangRepository khachHangRepository;
+    @Autowired
+    @Lazy
+    private HanhKhachService hanhKhachService;
+
+    @Autowired
+    private HanhKhachMapper hanhKhachMapper;
+
+
     @Override
     public Page<VeDTO> getAllVe(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -32,24 +59,92 @@ public class VeServiceImpl implements VeService {
         Page<Ve> vePage = veRepository.findByChuyenBay_IdChuyenBay(idChuyenBay, pageable);
         return vePage.map(veMapper::toDto);
     }
-    @Override
-    public boolean updateVe(int idVe, VeDTO veDTO) {
-        try {
-            // Retrieve the existing Ve entity
-            Ve existingVe = veRepository.findById(idVe)
-                    .orElseThrow(() -> new RuntimeException("Ve not found with id: " + idVe));
 
-            // Update fields of the existing entity with values from the DTO
-            existingVe.setGiaVe(veDTO.getGiaVe());
-            existingVe.setTrangThaiActive(veDTO.getTrangThaiActive());
-            existingVe.setTrangThai(veDTO.getTrangThai());
-           veRepository.save(existingVe);
-            return true;
-        }catch (Exception e) {
-                System.out.println(e);
-                return false;
+//    @Override
+//    public boolean updateVe(int idVe, VeUpdateDTO veUpdateDTO) {
+//        try {
+//            if (idVe != veUpdateDTO.getIdVe()) {
+//                throw new IllegalArgumentException("ID in the path and DTO do not match.");
+//            }
+//
+//            // Lấy đối tượng Ve hiện tại
+//            Ve existingVe = veRepository.findById(idVe)
+//                    .orElseThrow(() -> new RuntimeException("Ve not found with id: " + idVe));
+//
+//            // Cập nhật các thuộc tính của Ve từ DTO
+//            existingVe.setGiaVe(veUpdateDTO.getGiaVe());
+//            existingVe.setTrangThaiActive(veUpdateDTO.getTrangThaiActive());
+//            existingVe.setTrangThai(veUpdateDTO.getTrangThai());
+//
+//            HanhKhach hanhKhach = existingVe.getHanhKhach();
+//            if (hanhKhach != null) {
+//                System.out.println("Tên hành khách: " + hanhKhach.getHoTen());
+//                if (veRepository.existsByHanhKhach_IdHanhKhach(hanhKhach.getIdHanhKhach()) // IdHangVe = 1 => Hang pho thong
+//                        && !hanhKhach.getHoTen().equals(veUpdateDTO.getTenHanhKhach()) && existingVe.getHangVe().getIdHangVe() != 1 ) {
+//
+//                    System.out.println("Se doi ten hanh khach thanh: " + veUpdateDTO.getTenHanhKhach());
+//                    HanhKhach hanhKhachMoi =  taoMoiHanhKhachVaDoiTen(hanhKhach, veUpdateDTO.getTenHanhKhach());
+//                    existingVe.setHanhKhach(hanhKhachMoi);
+//                } else {
+//                    System.out.println("Khong can doi ten");
+//                }
+//            } else {
+//                System.out.println("Không lấy được hành khách");
+//            }
+//
+//            // Lưu lại Ve sau khi cập nhật hoàn tất
+//            veRepository.save(existingVe);
+//            return true;
+//        } catch (Exception e) {
+//            System.out.println("Error during updateVe: " + e);
+//            return false;
+//        }
+//    }
+
+
+    @Override
+    public boolean updateVe(int idVe, VeUpdateDTO veUpdateDTO) {
+        if (idVe != veUpdateDTO.getIdVe()) {
+            throw new IdMismatchException("ID in the path and DTO do not match.");
         }
 
+        // Lấy đối tượng Ve hiện tại
+        Ve existingVe = veRepository.findById(idVe)
+                .orElseThrow(() -> new ResourceNotFoundException("Ve", idVe));
+
+        // Cập nhật các thuộc tính của Ve từ DTO
+        existingVe.setGiaVe(veUpdateDTO.getGiaVe());
+        existingVe.setTrangThaiActive(veUpdateDTO.getTrangThaiActive());
+        existingVe.setTrangThai(veUpdateDTO.getTrangThai());
+
+        HanhKhach hanhKhach = existingVe.getHanhKhach();
+        if (hanhKhach != null) {
+            if (veRepository.existsByHanhKhach_IdHanhKhach(hanhKhach.getIdHanhKhach())
+                    && !hanhKhach.getHoTen().equals(veUpdateDTO.getTenHanhKhach())
+                    && existingVe.getHangVe().getIdHangVe() != 1) {
+
+                // Tạo đối tượng hành khách mới và cập nhật
+                HanhKhach hanhKhachMoi = taoMoiHanhKhachVaDoiTen(hanhKhach, veUpdateDTO.getTenHanhKhach());
+                existingVe.setHanhKhach(hanhKhachMoi);
+                // sau nay muon toi uu thi phai thong qua createDTO vi no khong chua id
+                // can so sanh 2 object co bang nhau khong
+            } else {
+                throw new NoUpdateRequiredException("No update required for the customer's name.");
+            }
+        }
+        // Lưu lại Ve sau khi cập nhật hoàn tất
+        veRepository.save(existingVe);
+        return true;
     }
 
+    private HanhKhach taoMoiHanhKhachVaDoiTen(HanhKhach hanhKhach, String tenMoi) {
+        HanhKhachCreateDTO hanhKhachCreateDTO = hanhKhachMapper.toHanhKhachCreateDTO(hanhKhach);
+        hanhKhachCreateDTO.setHoTen(tenMoi);
+        return hanhKhachService.createHanhKhach(hanhKhachCreateDTO);
+    }
+
+    @Override
+    public Optional<Ve> getVeById(int idVe) {
+        return veRepository.findById(idVe);
+    }
 }

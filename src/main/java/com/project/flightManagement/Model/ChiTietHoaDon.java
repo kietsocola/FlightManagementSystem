@@ -17,7 +17,7 @@ public class ChiTietHoaDon {
     @Column(name = "id_chi_tiet_hoa_don")
     private int idChiTietHoaDon;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "id_hoa_don", nullable = false)
     private HoaDon hoaDon;
 

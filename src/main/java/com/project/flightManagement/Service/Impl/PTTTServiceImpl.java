@@ -3,20 +3,23 @@ package com.project.flightManagement.Service.Impl;
 import com.project.flightManagement.DTO.PTTTDTO.PTTTDTO;
 import com.project.flightManagement.Mapper.PTTTMapper;
 import com.project.flightManagement.Model.PhuongThucThanhToan;
-import com.project.flightManagement.Repository.PTTTReposity;
+import com.project.flightManagement.Repository.PTTTRepository;
 import com.project.flightManagement.Service.PTTTService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Service
 public class PTTTServiceImpl implements PTTTService {
 
     @Autowired
-    private PTTTReposity ptttRepo;
+    private PTTTRepository ptttRepo;
 
     @Override
     public Iterable<PTTTDTO> getAllPTTT() {
@@ -69,18 +72,62 @@ public class PTTTServiceImpl implements PTTTService {
         }
     }
 
-//    @Override
-//    public List<PTTTDTO> findPhuongThucThanhToanByTen(String keyword) {
-//        if (khachHangList.isEmpty()) {
-//            System.out.println("No customer found with the keyword: " + keyword);
-//        } else {
-//            KhachHang kh = khachHangList.get(0); // Dùng get(0) thay vì getFirst()
-//            System.out.println("Id kh found: " + kh.getHoTen());
-//        }
-//        return khachHangList.stream()
-//                .map(KhachHangMapper::toDTO)
-//                .collect(Collectors.toList());
-//
-//    }
+    @Override
+    public List<PTTTDTO> findPhuongThucThanhToanByKeyWord(String keyword) {
+        List<PhuongThucThanhToan> phuongThucThanhToanList = ptttRepo.getPhuongThucThanhToanByKeyWord(keyword);
+        if (phuongThucThanhToanList.isEmpty()) {
+            System.out.println("Không tìm thấy phương thức thanh toán với từ khóa " + keyword);
+        } else {
+            PhuongThucThanhToan pttt = phuongThucThanhToanList.get(0);
+            System.out.println("Found: " + pttt.getTenPhuongThucTT());
+        }
+        return phuongThucThanhToanList.stream().map(PTTTMapper::toDTO).collect(Collectors.toList());
+    }
 
+    @Override
+    public Iterable<PTTTDTO> getAllPTTTSorted(String sortBy, String direction) {
+        try {
+            List<PhuongThucThanhToan> phuongThucThanhToanList;
+            // Lấy danh sách KhachHang từ cơ sở dữ liệu và sắp xếp theo sortBy
+            if(direction.equals("asc")) {
+                phuongThucThanhToanList = ptttRepo.findAll(Sort.by(Sort.Direction.ASC, sortBy));
+            } else {
+                phuongThucThanhToanList = ptttRepo.findAll(Sort.by(Sort.Direction.DESC, sortBy));
+            }
+
+            // Chuyển đổi từ KhachHang sang KhachHangDTO
+            List<PTTTDTO> phuongThucThanhToanDTOList = phuongThucThanhToanList.stream()
+                    .map(PTTTMapper::toDTO)
+                    .collect(Collectors.toList());
+
+            return phuongThucThanhToanDTOList;
+
+        } catch (IllegalArgumentException e) {
+            // Xử lý lỗi nếu tham số sortBy không hợp lệ hoặc có lỗi khác liên quan đến tham số
+            System.err.println("Invalid sorting field: " + sortBy);
+            return Collections.emptyList(); // Trả về danh sách rỗng
+
+        } catch (Exception e) {
+            // Xử lý các lỗi không lường trước khác
+            System.err.println("An error occurred while fetching sorted payment methods: " + e.getMessage());
+            return Collections.emptyList(); // Trả về danh sách rỗng nếu có lỗi
+        }
+    }
+
+    @Override
+    public Optional<PTTTDTO> getPTTTByTen(String tenPTTT) {
+        try {
+            Optional<PhuongThucThanhToan> pttt = ptttRepo.getPhuongThucThanhToanByTen(tenPTTT);
+            if (pttt.isPresent()) {
+                System.out.println("Tìm thấy phương thức thanh toán với tên: " + tenPTTT);
+                return pttt.map(PTTTMapper::toDTO);
+            } else {
+                System.out.println("Không tìm thấy phương thức thanh toán với tên: " + tenPTTT);
+                return Optional.empty();
+            }
+        } catch (Exception e) {
+            System.err.println("Lỗi: " + e);
+            return Optional.empty();
+        }
+    }
 }

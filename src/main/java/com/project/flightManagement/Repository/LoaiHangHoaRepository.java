@@ -1,0 +1,16 @@
+package com.project.flightManagement.Repository;
+
+import com.project.flightManagement.Model.LoaiHangHoa;
+import com.project.flightManagement.Model.TuyenBay;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface LoaiHangHoaRepository extends JpaRepository<LoaiHangHoa, Integer> {
+
+
+}
