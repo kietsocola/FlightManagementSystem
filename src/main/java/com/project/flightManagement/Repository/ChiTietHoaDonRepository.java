@@ -18,7 +18,7 @@ public interface ChiTietHoaDonRepository extends JpaRepository<ChiTietHoaDon, In
     @Query("SELECT cthd FROM ChiTietHoaDon cthd WHERE " +
             "cthd.hoaDon.idHoaDon = :idHoaDon AND " +
             "LOWER(cthd.hangHoa.tenHangHoa) LIKE LOWER(CONCAT('%', :keyWord, '%')) OR " +
-            "LOWER(cthd.ve.codeVe) LIKE LOWER(CONCAT('%', :keyWord, '%')) OR " +
+            "LOWER(cthd.ve.maVe) LIKE LOWER(CONCAT('%', :keyWord, '%')) OR " +
             "CAST(cthd.soTien AS string) LIKE CONCAT('%', :keyWord, '%')")
     List<ChiTietHoaDon> getChiTietHoaDonByKeyWord(@Param("idHoaDon") int idHoaDon, @Param("keyWord") String keyWord);
 }
