@@ -48,7 +48,7 @@ public class NhanVien {
 
     @JsonIgnore
     @OneToMany(mappedBy = "nhanVien")
-    @JsonIgnore
+
     List<QuyDinh> quyDinhList;
 
     @Column(name = "gioi_tinh")
