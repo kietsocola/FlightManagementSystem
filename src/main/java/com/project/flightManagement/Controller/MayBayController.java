@@ -93,7 +93,7 @@ public class MayBayController {
     }
     @GetMapping("/getAllPlaneSorted")
     public ResponseEntity<ResponseData> getAllKhachHangSorted(@RequestParam(defaultValue = "idKhachHang") String sortBy,
-                                                        @RequestParam(defaultValue = "asc") String order){
+                                                              @RequestParam(defaultValue = "asc") String order){
         Iterable<MayBayDTO> listMbDTO = mayBayService.getAllMayBaySorted(sortBy, order);
         if(listMbDTO.iterator().hasNext()){
             response.setMessage("get list plane success!!");
@@ -309,11 +309,12 @@ public class MayBayController {
         if(existingMB.isPresent()){
             if(existingMB.get().getTrangThaiActive() == ActiveEnum.ACTIVE){
                 Optional<MayBayDTO> blockMB = mayBayService.blockMayBay(existingMB.get().getIdMayBay());
-                Iterable<ChoNgoiDTO> listCN = choNgoiService.getChoNgoiByMayBay(blockMB.get());
-                for(ChoNgoiDTO cn : listCN) {
-                    cn.setTrangThaiActive(ActiveEnum.IN_ACTIVE);
-                }
+
                 if(blockMB.isPresent()){
+                    Iterable<ChoNgoiDTO> listCN = choNgoiService.getChoNgoiByMayBay(blockMB.get());
+                    for(ChoNgoiDTO cn : listCN) {
+                        choNgoiService.blockChoNgoi(cn.getIdChoNgoi());
+                    }
                     response.setMessage("Block plane successfully!!");
                     response.setData(blockMB.get());
                     response.setStatusCode(200); // OK
@@ -327,11 +328,12 @@ public class MayBayController {
                 }
             } else {
                 Optional<MayBayDTO> unblockMB = mayBayService.unblockMayBay(existingMB.get().getIdMayBay());
-                Iterable<ChoNgoiDTO> listCN = choNgoiService.getChoNgoiByMayBay(unblockMB.get());
-                for(ChoNgoiDTO cn : listCN) {
-                    cn.setTrangThaiActive(ActiveEnum.ACTIVE);
-                }
+
                 if(unblockMB.isPresent()){
+                    Iterable<ChoNgoiDTO> listCN = choNgoiService.getChoNgoiByMayBay(unblockMB.get());
+                    for(ChoNgoiDTO cn : listCN) {
+                        choNgoiService.unblockChoNgoi(cn.getIdChoNgoi());
+                    }
                     response.setMessage("Unblock plane successfully!!");
                     response.setData(unblockMB.get());
                     response.setStatusCode(200); // OK

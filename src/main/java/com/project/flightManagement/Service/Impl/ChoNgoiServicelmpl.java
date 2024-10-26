@@ -2,6 +2,7 @@ package com.project.flightManagement.Service.Impl;
 
 import com.project.flightManagement.DTO.ChoNgoiDTO.ChoNgoiDTO;
 import com.project.flightManagement.DTO.MayBayDTO.MayBayDTO;
+import com.project.flightManagement.Enum.ActiveEnum;
 import com.project.flightManagement.Mapper.ChoNgoiMapper;
 import com.project.flightManagement.Mapper.MayBayMapper;
 import com.project.flightManagement.Model.ChoNgoi;
@@ -9,10 +10,13 @@ import com.project.flightManagement.Model.MayBay;
 import com.project.flightManagement.Repository.ChoNgoiRepository;
 import com.project.flightManagement.Service.ChoNgoiService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 @Service
@@ -31,17 +35,7 @@ public class ChoNgoiServicelmpl implements ChoNgoiService {
             return null;
         }
     }
-    @Override
-    public Iterable<ChoNgoiDTO> getChoNgoiByMayBay(MayBayDTO mayBayDTO) {
-        try {
-            Iterable<ChoNgoi> choNgoiList = cnRepo.getChoNgoiByMayBay(MayBayMapper.toEntity(mayBayDTO));
-            Iterable<ChoNgoiDTO> cnDTOList = StreamSupport.stream(choNgoiList.spliterator(), false).map(ChoNgoiMapper::toDTO).collect(Collectors.toList());
-            return cnDTOList;
-        } catch (Exception e) {
-            System.out.println("Get list seat by plane failed!!");
-            return null;
-        }
-    }
+
     @Override
     public Optional<ChoNgoiDTO> addNewChoNgoi(ChoNgoiDTO choNgoiDTO) {
         try {
@@ -72,4 +66,75 @@ public class ChoNgoiServicelmpl implements ChoNgoiService {
             return Optional.empty();
         }
     }
+    @Override
+    public List<ChoNgoiDTO> getAllChoNgoiByIdChuyenBayandHangVe(int idCB, int hangVe) {
+        List<ChoNgoi> choNgoiList = cnRepo.findByMayBay_ChuyenBayList_IdChuyenBayAndHangVe_IdHangVe(idCB, hangVe);
+        return choNgoiList.stream()
+                .map(ChoNgoiMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+    @Override
+    public Iterable<ChoNgoiDTO> getChoNgoiByMayBay(MayBayDTO mayBayDTO) {
+        try{
+            Iterable<ChoNgoi> listnv =  cnRepo.findChoNgoiByMayBay(MayBayMapper.toEntity(mayBayDTO));
+            Iterable<ChoNgoiDTO> listnvDTO = StreamSupport.stream(listnv.spliterator(),false)
+                    .map(ChoNgoiMapper::toDTO)
+                    .toList();
+            return listnvDTO;
+        }catch (Exception e){
+            System.err.println("error occurred while fetching customers :" + e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+//    @Override
+//    public Optional<ChoNgoiDTO> blockChoNgoi(int idChoNgoi) {
+//        Optional<ChoNgoi> existingCN = cnRepo.findById(idChoNgoi);
+//        if (existingCN.isPresent()) {
+//            ChoNgoi cn = existingCN.get();
+//            cn.setTrangThaiActive(ActiveEnum.IN_ACTIVE);
+//            ChoNgoi savedCn = cnRepo.save(cn);
+//            return Optional.of(ChoNgoiMapper.toDTO(savedCn));
+//        } else {
+//            System.out.println("Not found seat!!");
+//            return Optional.empty();
+//        }
+//    }
+//    @Override
+//    public Optional<ChoNgoiDTO> unblockChoNgoi(int idChoNgoi) {
+//        Optional<ChoNgoi> existingCN = cnRepo.findById(idChoNgoi);
+//        if (existingCN.isPresent()) {
+//            ChoNgoi cn = existingCN.get();
+//            cn.setTrangThaiActive(ActiveEnum.ACTIVE);
+//            ChoNgoi savedCn = cnRepo.save(cn);
+//            return Optional.of(ChoNgoiMapper.toDTO(savedCn));
+//        } else {
+//            System.out.println("Not found seat!!");
+//            return Optional.empty();
+//        }
+//    }
+    @Override
+    public Optional<ChoNgoiDTO> blockChoNgoi(int id) {
+        Optional<ChoNgoi> existingCN = cnRepo.findById(id);
+        if (existingCN.isPresent()) {
+            ChoNgoi cn = existingCN.get();
+            cn.setTrangThaiActive(ActiveEnum.IN_ACTIVE);
+            cnRepo.save(cn);
+            return Optional.of(ChoNgoiMapper.toDTO(cn));
+        } else {
+            return Optional.empty();
+        }
+    }
+    @Override
+    public Optional<ChoNgoiDTO> unblockChoNgoi(int id) {
+        Optional<ChoNgoi> existingCN = cnRepo.findById(id);
+        if (existingCN.isPresent()) {
+            ChoNgoi cn = existingCN.get();
+            cn.setTrangThaiActive(ActiveEnum.ACTIVE);
+            cnRepo.save(cn);
+            return Optional.of(ChoNgoiMapper.toDTO(cn));
+        } else {
+            return Optional.empty();
+        }
+    }
+
 }
