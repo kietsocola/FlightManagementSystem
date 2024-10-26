@@ -226,7 +226,7 @@ public class MayBayController {
                 }
 
                 Optional<MayBayDTO> updatedMB = mayBayService.updateMayBay(mbDTO);
-                Iterable<ChoNgoiDTO> choNgoiByMB = choNgoiService.getChoNgoiByMayBay(MayBayMapper.toEntity(updatedMB.get()));
+                Iterable<ChoNgoiDTO> choNgoiByMB = choNgoiService.getChoNgoiByMayBay(updatedMB.get());
                 if(choNgoiByMB.iterator().hasNext()) {
                     for (ChoNgoiDTO cn : choNgoiByMB) {
                         choNgoiService.deleteChoNgoi(cn);
@@ -311,7 +311,7 @@ public class MayBayController {
                 Optional<MayBayDTO> blockMB = mayBayService.blockMayBay(existingMB.get().getIdMayBay());
 
                 if(blockMB.isPresent()){
-                    Iterable<ChoNgoiDTO> listCN = choNgoiService.getChoNgoiByMayBay(MayBayMapper.toEntity(blockMB.get()));
+                    Iterable<ChoNgoiDTO> listCN = choNgoiService.getChoNgoiByMayBay(blockMB.get());
                     for(ChoNgoiDTO cn : listCN) {
                         choNgoiService.blockChoNgoi(cn.getIdChoNgoi());
                     }
@@ -330,7 +330,7 @@ public class MayBayController {
                 Optional<MayBayDTO> unblockMB = mayBayService.unblockMayBay(existingMB.get().getIdMayBay());
 
                 if(unblockMB.isPresent()){
-                    Iterable<ChoNgoiDTO> listCN = choNgoiService.getChoNgoiByMayBay(MayBayMapper.toEntity(unblockMB.get()));
+                    Iterable<ChoNgoiDTO> listCN = choNgoiService.getChoNgoiByMayBay(unblockMB.get());
                     for(ChoNgoiDTO cn : listCN) {
                         choNgoiService.unblockChoNgoi(cn.getIdChoNgoi());
                     }

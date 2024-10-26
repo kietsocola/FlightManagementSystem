@@ -4,7 +4,6 @@ import com.project.flightManagement.DTO.HangVeDTO.HangVeDTO;
 import com.project.flightManagement.Mapper.HangVeMapper;
 import com.project.flightManagement.Model.HangVe;
 import com.project.flightManagement.Repository.HangVeRepository;
-import com.project.flightManagement.Service.HangBayService;
 import com.project.flightManagement.Service.HangVeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

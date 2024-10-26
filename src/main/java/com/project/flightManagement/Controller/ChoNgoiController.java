@@ -2,7 +2,6 @@ package com.project.flightManagement.Controller;
 
 import com.project.flightManagement.DTO.ChoNgoiDTO.ChoNgoiDTO;
 import com.project.flightManagement.DTO.MayBayDTO.MayBayDTO;
-import com.project.flightManagement.DTO.NhanVienDTO.NhanVienDTO;
 import com.project.flightManagement.Enum.ActiveEnum;
 import com.project.flightManagement.Mapper.MayBayMapper;
 import com.project.flightManagement.Model.ChoNgoi;
@@ -49,21 +48,7 @@ public class ChoNgoiController {
         }
     }
 
-    @GetMapping("/getchongoibymaybay/{mayBay}")
-    public ResponseEntity<ResponseData> getchongoibymaybay(@PathVariable MayBay mayBay){
-        Iterable<ChoNgoiDTO> listDTO = choNgoiService.getChoNgoiByMayBay(mayBay);
-        if(listDTO.iterator().hasNext()){
-            response.setMessage("get list Cho Ngoi success!!");
-            response.setData(listDTO);
-            response.setStatusCode(200);
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } else {
-            response.setMessage("get list Cho Ngoi unsuccess!!");
-            response.setData(null);
-            response.setStatusCode(204);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
-    }
+
     @PostMapping("/addSeat")
     public ResponseEntity<ResponseData> addNewChoNgoi(@Valid @RequestBody ChoNgoiDTO choNgoiDTO, BindingResult bindingResult) {
         if(bindingResult.hasErrors()){
@@ -95,10 +80,10 @@ public class ChoNgoiController {
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
     }
-    @GetMapping("/getSeatByPlane/{idMayBay}")
+    @GetMapping("/getallchongoibymaybay/{idMayBay}")
     public ResponseEntity<ResponseData> getChoNgoiByMayBay(@PathVariable int idMayBay) {
         Optional<MayBayDTO> mbDTO = mayBayService.getMayBayById(idMayBay);
-        Iterable<ChoNgoiDTO> listCN = choNgoiService.getChoNgoiByMayBay(MayBayMapper.toEntity(mbDTO.get()));
+        Iterable<ChoNgoiDTO> listCN = choNgoiService.getChoNgoiByMayBay(mayBayService.getMayBayById(idMayBay).get());
         if(listCN.iterator().hasNext()) {
             response.setStatusCode(200);
             response.setMessage("Get seat by plane success!!");
@@ -111,48 +96,48 @@ public class ChoNgoiController {
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
-    @PutMapping("/blockSeat/{idChoNgoi}")
-    public ResponseEntity<ResponseData> blockChoNgoi(@PathVariable int idChoNgoi) {
-        Optional<ChoNgoiDTO> existingCN = choNgoiService.getChoNgoiById(idChoNgoi);
-        if(existingCN.isPresent()){
-            if(existingCN.get().getTrangThaiActive() == ActiveEnum.ACTIVE){
-                Optional<ChoNgoiDTO> blockCN = choNgoiService.blockChoNgoi(idChoNgoi);
-
-                if(blockCN.isPresent()){
-                    response.setMessage("Block seat successfully!!");
-                    response.setData(blockCN.get());
-                    response.setStatusCode(200); // OK
-                    return new ResponseEntity<>(response, HttpStatus.OK);
-                } else {
-                    // Xử lý lỗi khi cập nhật không thành công
-                    response.setMessage("Block seat unsuccessfully!!");
-                    response.setData(null);
-                    response.setStatusCode(500); // Internal Server Error
-                    return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-                }
-            } else {
-                Optional<MayBayDTO> unblockCN = mayBayService.unblockMayBay(idChoNgoi);
-
-                if(unblockCN.isPresent()){
-                    response.setMessage("Unblock seat successfully!!");
-                    response.setData(unblockCN.get());
-                    response.setStatusCode(200); // OK
-                    return new ResponseEntity<>(response, HttpStatus.OK);
-                } else {
-                    // Xử lý lỗi khi cập nhật không thành công
-                    response.setMessage("Unblock seat unsuccessfully!!");
-                    response.setData(null);
-                    response.setStatusCode(500); // Internal Server Error
-                    return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-                }
-            }
-        } else {
-            response.setMessage("Seat not found!!");
-            response.setData(null);
-            response.setStatusCode(404); // Not Found
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-        }
-    }
+    //    @PutMapping("/blockSeat/{idChoNgoi}")
+//    public ResponseEntity<ResponseData> blockChoNgoi(@PathVariable int idChoNgoi) {
+//        Optional<ChoNgoiDTO> existingCN = choNgoiService.getChoNgoiById(idChoNgoi);
+//        if(existingCN.isPresent()){
+//            if(existingCN.get().getTrangThaiActive() == ActiveEnum.ACTIVE){
+//                Optional<ChoNgoiDTO> blockCN = choNgoiService.;
+//
+//                if(blockCN.isPresent()){
+//                    response.setMessage("Block seat successfully!!");
+//                    response.setData(blockCN.get());
+//                    response.setStatusCode(200); // OK
+//                    return new ResponseEntity<>(response, HttpStatus.OK);
+//                } else {
+//                    // Xử lý lỗi khi cập nhật không thành công
+//                    response.setMessage("Block seat unsuccessfully!!");
+//                    response.setData(null);
+//                    response.setStatusCode(500); // Internal Server Error
+//                    return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+//                }
+//            } else {
+//                Optional<MayBayDTO> unblockCN = mayBayService.unblockMayBay(idChoNgoi);
+//
+//                if(unblockCN.isPresent()){
+//                    response.setMessage("Unblock seat successfully!!");
+//                    response.setData(unblockCN.get());
+//                    response.setStatusCode(200); // OK
+//                    return new ResponseEntity<>(response, HttpStatus.OK);
+//                } else {
+//                    // Xử lý lỗi khi cập nhật không thành công
+//                    response.setMessage("Unblock seat unsuccessfully!!");
+//                    response.setData(null);
+//                    response.setStatusCode(500); // Internal Server Error
+//                    return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+//                }
+//            }
+//        } else {
+//            response.setMessage("Seat not found!!");
+//            response.setData(null);
+//            response.setStatusCode(404); // Not Found
+//            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+//        }
+//    }
     @GetMapping("/getSeat/{idChoNgoi}")
     public ResponseEntity<ResponseData> getChoNgoiById(@PathVariable int idChoNgoi) {
         try {
@@ -173,6 +158,44 @@ public class ChoNgoiController {
             response.setMessage("Not fount seat by ID!!");
             response.setData(null);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @PutMapping("/blockSeat/{idChoNgoi}")
+    public ResponseEntity<ResponseData> blockChoNgoi(@PathVariable int idChoNgoi) {
+        Optional<ChoNgoiDTO> existingCN = choNgoiService.getChoNgoiById(idChoNgoi);
+        if(existingCN.isPresent()) {
+            if (existingCN.get().getTrangThaiActive() == ActiveEnum.ACTIVE) {
+                Optional<ChoNgoiDTO> blockCN = choNgoiService.blockChoNgoi(idChoNgoi);
+                if(blockCN.isPresent()) {
+                    response.setStatusCode(200);
+                    response.setMessage("Block seat by id success!");
+                    response.setData(blockCN.get());
+                    return new ResponseEntity<>(response, HttpStatus.OK);
+                } else {
+                    response.setStatusCode(404);
+                    response.setMessage("Block seat by id failed!!");
+                    response.setData(null);
+                    return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+                }
+            } else {
+                Optional<ChoNgoiDTO> blockCN = choNgoiService.unblockChoNgoi(idChoNgoi);
+                if(blockCN.isPresent()) {
+                    response.setStatusCode(200);
+                    response.setMessage("Unblock seat by id success!");
+                    response.setData(blockCN.get());
+                    return new ResponseEntity<>(response, HttpStatus.OK);
+                } else {
+                    response.setStatusCode(404);
+                    response.setMessage("Unblock seat by id failed!!");
+                    response.setData(null);
+                    return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+                }
+            }
+        } else {
+            response.setStatusCode(404);
+            response.setMessage("Seat is not existing!!");
+            response.setData(null);
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
 }
