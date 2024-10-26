@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-//@RequestMapping("/admin/chongoi")
+@RequestMapping("/admin/chongoi")
 @CrossOrigin(origins = "http://localhost:5173")
 public class ChoNgoiController {
     @Autowired

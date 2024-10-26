@@ -36,14 +36,29 @@ public class ChoNgoiServicelmpl implements ChoNgoiService {
         }
     }
 
+//    @Override
+//    public Optional<ChoNgoiDTO> addNewChoNgoi(ChoNgoiDTO choNgoiDTO) {
+//        try {
+//            ChoNgoi cn = ChoNgoiMapper.toEntity(choNgoiDTO);
+//            ChoNgoi savedCn = cnRepo.save(cn);
+//            System.out.println("add seat success");
+//            System.out.println(choNgoiDTO.toString());
+//            return Optional.of(ChoNgoiMapper.toDTO(savedCn));
+//        } catch (Exception e) {
+//            System.out.println("Add new seat failed!!");
+//            System.out.println(choNgoiDTO.toString());
+//            return Optional.empty();
+//        }
+//    }
     @Override
     public Optional<ChoNgoiDTO> addNewChoNgoi(ChoNgoiDTO choNgoiDTO) {
         try {
             ChoNgoi cn = ChoNgoiMapper.toEntity(choNgoiDTO);
             ChoNgoi savedCn = cnRepo.save(cn);
+            System.out.println("Add seat success");
             return Optional.of(ChoNgoiMapper.toDTO(savedCn));
         } catch (Exception e) {
-            System.out.println("Add new seat failed!!");
+            System.out.println("Add new seat failed: " + e.getMessage());
             return Optional.empty();
         }
     }

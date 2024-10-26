@@ -32,7 +32,6 @@ public class ChoNgoi {
     private char rowIndex;
 
     @Column(name = "column_index", nullable = false)
-    @Pattern(regexp = "[A-Z]{1}$", message = "Kí tự đầu tiên của chỗ ngồi phải là chữ hoa")
     private int columnIndex;
 
     @Column(name = "active_status")

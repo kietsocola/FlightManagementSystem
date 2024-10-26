@@ -50,6 +50,7 @@ public class MayBay {
 
     @Column(name = "nam_san_xuat")
     private int namSanXuat;
+
     @OneToMany(mappedBy = "mayBay")
     @JsonIgnore
     private List<ChoNgoi> choNgoiList;
