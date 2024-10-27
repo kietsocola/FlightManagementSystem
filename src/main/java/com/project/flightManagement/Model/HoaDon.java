@@ -49,7 +49,7 @@ public class HoaDon {
     private LocalDateTime thoiGianLap;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "hoaDon")
+    @OneToMany(mappedBy = "hoaDon", fetch = FetchType.EAGER)
     private List<ChiTietHoaDon> chiTietHoaDonList;
 
     @Column(name = "status")

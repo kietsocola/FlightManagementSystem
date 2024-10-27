@@ -1,11 +1,14 @@
 package com.project.flightManagement.Controller;
 
 import com.project.flightManagement.DTO.ChiTietHoaDonDTO.ChiTietHoaDonDTO;
+import com.project.flightManagement.DTO.HoaDonDTO.HoaDonCreateDTO;
 import com.project.flightManagement.DTO.HoaDonDTO.HoaDonDTO;
 
 import com.project.flightManagement.Enum.HoaDonEnum;
+import com.project.flightManagement.Mapper.HoaDonMapper;
 import com.project.flightManagement.Model.ChiTietHoaDon;
 import com.project.flightManagement.Payload.ResponseData;
+import com.project.flightManagement.Service.ChiTietHoaDonService;
 import com.project.flightManagement.Service.HoaDonService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +28,7 @@ import java.util.Optional;
 public class HoaDonController {
     @Autowired
     private HoaDonService hoaDonService;
+    private ChiTietHoaDonService chiTietHoaDonService;
     private ResponseData response = new ResponseData();
 
     @GetMapping("/getAllHoaDon")
@@ -268,5 +272,42 @@ public class HoaDonController {
             responseData.setData(null);
             return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @PostMapping("/createHoaDon")
+    public ResponseEntity<ResponseData> createHoaDon(@Valid @RequestBody HoaDonCreateDTO hoaDonCreateDTO, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            Map<String, String> fieldErrors = new HashMap<>();
+            bindingResult.getFieldErrors().forEach(error -> fieldErrors.put(error.getField(), error.getDefaultMessage()));
+            response.setStatusCode(400);
+            response.setData(fieldErrors);
+            response.setMessage("There are some fields invalid!");
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+
+
+        // Tiến hành lưu hóa đơn
+        Optional<HoaDonDTO> savedHoaDon = hoaDonService.addHoaDon(hoaDonCreateDTO.getHoaDonDTO());
+        if (savedHoaDon.isPresent()) {
+            int hoaDonId = savedHoaDon.get().getIdHoaDon(); // Lấy ID hóa đơn vừa lưu
+
+            // Thêm chi tiết hóa đơn
+            if (hoaDonCreateDTO.getChiTietHoaDonDTOList() != null) {
+                for (ChiTietHoaDonDTO chiTiet : hoaDonCreateDTO.getChiTietHoaDonDTOList()) {
+                    chiTiet.setHoaDon(HoaDonMapper.toEntity(hoaDonCreateDTO.getHoaDonDTO())); // Gán ID hóa đơn cho chi tiết
+                    chiTietHoaDonService.addChiTietHoaDon(chiTiet); // Gọi service để thêm chi tiết hóa đơn
+                }
+            }
+            response.setMessage("Save Hoa Don successfully!");
+            response.setData(savedHoaDon.get());
+            response.setStatusCode(200);
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+        } else {
+            response.setMessage("Save Hoa Don unsuccessfully!");
+            response.setData(null);
+            response.setStatusCode(500);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
     }
 }
