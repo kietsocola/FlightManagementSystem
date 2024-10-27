@@ -1,6 +1,5 @@
 package com.project.flightManagement.Security;
 
-import com.project.flightManagement.Service.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,7 +24,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = getJwtFromRequest(request);
-        System.out.println("Token: "+token);
 
         if (token != null) {
             if (jwtTokenProvider.validateJwtToken(token)) {
@@ -39,17 +37,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 } else {
                     // Ghi log hoặc xử lý khi không tìm thấy người dùng
-                    System.out.println("User not found: " + userName);
+//                    System.out.println("User not found: " + userName);
                 }
             } else {
                 // Ghi log hoặc xử lý khi token không hợp lệ
-                System.out.println("Invalid JWT token: " + token);
+//                System.out.println("Invalid JWT token: " + token);
             }
         } else {
             // Ghi log hoặc xử lý khi không có token
-            System.out.println("No JWT token found in request");
+//            System.out.println("No JWT token found in request");
         }
-        System.out.println(request.getRequestURI());
+//        System.out.println(request.getRequestURI());
         filterChain.doFilter(request, response);
     }
     private String getJwtFromRequest(HttpServletRequest request) {

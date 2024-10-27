@@ -6,7 +6,9 @@ import com.project.flightManagement.DTO.VeDTO.VeUpdateDTO;
 import com.project.flightManagement.Exception.IdMismatchException;
 import com.project.flightManagement.Exception.NoUpdateRequiredException;
 import com.project.flightManagement.Exception.ResourceNotFoundException;
+import com.project.flightManagement.Model.Email;
 import com.project.flightManagement.Payload.ResponseData;
+import com.project.flightManagement.Service.EmailService;
 import com.project.flightManagement.Service.VeService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,8 @@ import org.springframework.web.bind.annotation.*;
 public class VeController {
     @Autowired
     private VeService veService;
+    @Autowired
+    private EmailService emailService;
     @GetMapping
     public ResponseEntity<?> getAllVe(@RequestParam(defaultValue = "0") int page,
                                           @RequestParam(defaultValue = "10") int size) {
@@ -90,5 +94,24 @@ public class VeController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
         }
     }
+    @PostMapping("/email")
+    public ResponseEntity<ResponseData> sendHtmlVeOnlineEmail() {
+        ResponseData responseData = new ResponseData();
+        try {
+            Email email = new Email();
+            email.setToEmail("vankiet27012004@gmail.com");
+            email.setSubject("Your ticket");
+            emailService.sendHtmlVeOnlineEmail(email);
+
+            responseData.setMessage("Email sent successfully.");
+            responseData.setStatusCode(200);
+            return ResponseEntity.ok(responseData);
+        } catch (Exception e) {
+            responseData.setMessage("Failed to send email: " + e.getMessage());
+            responseData.setStatusCode(500);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
+        }
+    }
+
 
 }

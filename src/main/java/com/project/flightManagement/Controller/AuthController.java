@@ -74,11 +74,6 @@ public class AuthController {
                         ActiveEnum.ACTIVE
                 );
                 boolean isSaveSuccess = refreshTokenService.saveRefreshTokenIntoDatabase(refreshTokenDTO);
-                if(isSaveSuccess) {
-                    System.out.println("luu thanh cong");
-                }else {
-                    System.out.println("luu that bai");
-                }
 
                 // Trả về phản hồi thành công
                 responseData.setStatusCode(200);

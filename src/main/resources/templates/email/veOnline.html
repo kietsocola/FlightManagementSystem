@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" />
+    <title>Email Template</title>
+    <style>
+        body {
+          font-family: "Roboto", sans-serif;
+          padding: 20px;
+        }
+
+        .infoHanhKhach_XuatVe {
+          display: flex;
+          align-items: center;
+          gap: 500px;
+        }
+
+        .infoHanhKhach .label {
+          color: #64af53;
+          font-weight: 600;
+        }
+
+        .infoHanhKhach .content_label {
+          color: #333;
+          font-weight: 500;
+        }
+        .infoVe {
+            padding-left: 100px;
+        }
+
+        .infoVe .label_info {
+          color: #333;
+          font-weight: 500;
+        }
+
+        .infoVe .content_label {
+          color: #333;
+          font-weight: 400;
+          font-size: 15px;
+        }
+
+        .label {
+          color: #64af53;
+          font-weight: 600;
+        }
+
+        .seperate_block {
+          font-size: 20px;
+          padding: 20px;
+          background-color: #64af53;
+          color: #fff;
+        }
+
+        .note {
+          color: #333;
+          font-size: 13px;
+          font-style: italic;
+        }
+
+        .bold {
+          font-weight: 600;
+        }
+
+        .seperate {
+          background-color: #64af53;
+          padding: 2px;
+          width: 100%;
+        }
+
+        .notice_label {
+          padding-left: 10px;
+          color: #64af53;
+          font-weight: 600;
+          margin-top: 10px;
+        }
+
+        ul li {
+          color: #333;
+          line-height: 130%;
+          font-size: 14px;
+        }
+
+        .notice_last {
+          display: block;
+          font-size: 14px;
+          padding: 10px;
+          color: #333;
+        }
+
+        .column_4,
+        .column_5 {
+          display: flex;
+          flex-direction: column;
+        }
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          border-spacing: 0;
+        }
+        thead {
+          background-color: #64af53;
+          color: #fff;
+        }
+        thead tr td {
+          padding: 10px;
+        }
+        tbody .row_first{
+          background-color: #b9d7b2;
+        }
+        tbody tr td {
+          padding-left: 10px;
+          padding-top: 10px;
+        }
+        .bold {
+          font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+<header class="header">
+    <div class="logo">
+        <img src="https://www.bambooairways.com/o/wpbav-home-theme/css/assets/logo.png" alt="" />
+    </div>
+    <div class="infoHanhKhach_XuatVe">
+        <div class="infoHanhKhach">
+            <p class="label">
+                Hành khách: <span class="content_label">Nguyễn Văn Đạt</span>
+            </p>
+            <p class="label">Mã đặt chổ: <span class="content_label">E6</span></p>
+            <p class="label">
+                Mã vé: <span class="content_label">F572sd8Hgh2</span>
+            </p>
+        </div>
+        <div class="infoVe">
+            <p class="label_info">
+                Nơi xuất vé: <br /><span class="content_label">BAMBOO AIRLINES DIGITAL, 273 AN DUONG VUONG, DISTRICT 5, TP
+            HCM</span>
+            </p>
+            <p class="label_info">
+                Số điện thoại: <span class="content_label">1900 8585</span>
+            </p>
+            <p class="label_info">
+                Ngày: <span class="content_label">24/10/2024</span>
+            </p>
+        </div>
+    </div>
+</header>
+<div class="content">
+    <div class="seperate_block">
+        <span>PHIẾU THU VÉ ĐIỆN TỬ</span>
+    </div>
+    <span class="note">Quý khách vui lòng kiểm tra thông tin hành trình</span>
+    <table class="table">
+        <thead>
+        <tr>
+            <td>Từ</td>
+            <td>Đến</td>
+            <td>Chuyến bay</td>
+            <td>Khởi hành</td>
+            <td>Điểm đến</td>
+        </tr>
+        </thead>
+        <tbody>
+        <tr class="row_first">
+            <td><span class="bold">HA NOI</span> NOIBAI CITY VN</td>
+            <td><span class="bold">HOCHIMINH</span> TANSONNHAT CITY VN</td>
+            <td>VN212</td>
+            <td class="bold">11h30</td>
+            <td class="bold">13h15</td>
+        </tr>
+        <tr class="row_first">
+            <td>Cổng: 1</td>
+            <td>Cổng: 2</td>
+            <td></td>
+            <td>14/2/2023</td>
+            <td>15/2/2023</td>
+        </tr>
+        <tr>
+            <td rowspan="2"><span class="label">Hạng: </span> <span>Thương gia</span></td>
+            <td><span class="label">Hãng vận chuyển: </span> VIETNAM AIRLINE</td>
+            <td colspan="2"><span class="label">Thời gian bay: </span> 02:15</td>
+        </tr>
+        <tr>
+            <td><span class="label">Hãng xuất vé: </span> BAMBOO AIRLINE</td>
+        </tr>
+        <tr>
+            <td> <span class="label">Hành lý: </span><span>E7923F867J3AG</span></td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="seperate"></div>
+
+    <div class="notice_label">LƯU Ý VỀ VẺ ĐIỆN TỬ</div>
+    <ul>
+        <li>
+            Làm thủ tục trực tuyến trong vòng 24 giờ đến 1 giờ trước thời gian
+            khởi hành, tại mục "Làm thủ tục" trên website/ứng dụng di động của
+            Vietnam Airlines. Hình thức làm thủ tục trực tuyến cho các chuyến bay
+            do Vietnam Airlines khai thác chỉ được chấp nhận ở một số sân bay nội
+            địa và quốc tế. Vui lòng tham khảo thông tin chi tiết tại đây.
+        </li>
+        <li>
+            Gỡ check-in: tại mục "Quản lý đặt chỗ" - "Trợ giúp sau bán" - "Gỡ
+            check-in" trên website của Vietnam Airlines.
+        </li>
+        <li>
+            Nếu Quý khách mua vé máy bay theo hình thức hợp tác giữa Vietnam
+            Airlines và hãng hàng không khác, trong đó hãng hàng không khác là
+            hãng khai thác chuyến bay, Quý khách lưu ý làm thủ tục tại quầy của
+            hãng khai thác.
+        </li>
+        <li>
+            Chủ động thay đổi, hoàn, hủy trên website/ứng dụng di động của Vietnam
+            Airlines tại mục "Quản lý đặt chỗ" - "Thay đổi chuyên bay"
+        </li>
+        <li>
+            Liên hệ trung tâm Chăm sóc khách hàng của Vietnam Airlines:
+            <ul>
+                Điện thoại:
+                <ul>
+                    <li>Gọi trong lãnh thổ Việt Nam: 1900 1100</li>
+                    <li>Gọi từ nước ngoài về Việt Nam: +84 24 38320320</li>
+                </ul>
+                Email trợ giúp khách mua vé trực tuyến: onlinesupport@bamboo.com
+            </ul>
+        </li>
+    </ul>
+    <div class="notice_label">Thông báo</div>
+    <span class="notice_last">
+      Để biết thêm thông tin chi tiết, hành khách tham khảo Điều khoản & Điều
+      kiện của Vietnam Airlines.
+    </span>
+    <div class="seperate"></div>
+</div>
+</body>
+
+</html>
