@@ -28,4 +28,6 @@ public class KhachHangDTO {
     private String cccd;
     private GioiTinhEnum gioiTinhEnum;
     private ActiveEnum trangThaiActive;
+    @Min(0)
+    private int point;
 }

@@ -5,6 +5,7 @@ import com.project.flightManagement.Enum.VeEnum;
 import com.project.flightManagement.Model.Ve;
 import com.project.flightManagement.Payload.ResponseData;
 import com.project.flightManagement.Repository.VeRepository;
+import com.project.flightManagement.Service.KhachHangService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,7 +23,8 @@ import java.util.Optional;
 public class PaymentController {
     @Autowired
     private final VeRepository veRepo;
-
+    @Autowired
+    private KhachHangService khService;
     public PaymentController(VeRepository veRepo) {
         this.veRepo = veRepo;
     }
@@ -50,8 +52,8 @@ public class PaymentController {
                     Ve ve = optionalVe.get();
                     ve.setTrangThai(VeEnum.BOOKED); // Cập nhật trạng thái vé
                     veRepo.save(ve);
-
-                    response.setMessage("Thanh toán thành công cho vé " + ve.getIdVe());
+                    boolean rs = khService.updatePoint(1, (int) (ve.getGiaVe()*5/100), false);
+                    response.setMessage("Thanh toán thành công cho vé " + ve.getIdVe() + rs);
                     response.setStatusCode(200); // OK
                 } else {
                     response.setMessage("Vé không tồn tại." + "ticketId: "+ticketId);
