@@ -2,8 +2,10 @@ package com.project.flightManagement.Service.Impl;
 
 import com.project.flightManagement.DTO.HanhKhachDTO.HanhKhachCreateDTO;
 import com.project.flightManagement.DTO.HanhKhachDTO.HanhKhachUpdateDTO;
+import com.project.flightManagement.DTO.VeDTO.VeCreateDTO;
 import com.project.flightManagement.DTO.VeDTO.VeDTO;
 import com.project.flightManagement.DTO.VeDTO.VeUpdateDTO;
+import com.project.flightManagement.DTO.VeDTO.VeUpdateHanhKhachDTO;
 import com.project.flightManagement.Exception.IdMismatchException;
 import com.project.flightManagement.Exception.NoUpdateRequiredException;
 import com.project.flightManagement.Exception.ResourceNotFoundException;
@@ -35,6 +37,7 @@ public class VeServiceImpl implements VeService {
     @Autowired
     private VeRepository veRepository;
     @Autowired
+    @Lazy
     private VeMapper veMapper;
     @Autowired
     private KhachHangRepository khachHangRepository;
@@ -144,7 +147,39 @@ public class VeServiceImpl implements VeService {
     }
 
     @Override
-    public Optional<Ve> getVeById(int idVe) {
-        return veRepository.findById(idVe);
+    public VeDTO getVeById(int idVe) {
+        Optional<Ve> ve = veRepository.findById(idVe);
+        if (ve.isEmpty()) {
+            return null;
+        }
+        return veMapper.toDto(ve.get());
+    }
+
+    @Override
+    public boolean createVe(VeCreateDTO veCreateDTO) {
+        try {
+            Ve ve = veMapper.toEntity(veCreateDTO);
+            veRepository.save(ve);
+            return true;
+        }catch (Exception e) {
+            System.out.println("loi tao ve: " + e);
+            return false;
+        }
+    }
+
+    @Override
+    public boolean updateHanhKhachVe(VeUpdateHanhKhachDTO veUpdateHanhKhachDTO) {
+        try {
+            Optional<Ve> veOptional = veRepository.findById(veUpdateHanhKhachDTO.getIdVe());
+            Optional<HanhKhach> hanhKhach = hanhKhachService.getHanhKhachById(veUpdateHanhKhachDTO.getIdHanhKhach());
+            Ve ve = veOptional.get();
+            ve.setHanhKhach(hanhKhach.get());
+            ve.setTrangThai(veUpdateHanhKhachDTO.getTrangThai());
+            veRepository.save(ve);
+            return true;
+        } catch (Exception e) {
+            System.out.println("Ham updateHanhKhachVe: " + e);
+            return false;
+        }
     }
 }

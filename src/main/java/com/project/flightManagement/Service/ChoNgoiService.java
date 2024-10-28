@@ -18,4 +18,6 @@ public interface ChoNgoiService {
     public List<ChoNgoiDTO> getAllChoNgoiByIdChuyenBayandHangVe(int idCB, int hangVe);
     public Optional<ChoNgoiDTO> blockChoNgoi(int id);
     public Optional<ChoNgoiDTO> unblockChoNgoi(int id);
+
+    Optional<ChoNgoi> getChoNgoiEntityById(int idChoNgoi);
 }

@@ -1,6 +1,7 @@
 package com.project.flightManagement.Service;
 
 import com.project.flightManagement.DTO.ChuyenBayDTO.ChuyenBayDTO;
+import com.project.flightManagement.Model.ChuyenBay;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -18,4 +19,6 @@ public interface ChuyenBayService {
 
     public Optional<ChuyenBayDTO> getChuyenBayById(int  id);
     public List<ChuyenBayDTO> searchFlights(String departureLocation, String arrivalLocation, Date departureDate, int numberOfTickets);
+
+    public ChuyenBay getChuyenBayEntityById(int idChuyenBay);
 }

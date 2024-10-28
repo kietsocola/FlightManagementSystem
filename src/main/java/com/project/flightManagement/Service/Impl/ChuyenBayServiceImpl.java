@@ -81,4 +81,10 @@ public class ChuyenBayServiceImpl implements ChuyenBayService {
         Optional<ChuyenBay> cb = repo.findById(id);
         return cb.map(ChuyenBayMapper::toDTO);
     }
+
+    @Override
+    public ChuyenBay getChuyenBayEntityById(int idChuyenBay) {
+        Optional<ChuyenBay> chuyenBayOptional = repo.findById(idChuyenBay);
+        return chuyenBayOptional.get();
+    }
 }

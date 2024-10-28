@@ -152,4 +152,10 @@ public class ChoNgoiServicelmpl implements ChoNgoiService {
         }
     }
 
+    @Override
+    public Optional<ChoNgoi> getChoNgoiEntityById(int idChoNgoi) {
+        Optional<ChoNgoi> choNgoiOptional = cnRepo.findById(idChoNgoi);
+        return choNgoiOptional;
+    }
+
 }
