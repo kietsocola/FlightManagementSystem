@@ -1,7 +1,8 @@
-package com.project.flightManagement.Service;
+package com.project.flightManagement.Security;
 
 import com.project.flightManagement.Model.Quyen;
 import com.project.flightManagement.Model.TaiKhoan;
+import com.project.flightManagement.Service.TaiKhoanService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;

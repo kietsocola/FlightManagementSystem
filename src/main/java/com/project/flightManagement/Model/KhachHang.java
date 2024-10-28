@@ -1,5 +1,6 @@
 package com.project.flightManagement.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.flightManagement.Enum.ActiveEnum;
 import com.project.flightManagement.Enum.ChucVuEnum;
 import com.project.flightManagement.Enum.GioiTinhEnum;
@@ -40,8 +41,9 @@ public class KhachHang {
     private String cccd;
 
 //     Mối quan hệ 1-1 tùy chọn với Account
-//    @OneToOne(mappedBy = "khachHang", optional = true)
-//    private TaiKhoan taiKhoan;
+    @JsonIgnore
+    @OneToOne(mappedBy = "khachHang", optional = true)
+    private TaiKhoan taiKhoan;
 
     @Column(name = "gioi_tinh")
     @Enumerated(EnumType.STRING)

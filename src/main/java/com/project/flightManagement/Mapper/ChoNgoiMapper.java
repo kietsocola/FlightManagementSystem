@@ -5,31 +5,23 @@ import com.project.flightManagement.Model.ChoNgoi;
 
 public class ChoNgoiMapper {
     public static ChoNgoiDTO toDTO(ChoNgoi choNgoi) {
-        if (choNgoi == null) {
-            return null;
-        }
-
-        return new ChoNgoiDTO(
-                choNgoi.getIdChoNgoi(),
-                choNgoi.getVe().getIdVe(),
-                choNgoi.getRowIndex(),
-                choNgoi.getColumnIndex(),
-                choNgoi.getVe().getTrangThai()
-        );
+        ChoNgoiDTO choNgoiDTO = new ChoNgoiDTO();
+        choNgoiDTO.setIdChoNgoi(choNgoi.getIdChoNgoi());
+        choNgoiDTO.setMayBay(choNgoi.getMayBay());
+        choNgoiDTO.setHangVe(choNgoi.getHangVe());
+        choNgoiDTO.setRowIndex(choNgoi.getRowIndex());
+        choNgoiDTO.setColumnIndex(choNgoi.getColumnIndex());
+        choNgoiDTO.setTrangThaiActive(choNgoi.getTrangThaiActive());
+        return choNgoiDTO;
     }
-
-    // Mapping from ChoNgoiDTO to ChoNgoi entity
     public static ChoNgoi toEntity(ChoNgoiDTO choNgoiDTO) {
-        if (choNgoiDTO == null) {
-            return null;
-        }
-
         ChoNgoi choNgoi = new ChoNgoi();
         choNgoi.setIdChoNgoi(choNgoiDTO.getIdChoNgoi());
-        choNgoi.setRowIndex(choNgoiDTO.getRow());
-        choNgoi.setColumnIndex(choNgoiDTO.getColumn());
-        choNgoi.getVe().setTrangThai(choNgoiDTO.getTrangThaiChoNgoi());
-
+        choNgoi.setMayBay(choNgoiDTO.getMayBay());
+        choNgoi.setHangVe(choNgoiDTO.getHangVe());
+        choNgoi.setRowIndex(choNgoiDTO.getRowIndex());
+        choNgoi.setColumnIndex(choNgoiDTO.getColumnIndex());
+        choNgoi.setTrangThaiActive(choNgoiDTO.getTrangThaiActive());
         return choNgoi;
     }
 }

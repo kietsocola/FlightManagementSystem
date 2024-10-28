@@ -14,6 +14,7 @@ import java.util.Optional;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
+@RequestMapping("/admin/hangbay")
 public class HangBayController {
     @Autowired
     private HangBayService hangBayService;

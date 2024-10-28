@@ -42,7 +42,7 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public String sendHtmlEMail(Email email, String resetLink, String userName) {
-        try {
+        try { // ham nay la gui html cho chuc nang quen mat khau
             // Create Thymeleaf context and add variables
             Context context = new Context();
             context.setVariable("name", userName);
@@ -69,7 +69,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public String sendEmailWithAttachment(Email email) {
+    public String sendEmailWithAttachment(Email email) { // co the khong can ham nay -> du
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
@@ -86,6 +86,33 @@ public class EmailServiceImpl implements EmailService {
             return "Email with attachment sent successfully";
         } catch (MessagingException e) {
             System.out.println("Failed to send email with attachment");
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public String sendHtmlVeOnlineEmail(Email email) { // ham gui ve online -> thieu file pdf gui kem theo
+        try {
+            Context context = new Context(); // dat cac bien de thay doi noi dung html o day
+//            context.setVariable("name", userName);
+//            context.setVariable("resetLink", resetLink);
+
+            // Process HTML template with Thymeleaf
+            String emailContent = templateEngine.process("email/veOnline", context);
+
+            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
+            mimeMessageHelper.setTo(email.getToEmail());
+            mimeMessageHelper.setSubject(email.getSubject());
+
+            // Set the processed HTML content
+            mimeMessageHelper.setText(emailContent, true);
+            mimeMessageHelper.setFrom(email_host);
+
+            javaMailSender.send(mimeMessage);
+            return "Email sent with Thymeleaf template successfully";
+        } catch (Exception e) {
+            System.out.println("Failed to send email with Thymeleaf HTML");
             throw new RuntimeException(e);
         }
     }

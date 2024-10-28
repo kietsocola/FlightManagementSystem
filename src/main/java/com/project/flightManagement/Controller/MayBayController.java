@@ -1,20 +1,23 @@
 package com.project.flightManagement.Controller;
 
+import com.project.flightManagement.DTO.ChoNgoiDTO.ChoNgoiDTO;
 import com.project.flightManagement.DTO.HangBayDTO.HangBayDTO;
 import com.project.flightManagement.DTO.MayBayDTO.MayBayDTO;
 import com.project.flightManagement.DTO.QuocGiaDTO.QuocGiaDTO;
 import com.project.flightManagement.Enum.ActiveEnum;
 import com.project.flightManagement.Mapper.HangBayMapper;
+import com.project.flightManagement.Mapper.HangVeMapper;
 import com.project.flightManagement.Mapper.MayBayMapper;
-import com.project.flightManagement.Model.HangBay;
-import com.project.flightManagement.Model.KhachHang;
-import com.project.flightManagement.Model.MayBay;
+import com.project.flightManagement.Model.*;
 import com.project.flightManagement.Payload.ResponseData;
 import com.project.flightManagement.Repository.HangBayRepository;
+import com.project.flightManagement.Service.ChoNgoiService;
 import com.project.flightManagement.Service.HangBayService;
+import com.project.flightManagement.Service.HangVeService;
 import com.project.flightManagement.Service.MayBayService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -25,12 +28,19 @@ import java.util.*;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
+@RequestMapping("/admin/maybay")
 public class MayBayController {
     @Autowired
     private MayBayService mayBayService;
     @Autowired
     private HangBayService hangBayService;
+    @Autowired
+    private HangVeService hangVeService;
+    @Autowired
+    private ChoNgoiService choNgoiService;
     private ResponseData response = new ResponseData();
+
+
 
     @GetMapping("/getPlane/{id}")
     public ResponseEntity<ResponseData> getPlaneById(@PathVariable int id) {
@@ -84,7 +94,7 @@ public class MayBayController {
     }
     @GetMapping("/getAllPlaneSorted")
     public ResponseEntity<ResponseData> getAllKhachHangSorted(@RequestParam(defaultValue = "idKhachHang") String sortBy,
-                                                        @RequestParam(defaultValue = "asc") String order){
+                                                              @RequestParam(defaultValue = "asc") String order){
         Iterable<MayBayDTO> listMbDTO = mayBayService.getAllMayBaySorted(sortBy, order);
         if(listMbDTO.iterator().hasNext()){
             response.setMessage("get list plane success!!");
@@ -100,10 +110,6 @@ public class MayBayController {
     }
     @GetMapping("/getPlaneByAirline/{idHangBay}")
     public ResponseEntity<ResponseData> getPlaneByAirLine(@PathVariable int idHangBay) {
-//        response.setMessage("hello");
-//        response.setStatusCode(200);
-//        response.setData(null);
-//        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         Optional<HangBayDTO> hangBayDTO = hangBayService.getHangBayById(idHangBay);
         if (hangBayDTO.isPresent()) {
             HangBay hangBay = hangBayDTO.map(HangBayMapper::toEntity).get();
@@ -140,19 +146,47 @@ public class MayBayController {
             response.setMessage("There are some fields invalid");
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
-        // Kiểm tra xem khDTO có khác null và có ít nhất một trường thông tin cần thiết không
         if (mbDTO != null && mbDTO.getSoHieu()!= null) {
             ResponseEntity<ResponseData> rs = checkExistSoHieu(mbDTO.getSoHieu());
             if(rs!=null){
                 return rs;
             }
-
-
-            // Nếu không có thông tin nào tồn tại, tiến hành lưu khách hàng mới
             Optional<MayBayDTO> savedMB = mayBayService.addNewMayBay(mbDTO);
+            try {
+                // id = 2 : ghế phổ thông
+                for(int iE = 1 ; iE <= savedMB.get().getSoCotGheThuong() ; iE++){
+                    for (int jE = 0 ; jE < savedMB.get().getSoHangGheThuong().length() ; jE++){
+                        ChoNgoiDTO cnDTO = new ChoNgoiDTO(HangVeMapper.toEntity(hangVeService.getHangVeById(2).get()),
+                                MayBayMapper.toEntity(savedMB.get()),
+                                savedMB.get().getSoHangGheThuong().charAt(jE),
+                                iE,
+                                ActiveEnum.ACTIVE
+                        );
+                        choNgoiService.addNewChoNgoi(cnDTO);
+                    }
+                }
+                // id = 1 : ghế thương gia
+                for(int iE = 1 ; iE <= savedMB.get().getSoCotGheVip() ; iE++){
+                    for (int jE = 0 ; jE < savedMB.get().getSoHangGheVip().length() ; jE++){
+                        ChoNgoiDTO cnDTO = new ChoNgoiDTO(HangVeMapper.toEntity(hangVeService.getHangVeById(1).get()),
+                                MayBayMapper.toEntity(savedMB.get()),
+                                savedMB.get().getSoHangGheThuong().charAt(jE),
+                                iE,
+                                ActiveEnum.ACTIVE
+                        );
+                        choNgoiService.addNewChoNgoi(cnDTO);
+                    }
+                }
+            } catch (Exception e) {
+                System.out.println("Cant add seat when add plane");
+                response.setStatusCode(400);
+                response.setMessage("Cant add seat when add plane");
+                response.setData(null);
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            }
             if (savedMB.isPresent()) {
                 response.setMessage("Save plane successfully!!");
-                response.setData(savedMB.get()); // Trả về dữ liệu của khách hàng đã lưu
+                response.setData(savedMB.get());
                 response.setStatusCode(201); // Created
                 return new ResponseEntity<>(response, HttpStatus.CREATED);
             } else {
@@ -163,7 +197,6 @@ public class MayBayController {
                 return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
             }
         } else {
-            // Xử lý trường hợp dữ liệu khách hàng không hợp lệ
             response.setMessage("Invalid plane data!!");
             response.setData(null);
             response.setStatusCode(400); // Bad Request
@@ -194,13 +227,51 @@ public class MayBayController {
                 }
 
                 Optional<MayBayDTO> updatedMB = mayBayService.updateMayBay(mbDTO);
+                Iterable<ChoNgoiDTO> choNgoiByMB = choNgoiService.getChoNgoiByMayBay(updatedMB.get());
+                if(choNgoiByMB.iterator().hasNext()) {
+                    for (ChoNgoiDTO cn : choNgoiByMB) {
+                        choNgoiService.deleteChoNgoi(cn);
+                    }
+                } else {
+                    System.out.println("Cant find any seat by plane when update plane!");
+                }
+                try {
+                    for(int iE  = 1 ; iE <= updatedMB.get().getSoCotGheThuong() ; iE++){
+                        for (int jE = 0 ; jE < updatedMB.get().getSoHangGheThuong().length() ; jE++){
+                            ChoNgoiDTO cnDTO = new ChoNgoiDTO(HangVeMapper.toEntity(hangVeService.getHangVeById(2).get()),
+                                    MayBayMapper.toEntity(updatedMB.get()),
+                                    updatedMB.get().getSoHangGheThuong().charAt(jE),
+                                    iE,
+                                    ActiveEnum.ACTIVE
+                            );
+                            choNgoiService.addNewChoNgoi(cnDTO);
+                        }
+                    }
+                    for(int iE = 1 ; iE <= updatedMB.get().getSoCotGheVip() ; iE++){
+                        for (int jE = 0 ; jE < updatedMB.get().getSoHangGheVip().length() ; jE++){
+                            ChoNgoiDTO cnDTO = new ChoNgoiDTO(HangVeMapper.toEntity(hangVeService.getHangVeById(1).get()),
+                                    MayBayMapper.toEntity(updatedMB.get()),
+                                    updatedMB.get().getSoHangGheThuong().charAt(jE),
+                                    iE,
+                                    ActiveEnum.ACTIVE
+                            );
+                            choNgoiService.addNewChoNgoi(cnDTO);
+                        }
+                    }
+                } catch (Exception e) {
+                    System.out.println("Cant add seat when add plane");
+                    response.setStatusCode(400);
+                    response.setMessage("Cant add seat when add plane");
+                    response.setData(null);
+                    return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+                }
+
                 if (updatedMB.isPresent()) {
                     response.setMessage("Update plane successfully!!");
                     response.setData(updatedMB.get());
                     response.setStatusCode(200); // OK
                     return new ResponseEntity<>(response, HttpStatus.OK);
                 } else {
-                    // Xử lý lỗi khi cập nhật không thành công
                     response.setMessage("Update plane unsuccessfully!!");
                     response.setData(null);
                     response.setStatusCode(500); // Internal Server Error
@@ -220,6 +291,7 @@ public class MayBayController {
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
     }
+
     public ResponseEntity<ResponseData> checkExistSoHieu(String soHieu){
         Optional<MayBayDTO> existingMBBySoHieu = mayBayService.getMayBayBySoHieu(soHieu);
         if (existingMBBySoHieu.isPresent()) {
@@ -238,7 +310,12 @@ public class MayBayController {
         if(existingMB.isPresent()){
             if(existingMB.get().getTrangThaiActive() == ActiveEnum.ACTIVE){
                 Optional<MayBayDTO> blockMB = mayBayService.blockMayBay(existingMB.get().getIdMayBay());
+
                 if(blockMB.isPresent()){
+                    Iterable<ChoNgoiDTO> listCN = choNgoiService.getChoNgoiByMayBay(blockMB.get());
+                    for(ChoNgoiDTO cn : listCN) {
+                        choNgoiService.blockChoNgoi(cn.getIdChoNgoi());
+                    }
                     response.setMessage("Block plane successfully!!");
                     response.setData(blockMB.get());
                     response.setStatusCode(200); // OK
@@ -252,7 +329,12 @@ public class MayBayController {
                 }
             } else {
                 Optional<MayBayDTO> unblockMB = mayBayService.unblockMayBay(existingMB.get().getIdMayBay());
+
                 if(unblockMB.isPresent()){
+                    Iterable<ChoNgoiDTO> listCN = choNgoiService.getChoNgoiByMayBay(unblockMB.get());
+                    for(ChoNgoiDTO cn : listCN) {
+                        choNgoiService.unblockChoNgoi(cn.getIdChoNgoi());
+                    }
                     response.setMessage("Unblock plane successfully!!");
                     response.setData(unblockMB.get());
                     response.setStatusCode(200); // OK

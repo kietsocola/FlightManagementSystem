@@ -10,4 +10,6 @@ public interface EmailService {
     String sendTextEmail(Email email);
     String sendHtmlEMail(Email email, String resetLink, String userName);
     String sendEmailWithAttachment(Email email);
+
+    String sendHtmlVeOnlineEmail(Email email);
 }

@@ -56,7 +56,7 @@ public class AuthController {
                 // Tạo access token và refresh token
                 String accessToken = jwtTokenProvider.generateToken(loginDTO.getUserName());
                 String refreshToken = jwtTokenProvider.generateRefreshToken(loginDTO.getUserName());
-                System.out.println("refreshToken ~ login: " + refreshToken);
+//                System.out.println("refreshToken ~ login: " + refreshToken);
 
                 // Cấu hình cookie
                 ResponseCookie responseCookie = ResponseCookie.from("refreshToken", refreshToken)
@@ -74,11 +74,6 @@ public class AuthController {
                         ActiveEnum.ACTIVE
                 );
                 boolean isSaveSuccess = refreshTokenService.saveRefreshTokenIntoDatabase(refreshTokenDTO);
-                if(isSaveSuccess) {
-                    System.out.println("luu thanh cong");
-                }else {
-                    System.out.println("luu that bai");
-                }
 
                 // Trả về phản hồi thành công
                 responseData.setStatusCode(200);
@@ -287,7 +282,7 @@ public class AuthController {
     }
 
     @PostMapping("/reset_password")
-    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordDTO resetPasswordDTO) {
+    public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordDTO resetPasswordDTO) {
 
         ResponseData responseData = new ResponseData();
         String refreshPasswordToken = resetPasswordDTO.getRefreshPasswordToken();
@@ -296,9 +291,9 @@ public class AuthController {
         // Kiểm tra token có hợp lệ không
         if (refreshPasswordToken == null || !jwtTokenProvider.validateJwtToken(refreshPasswordToken) || invalidTokenService.existsByIdToken(refreshPasswordToken)) {
             responseData.setStatusCode(400);
-            responseData.setMessage("Invalid token");
+            responseData.setMessage("Token không hợp lệ");
             responseData.setData("");
-            return new ResponseEntity<>(responseData, HttpStatus.OK);
+            return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
         }
 
         // Lấy email từ token
@@ -311,7 +306,7 @@ public class AuthController {
         // So sánh thời gian hết hạn với thời gian hiện tại
         if (expirationTime.isBefore(LocalDateTime.now())) {
             responseData.setStatusCode(400);
-            responseData.setMessage("Token has expired");
+            responseData.setMessage("Token đã hết hạn");
             responseData.setData("");
             return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
         }
@@ -320,28 +315,35 @@ public class AuthController {
         Optional<TaiKhoan> taiKhoanOptional = taiKhoanService.getTaiKhoanByEmail(email);
         if (taiKhoanOptional.isEmpty()) {
             responseData.setStatusCode(404);
-            responseData.setMessage("User not found");
+            responseData.setMessage("Không tìm thấy người dùng");
             responseData.setData("");
             return new ResponseEntity<>(responseData, HttpStatus.NOT_FOUND);
         }
 
         // Lấy tài khoản và cập nhật mật khẩu mới
         TaiKhoan taiKhoan = taiKhoanOptional.get();
+        if (!resetPasswordDTO.getNewPassword().equals(resetPasswordDTO.getReNewPassword())) {
+            responseData.setStatusCode(400);
+            responseData.setMessage("Mật khẩu nhập lại không khớp");
+            responseData.setData("");
+            return new ResponseEntity<>(responseData, HttpStatus.CONFLICT);
+        }
         taiKhoan.setMatKhau(resetPasswordDTO.getNewPassword());
 
         // Cập nhật tài khoản với mật khẩu mới
         boolean isSuccess = taiKhoanService.updateTaiKhoan_RefreshPassword(taiKhoan);
-        // Loai bo token
-        InvalidTokenDTO invalidTokenDTO = new InvalidTokenDTO(idRefreshPasswordToken, expirationDate);
-        invalidTokenService.saveInvalidTokenIntoDatabase(invalidTokenDTO);
+
+        // Loại bỏ token
         if (isSuccess) {
+            InvalidTokenDTO invalidTokenDTO = new InvalidTokenDTO(idRefreshPasswordToken, expirationDate);
+            invalidTokenService.saveInvalidTokenIntoDatabase(invalidTokenDTO);
             responseData.setStatusCode(200);
-            responseData.setMessage("Password has been reset successfully");
+            responseData.setMessage("Đặt lại mật khẩu thành công");
             responseData.setData("");
             return new ResponseEntity<>(responseData, HttpStatus.OK);
         } else {
             responseData.setStatusCode(500);
-            responseData.setMessage("Failed to reset password");
+            responseData.setMessage("Đặt lại mật khẩu thất bại");
             responseData.setData("");
             return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
         }

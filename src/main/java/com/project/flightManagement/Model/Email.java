@@ -13,8 +13,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Email {
-    private String toEmail;
-    private String subject;
-    private String messageBody;
-    private DataSource attachment;
+    private String toEmail; // gui cho email nao
+    private String subject; // tieu de la gi
+    private String messageBody; // noi dung
+    private DataSource attachment; // neu co file gui kem
 }

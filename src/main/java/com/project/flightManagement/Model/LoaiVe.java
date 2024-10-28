@@ -1,5 +1,6 @@
 package com.project.flightManagement.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.flightManagement.Enum.ActiveEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -26,6 +27,7 @@ public class LoaiVe {
     @Column(name = "mo_ta")
     private String moTa;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "loaiVe")
     private List<Ve> listVe;
 

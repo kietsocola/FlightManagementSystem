@@ -13,6 +13,7 @@ import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,5 +35,10 @@ public class LoaiVeServiceImpl implements LoaiVeService {
                 () -> new ResourceNotFoundException("Loai ve not found with ID: " + idLoaiVe)
         );
         return loaiVeMapper.toDto(loaiVe);
+    }
+
+    @Override
+    public Optional<LoaiVe> getLoaiVeEntityById(int idLoaiVe) {
+        return loaiVeRepository.findById(idLoaiVe);
     }
 }

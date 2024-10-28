@@ -25,7 +25,6 @@ public class MayBay {
     private String tenMayBay;
 
     @ManyToOne
-    @JsonIgnore
     @JoinColumn(name = "id_hang_bay", referencedColumnName = "id_hang_bay") // Khóa ngoại đến bảng HangBay
     private HangBay hangBay;
 
@@ -53,10 +52,10 @@ public class MayBay {
     private int namSanXuat;
 
     @OneToMany(mappedBy = "mayBay")
+    @JsonIgnore
     private List<ChoNgoi> choNgoiList;
 
     @Column(name = "active_status")
     @Enumerated(EnumType.STRING)
     private ActiveEnum trangThaiActive;
-
 }

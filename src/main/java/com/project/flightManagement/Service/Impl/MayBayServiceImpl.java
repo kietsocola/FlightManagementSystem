@@ -98,10 +98,14 @@ public class MayBayServiceImpl implements MayBayService {
     @Override
     public Optional<MayBayDTO> addNewMayBay(MayBayDTO mbDTO){
         try {
+            System.out.println("add plane success");
+            System.out.println(mbDTO.toString());
             MayBay mb = MayBayMapper.toEntity(mbDTO);
             MayBay mbSaved = mbRepo.save(mb);
             return Optional.of(MayBayMapper.toDTO(mbSaved));
         }catch (Exception e){
+            System.out.println("add plane failed");
+            System.out.println(mbDTO.toString());
             System.err.println("Error occurred while save plane: " + e.getMessage());
             return null;
         }

@@ -20,6 +20,7 @@ import java.util.*;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
+@RequestMapping("/admin/sanbay")
 public class SanBayController {
     @Autowired
     private SanBayService sanBayService;

@@ -1,5 +1,7 @@
 package com.project.flightManagement.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.project.flightManagement.Enum.ActiveEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -25,6 +27,7 @@ public class Quyen {
     @OneToMany(mappedBy = "quyen", fetch = FetchType.EAGER)
     private List<TaiKhoan> taiKhoanList;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "quyen")
     private List<ChiTietQuyen> chiTietQuyenList;
 

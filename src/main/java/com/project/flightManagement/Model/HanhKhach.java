@@ -1,5 +1,6 @@
 package com.project.flightManagement.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.flightManagement.Enum.ActiveEnum;
 import com.project.flightManagement.Enum.GioiTinhEnum;
 import jakarta.persistence.*;
@@ -42,8 +43,10 @@ public class HanhKhach {
     private String cccd;
     @Column(name = "ho_chieu")
     private String hoChieu;
-//    @OneToMany(mappedBy = "hanhKhach")
-//    private List<Ve> ve;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "hanhKhach")
+    private List<Ve> ve;
     @Column(name = "gioi_tinh")
     @Enumerated(EnumType.STRING)
     private GioiTinhEnum gioiTinhEnum;

@@ -31,17 +31,21 @@ public class Ve {
     @Column(name = "gia_ve", nullable = false)
     private double giaVe;
 
-    @OneToOne
-    @JoinColumn(name = "id_cho_ngoi")
+    @OneToOne(optional = false)
+    @JoinColumn(name = "id_cho_ngoi", nullable = false)
     private ChoNgoi choNgoi;
 
     @ManyToOne
-    @JoinColumn(name="id_hanh_khach")
+    @JoinColumn(name = "id_hanh_khach", nullable = true)
     private HanhKhach hanhKhach;
 
     @ManyToOne
     @JoinColumn(name = "idLoaiVe", referencedColumnName = "id_loai_ve", nullable = false)
     private LoaiVe loaiVe;
+
+    @ManyToOne
+    @JoinColumn(name = "id_hang_ve")
+    private HangVe hangVe;
 
     @Column(name = "active_status")
     @Enumerated(EnumType.STRING)
