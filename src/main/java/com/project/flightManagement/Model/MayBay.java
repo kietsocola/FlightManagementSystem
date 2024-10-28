@@ -58,4 +58,9 @@ public class MayBay {
     @Column(name = "active_status")
     @Enumerated(EnumType.STRING)
     private ActiveEnum trangThaiActive;
+
+
+    @ManyToOne
+    @JoinColumn(name = "id_san_bay")
+    private SanBay sanBay ;
 }

@@ -79,5 +79,7 @@ public class ChuyenBay {
     @Enumerated(EnumType.STRING)
     private ActiveEnum trangThaiActive;
 
-
+    @OneToMany(mappedBy = "chuyenBay")
+    @JsonIgnore
+    private List<NhanVien> nhanvienList;
 }
