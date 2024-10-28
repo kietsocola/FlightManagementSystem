@@ -16,7 +16,7 @@ public class TuyenBay_VeDTO {
     private int idTuyenBay;
     private SanBay_VeDTO SanBayBatDau;
     private SanBay_VeDTO SanBayKetThuc;
-    private LocalTime thoiGianChuyenBay;
+    private int thoiGianChuyenBay;
     private int khoangCach;
     private ActiveEnum status;
 }

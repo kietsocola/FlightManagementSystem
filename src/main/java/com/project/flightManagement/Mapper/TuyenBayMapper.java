@@ -48,9 +48,7 @@ public class TuyenBayMapper {
         tbDTO.setSanBayBatDau(SanBayMapper.toSanBay_veDTO(tb.getSanBayBatDau()));
         tbDTO.setSanBayKetThuc(SanBayMapper.toSanBay_veDTO(tb.getSanBayKetThuc()));
 
-//có sửa qua tay LOc
-        tbDTO.setThoiGianChuyenBay(LocalTime.ofSecondOfDay(tb.getThoiGianChuyenBay()));
-
+        tbDTO.setThoiGianChuyenBay(tb.getThoiGianChuyenBay());
 
         tbDTO.setKhoangCach(tb.getKhoangCach());
         tbDTO.setStatus(tb.getStatus());

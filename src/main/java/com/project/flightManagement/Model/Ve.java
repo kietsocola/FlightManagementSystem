@@ -31,8 +31,8 @@ public class Ve {
     @Column(name = "gia_ve", nullable = false)
     private double giaVe;
 
-    @OneToOne
-    @JoinColumn(name = "id_cho_ngoi")
+    @OneToOne(optional = false)
+    @JoinColumn(name = "id_cho_ngoi", nullable = false)
     private ChoNgoi choNgoi;
 
     @ManyToOne
