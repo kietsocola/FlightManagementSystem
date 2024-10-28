@@ -286,7 +286,13 @@ public class AuthController {
 
         ResponseData responseData = new ResponseData();
         String refreshPasswordToken = resetPasswordDTO.getRefreshPasswordToken();
-        String idRefreshPasswordToken = jwtTokenProvider.getIdTokenFromJwtToken(refreshPasswordToken);
+        if (!isValidJwtFormat(refreshPasswordToken)) {
+            responseData.setStatusCode(400);
+            responseData.setMessage("Token không hợp lệ");
+            responseData.setData("");
+            return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
+        }
+        String idRefreshPasswordToken = jwtTokenProvider.getIdTokenFromExpiredJwtToken(refreshPasswordToken);
 
         // Kiểm tra token có hợp lệ không
         if (refreshPasswordToken == null || !jwtTokenProvider.validateJwtToken(refreshPasswordToken) || invalidTokenService.existsByIdToken(refreshPasswordToken)) {
@@ -363,5 +369,10 @@ public class AuthController {
             }
         }
         return refreshToken;
+    }
+
+    private boolean isValidJwtFormat(String token) {
+        // Kiểm tra token không null và có đúng định dạng JWT
+        return token != null && token.split("\\.").length == 3;
     }
 }
