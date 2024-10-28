@@ -13,11 +13,7 @@ public class TuyenBayMapper {
         tbDTO.setIdTuyenBay(tb.getIdTuyenBay());
         tbDTO.setSanBayBatDau(tb.getSanBayBatDau());
         tbDTO.setSanBayKetThuc(tb.getSanBayKetThuc());
-
-        if (tb.getThoiGianChuyenBay() != null) {
-            LocalTime thoiGianChuyenBay = tb.getThoiGianChuyenBay().toLocalDateTime().toLocalTime();
-            tbDTO.setThoiGianChuyenBay(thoiGianChuyenBay);
-        }
+        tbDTO.setThoiGianChuyenBay(tb.getThoiGianChuyenBay());
 
         tbDTO.setKhoangCach(tb.getKhoangCach());
         tbDTO.setStatus(tb.getTrangThaiActive());
@@ -31,13 +27,7 @@ public class TuyenBayMapper {
         tb.setIdTuyenBay(tbDTO.getIdTuyenBay());
         tb.setSanBayBatDau(tbDTO.getSanBayBatDau());
         tb.setSanBayKetThuc(tbDTO.getSanBayKetThuc());
-
-        if (tbDTO.getThoiGianChuyenBay() != null) {
-            Timestamp thoiGianChuyenBay = Timestamp
-                    .valueOf(tbDTO.getThoiGianChuyenBay().atDate(java.time.LocalDate.now()));
-            tb.setThoiGianChuyenBay(thoiGianChuyenBay);
-        }
-
+        tb.setThoiGianChuyenBay(tbDTO.getThoiGianChuyenBay());
         tb.setKhoangCach(tbDTO.getKhoangCach());
         tb.setTrangThaiActive(tbDTO.getStatus());
 

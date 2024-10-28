@@ -33,8 +33,9 @@ public class MayBay {
     @Column(name = "icao_may_bay", length = 6)
     private String icaoMayBay;  // Mã ICAO có độ dài 4 ký tự
 
-    @OneToMany(mappedBy = "mayBay")
-    private List<ChuyenBay> chuyenBayList;
+    @OneToOne
+    @JoinColumn(name = "id_chuyen_bay")
+    private ChuyenBay chuyenBay;
 
     @Column(name = "so_luong_ghe")
     private int soLuongGhe;
@@ -51,4 +52,8 @@ public class MayBay {
     @Column(name = "active_status")
     @Enumerated(EnumType.STRING)
     private ActiveEnum trangThaiActive;
+
+    @ManyToOne
+    @JoinColumn(name = "id_san_bay")
+    private SanBay sanBay ;
 }

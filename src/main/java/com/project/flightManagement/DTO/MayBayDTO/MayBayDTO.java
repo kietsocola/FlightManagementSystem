@@ -1,7 +1,9 @@
 package com.project.flightManagement.DTO.MayBayDTO;
 
 import com.project.flightManagement.Enum.ActiveEnum;
+import com.project.flightManagement.Model.ChuyenBay;
 import com.project.flightManagement.Model.HangBay;
+import com.project.flightManagement.Model.SanBay;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -26,4 +28,6 @@ public class MayBayDTO {
     private String soHieu;
     private int namSanXuat;
     private ActiveEnum trangThaiActive;
+    private SanBay sanBay ;
+    private ChuyenBay chuyenBay;
 }

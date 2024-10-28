@@ -9,7 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.sql.Date;
 import java.util.List;
 
 @Data
@@ -56,7 +56,11 @@ public class NhanVien {
     @Enumerated(EnumType.STRING)
     private ActiveEnum trangThaiActive;
 
-    @Column(name = "chuc_vu")
-    @Enumerated(EnumType.STRING)
-    private ChucVuEnum chucVu;
+    @ManyToOne
+    @JoinColumn(name = "idChucVu")
+    private ChucVu chucVu ;
+
+    @ManyToOne
+    @JoinColumn(name = "id_chuyen_bay")
+    private ChuyenBay chuyenBay ;
 }

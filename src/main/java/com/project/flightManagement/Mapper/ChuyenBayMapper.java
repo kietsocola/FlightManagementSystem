@@ -10,7 +10,6 @@ public class ChuyenBayMapper {
         ChuyenBayDTO dto = new ChuyenBayDTO();
         dto.setIdChuyenBay(chuyenBay.getIdChuyenBay());
         dto.setTuyenBay(TuyenBayMapper.toDTO(chuyenBay.getTuyenBay()));
-        dto.setMayBay(MayBayMapper.toDTO(chuyenBay.getMayBay()));
         dto.setCong(CongMapper.toDTO(chuyenBay.getCong()));
         dto.setThoiGianBatDauDuTinh(chuyenBay.getThoiGianBatDauDuTinh());
         dto.setThoiGianKetThucDuTinh(chuyenBay.getThoiGianKetThucDuTinh());
@@ -31,7 +30,6 @@ public class ChuyenBayMapper {
         ChuyenBay chuyenBay = new ChuyenBay();
         chuyenBay.setIdChuyenBay(dto.getIdChuyenBay());
         chuyenBay.setTuyenBay(TuyenBayMapper.toEntity(dto.getTuyenBay()));
-        chuyenBay.setMayBay(MayBayMapper.toEntity(dto.getMayBay()));
         chuyenBay.setCong(CongMapper.toEntity(dto.getCong()));
         chuyenBay.setThoiGianBatDauDuTinh(dto.getThoiGianBatDauDuTinh());
         chuyenBay.setThoiGianKetThucDuTinh(dto.getThoiGianKetThucDuTinh());

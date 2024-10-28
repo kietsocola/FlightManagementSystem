@@ -4,5 +4,6 @@ public enum ChuyenBayEnum {
     SCHEDULED,
     DELAYED,
     CANCELED,
-    COMPLETED
+    COMPLETED,
+    IN_FLIGHT
 }

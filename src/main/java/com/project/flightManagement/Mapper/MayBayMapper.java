@@ -14,6 +14,8 @@ public class MayBayMapper {
         mbDTO.setSoLuongGhe(mb.getSoLuongGhe());
         mbDTO.setNamSanXuat(mb.getNamSanXuat());
         mbDTO.setTrangThaiActive(mb.getTrangThaiActive());
+        mbDTO.setSanBay(mb.getSanBay());
+        mbDTO.setChuyenBay(mb.getChuyenBay());
         return mbDTO;
     }
     public static MayBay toEntity(MayBayDTO mbDTO){
@@ -26,6 +28,8 @@ public class MayBayMapper {
         mb.setSoLuongGhe(mbDTO.getSoLuongGhe());
         mb.setNamSanXuat(mbDTO.getNamSanXuat());
         mb.setTrangThaiActive(mbDTO.getTrangThaiActive());
+        mb.setSanBay(mbDTO.getSanBay());
+        mb.setChuyenBay(mbDTO.getChuyenBay());
         return mb;
     }
 }

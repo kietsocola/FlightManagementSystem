@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Time;
 import java.time.LocalTime;
 
 @Data
@@ -16,14 +17,14 @@ public class TuyenBayDTO {
 
     private int idTuyenBay;
 
-//    @NotNull(message = "Không đúng thông tin sân bay khởi hành")
+    @NotNull(message = "Không đúng thông tin sân bay khởi hành")
     private SanBay SanBayBatDau;
 
-//    @NotNull(message = "Không đúng thông tin sân bay hạ cánh")
+    @NotNull(message = "Không đúng thông tin sân bay hạ cánh")
     private SanBay SanBayKetThuc;
 
     @NotNull(message = "Không để trống thời gian của chuyến bay")
-    private LocalTime thoiGianChuyenBay;
+    private int thoiGianChuyenBay;
 
     @NotNull(message = "Không để trống khoảng cách của chuyến bay")
     private int khoangCach;

@@ -154,7 +154,6 @@ public class NhanVienController {
             response.setMessage("There are some fields invalid");
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
-        System.out.println(nvDTO.getEmail());
 
 
         if(existInfo(nvDTO,"email") != null){

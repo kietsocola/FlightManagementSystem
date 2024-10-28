@@ -9,6 +9,7 @@ import com.project.flightManagement.Enum.ChuyenBayEnum;
 import com.project.flightManagement.Model.Cong;
 import com.project.flightManagement.Model.MayBay;
 import com.project.flightManagement.Model.TuyenBay;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -28,13 +29,12 @@ public class ChuyenBayDTO {
     @NotNull(message = "ID chuyến bay không được để trống")
     private int idChuyenBay;
 
-    @NotNull(message = "Tuyến bay không được để trống")
+    @NotNull(message = "Hãy chọn sân bay bắt đầu , sân bay kết thúc")
+    @Valid
     private TuyenBayDTO tuyenBay;
 
-    @NotNull(message = "Máy bay không được để trống")
-    private MayBayDTO mayBay;
-
     @NotNull(message = "Cổng không được để trống")
+    @Valid
     private CongDTO cong;
 
     @NotNull(message = "Thời gian bắt đầu dự tính không được để trống")

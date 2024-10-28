@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Table(name = "sanbay")
 @Data
@@ -33,11 +35,14 @@ public class SanBay {
 
     // Mapping to ThanhPho entity
     @OneToOne
-    @JsonIgnore
     @JoinColumn(name = "id_thanh_pho", nullable = false)
     private ThanhPho thanhPho;
     @Column(name = "active_status")
     @Enumerated(EnumType.STRING)
     private ActiveEnum trangThaiActive;
+
+    @OneToMany(mappedBy = "sanBay")
+    @JsonIgnore
+    private List<MayBay> listMayBay ;
 }
 

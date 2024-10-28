@@ -26,11 +26,11 @@ public class SanBayServicelmpl implements SanBayService {
     public Optional<SanBayDTO> getSanBayById(int id) {
         try{
             Optional<SanBay> sanBay = sanBayRepository.findById(id);
-            Optional<SanBayDTO> sanBayDTO = sanBay.map(SanBayMapper::toDTO);
-            return sanBayDTO;
+            return sanBay.map(SanBayMapper::toDTO);
         } catch (Exception e) {
             System.err.println("Error occurred while get airport: " + e.getMessage());
-            return null;
+            Optional<SanBay> sanBay = Optional.of(new SanBay());
+            return sanBay.map(SanBayMapper::toDTO);
         }
     }
     @Override

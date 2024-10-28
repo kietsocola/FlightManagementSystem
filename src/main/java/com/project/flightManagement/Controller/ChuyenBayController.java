@@ -1,6 +1,7 @@
 package com.project.flightManagement.Controller;
 
 import com.project.flightManagement.DTO.ChuyenBayDTO.ChuyenBayDTO;
+import com.project.flightManagement.Enum.ChuyenBayEnum;
 import com.project.flightManagement.Payload.ResponseData;
 import com.project.flightManagement.Service.ChuyenBayService;
 import jakarta.validation.Valid;
@@ -10,9 +11,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @RestController
 @RequestMapping("/admin/chuyenbay")
@@ -68,6 +69,24 @@ public class ChuyenBayController {
             response.setMessage("There are some fields invalid");
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
+        Iterable<ChuyenBayDTO> listCB = cbservice.getAllChuyenBay();
+        ChuyenBayEnum scheduled = ChuyenBayEnum.SCHEDULED;
+
+        for(ChuyenBayDTO cb : listCB){
+            ChuyenBayEnum status = cb.getTrangThai() ;
+            if (cb.getIdChuyenBay() != cbDTO.getIdChuyenBay()
+                    && cb.getTuyenBay().getIdTuyenBay() == cbDTO.getTuyenBay().getIdTuyenBay()
+                    && !isDifferenceGreaterThanTwoHour(cb.getThoiGianBatDauDuTinh() , cbDTO.getThoiGianBatDauThucTe())
+                    && scheduled.name().equals(status.name())){
+                System.out.println("id chuyen bay : " +  cb.getIdChuyenBay());
+                System.out.println("khoang thoi gian >  2 gio : " + !isDifferenceGreaterThanTwoHour(cb.getThoiGianBatDauDuTinh() , cbDTO.getThoiGianBatDauThucTe()));
+                response.setMessage("Tuyến bay và thời gian này gần với chuyến bay : " + cb.getIdChuyenBay());
+                response.setData(null);
+                response.setStatusCode(409);
+                return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+            }
+        }
+
 
         Optional<ChuyenBayDTO> saveCB = cbservice.addChuyenBay(cbDTO);
         if (saveCB.isPresent()) {
@@ -83,6 +102,8 @@ public class ChuyenBayController {
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+
 
     @GetMapping("/getchuyenbaybyid/{idChuyenBay}")
     public ResponseEntity<ResponseData> getchuyenbaybyid(@PathVariable int idChuyenBay){
@@ -113,6 +134,53 @@ public class ChuyenBayController {
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
 
+        Iterable<ChuyenBayDTO> listCB = cbservice.getAllChuyenBay();
+        ChuyenBayEnum scheduled = ChuyenBayEnum.SCHEDULED;
+
+        for(ChuyenBayDTO cb : listCB){
+            ChuyenBayEnum status = cb.getTrangThai() ;
+            if (cb.getIdChuyenBay() != cbDTO.getIdChuyenBay()
+                    && cb.getTuyenBay().getIdTuyenBay() == cbDTO.getTuyenBay().getIdTuyenBay()
+                    && !isDifferenceGreaterThanTwoHour(cb.getThoiGianBatDauDuTinh() , cbDTO.getThoiGianBatDauThucTe())
+                    && scheduled.name().equals(status.name())){
+                System.out.println("id chuyen bay : " +  cb.getIdChuyenBay());
+                System.out.println("khoang thoi gian >  2 gio : " + !isDifferenceGreaterThanTwoHour(cb.getThoiGianBatDauDuTinh() , cbDTO.getThoiGianBatDauThucTe()));
+                response.setMessage("Tuyến bay và thời gian này gần với chuyến bay : " + cb.getIdChuyenBay());
+                response.setData(null);
+                response.setStatusCode(409);
+                return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+            }
+        }
+
+        Optional<ChuyenBayDTO> cbOld = cbservice.getChuyenBayById(idChuyenBay);
+
+
+        ChuyenBayEnum cancled = ChuyenBayEnum.CANCELED;
+        ChuyenBayEnum completed = ChuyenBayEnum.COMPLETED;
+        ChuyenBayEnum in_flight = ChuyenBayEnum.IN_FLIGHT;
+        ChuyenBayEnum status = cbOld.get().getTrangThai();
+        if(status.name().equals(cancled.name()) || status.name().equals(completed.name()) || status.name().equals(in_flight.name())){
+            if(status.name().equals(cancled.name()))
+            {
+                response.setStatusCode(200);
+                response.setData(null);
+                response.setMessage("Chuyến bay đã huỷ.Không thể thay đổi thông tin");
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            }
+            else if(status.name().equals(completed.name())){
+                response.setStatusCode(200);
+                response.setData(null);
+                response.setMessage("Chuyến bay đã hoàn thành.Không thể thay đổi thông tin");
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            }
+            else {
+                response.setStatusCode(200);
+                response.setData(null);
+                response.setMessage("Chuyến bay đang diễn ra.Không thể thay đổi thông tin");
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            }
+        }
+
         Optional<ChuyenBayDTO> saveCb = cbservice.updateChuyenBay(cbDTO);
         if (saveCb.isPresent()) {
             response.setMessage("Save Chuyen Bay successfully!!");
@@ -127,4 +195,12 @@ public class ChuyenBayController {
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    public static boolean isDifferenceGreaterThanTwoHour(LocalDateTime a, LocalDateTime b) {
+        // Tính khoảng thời gian giữa hai LocalDateTime
+        Duration duration = Duration.between(a, b);
+        // Kiểm tra nếu chênh lệch tuyệt đối lớn hơn 2 giờ
+        return Math.abs(duration.toHours()) >= 2;
+    }
+
 }

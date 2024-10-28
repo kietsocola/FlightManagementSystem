@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -31,7 +32,7 @@ public class TuyenBay {
     private SanBay sanBayKetThuc;
 
     @Column(name = "thoi_gian_chuyen_bay")
-    private Timestamp thoiGianChuyenBay;
+    private int thoiGianChuyenBay;
 
     @Column(name = "khoang_cach")
     private int khoangCach;
