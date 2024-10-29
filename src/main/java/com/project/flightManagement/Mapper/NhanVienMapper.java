@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 
 public class NhanVienMapper {
     public static NhanVienDTO toDTO(NhanVien nv){
-        return new NhanVienDTO(nv.getIdNhanVien(), nv.getHoTen(),nv.getNgaySinh(),nv.getEmail(),nv.getSoDienThoai(),nv.getCccd(),nv.getGioiTinhEnum(),nv.getTrangThaiActive(),nv.getChucVu());
+        return new NhanVienDTO(nv.getIdNhanVien(), nv.getHoTen(),nv.getNgaySinh(),nv.getEmail(),nv.getSoDienThoai(),nv.getCccd(),nv.getGioiTinhEnum(),nv.getTrangThaiActive(),nv.getChucVu(),nv.getChuyenBay());
     }
 
     public static NhanVien toEntity(NhanVienDTO nvDTO){
@@ -24,6 +24,7 @@ public class NhanVienMapper {
         nv.setGioiTinhEnum(nvDTO.getGioiTinhEnum());
         nv.setTrangThaiActive(nvDTO.getTrangThaiActive());
         nv.setChucVu(nvDTO.getChucVu());
+        nv.setChuyenBay(nvDTO.getChuyenBay());
         return nv;
     }
 }

@@ -49,10 +49,10 @@ public class ChuyenBay {
     @Column(name = "thoi_gian_ket_thuc_du_tinh", nullable = false)
     private LocalDateTime thoiGianKetThucDuTinh;
 
-    @Column(name = "iata_chuyen_bay", length = 3, nullable = false)
+    @Column(name = "iata_chuyen_bay", length = 6, nullable = false)
     private String iataChuyenBay;
 
-    @Column(name = "icao_chuyen_bay", length = 4, nullable = false)
+    @Column(name = "icao_chuyen_bay", length = 50, nullable = false)
     private String icaoChuyenBay;
 
     @Column(name = "thoi_gian_bat_dau_thuc_te")
@@ -79,5 +79,7 @@ public class ChuyenBay {
     @Enumerated(EnumType.STRING)
     private ActiveEnum trangThaiActive;
 
-
+    @OneToMany(mappedBy = "chuyenBay")
+    @JsonIgnore
+    private List<NhanVien> nhanvienList;
 }

@@ -1,6 +1,8 @@
 package com.project.flightManagement.Service;
 
 import com.project.flightManagement.DTO.NhanVienDTO.NhanVienDTO;
+import com.project.flightManagement.Model.ChucVu;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,5 +21,10 @@ public interface NhanVienService {
     public List<NhanVienDTO> getNhanVienBySDT(String SDT);
     public List<NhanVienDTO> getNhanVienByCCCD(String cccd);
     public List<NhanVienDTO> getNhanVienBetween(String start , String end);
+    public List<NhanVienDTO> filterNhanVien(String hoTen,
+                                            String email,
+                                            String soDienThoai,
+                                            String cccd,
+                                            ChucVu chucVu);
 
 }

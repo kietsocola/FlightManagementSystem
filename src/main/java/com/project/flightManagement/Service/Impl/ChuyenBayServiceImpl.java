@@ -1,7 +1,9 @@
 package com.project.flightManagement.Service.Impl;
 
 import com.project.flightManagement.DTO.ChuyenBayDTO.ChuyenBayDTO;
+import com.project.flightManagement.Enum.ChuyenBayEnum;
 import com.project.flightManagement.Mapper.ChuyenBayMapper;
+import com.project.flightManagement.Mapper.NhanVienMapper;
 import com.project.flightManagement.Model.ChuyenBay;
 import com.project.flightManagement.Repository.ChuyenBayRepository;
 import com.project.flightManagement.Service.ChuyenBayService;
@@ -9,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -86,5 +89,11 @@ public class ChuyenBayServiceImpl implements ChuyenBayService {
     public ChuyenBay getChuyenBayEntityById(int idChuyenBay) {
         Optional<ChuyenBay> chuyenBayOptional = repo.findById(idChuyenBay);
         return chuyenBayOptional.get();
+    }
+
+    @Override
+    public List<ChuyenBayDTO> getFilterChuyenBay(ChuyenBayEnum trangThai, LocalDateTime thoiGianBatDau , LocalDateTime thoiGianKetThuc) {
+            List<ChuyenBay> cb = repo.filterChuyenBay(trangThai,thoiGianBatDau ,thoiGianKetThuc);
+            return cb.stream().map(ChuyenBayMapper::toDTO).collect(Collectors.toList());
     }
 }
