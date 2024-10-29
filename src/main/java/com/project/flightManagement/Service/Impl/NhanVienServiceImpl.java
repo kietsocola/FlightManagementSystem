@@ -1,7 +1,9 @@
 package com.project.flightManagement.Service.Impl;
 
 import com.project.flightManagement.DTO.NhanVienDTO.NhanVienDTO;
+import com.project.flightManagement.Mapper.ChuyenBayMapper;
 import com.project.flightManagement.Mapper.NhanVienMapper;
+import com.project.flightManagement.Model.ChucVu;
 import com.project.flightManagement.Model.NhanVien;
 import com.project.flightManagement.Repository.NhanVienRepository;
 import com.project.flightManagement.Service.NhanVienService;
@@ -88,7 +90,7 @@ public class NhanVienServiceImpl implements NhanVienService {
 
     @Override
     public List<NhanVienDTO> getNhanVienByhoTen(String hoTen) {
-            List<NhanVien> nv = repo.findByHoTenContaining(hoTen);
+            List<NhanVien> nv = repo.findByHoTenContainingIgnoreCase(hoTen);
             return nv.stream().map(NhanVienMapper::toDTO).collect(Collectors.toList());
     }
 
@@ -113,6 +115,12 @@ public class NhanVienServiceImpl implements NhanVienService {
     @Override
     public List<NhanVienDTO> getNhanVienBetween(String start, String end) {
         List<NhanVien> nv = repo.findByContentBetween(start ,end);
+        return nv.stream().map(NhanVienMapper::toDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<NhanVienDTO> filterNhanVien(String hoTen, String email, String soDienThoai, String cccd, ChucVu chucVu) {
+        List<NhanVien> nv =  repo.filterNhanVien(hoTen , email,soDienThoai,cccd ,chucVu);
         return nv.stream().map(NhanVienMapper::toDTO).collect(Collectors.toList());
     }
 

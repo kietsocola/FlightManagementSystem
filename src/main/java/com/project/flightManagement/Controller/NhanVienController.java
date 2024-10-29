@@ -1,10 +1,15 @@
 package com.project.flightManagement.Controller;
 
+import com.project.flightManagement.DTO.ChucVuDTO.ChucVuDTO;
+import com.project.flightManagement.DTO.ChuyenBayDTO.ChuyenBayDTO;
 import com.project.flightManagement.DTO.NhanVienDTO.NhanVienDTO;
 import com.project.flightManagement.Enum.ActiveEnum;
+import com.project.flightManagement.Mapper.ChucVuMapper;
+import com.project.flightManagement.Model.ChucVu;
 import com.project.flightManagement.Model.NhanVien;
 import com.project.flightManagement.Payload.ResponseData;
 import com.project.flightManagement.Repository.NhanVienRepository;
+import com.project.flightManagement.Service.ChucVuService;
 import com.project.flightManagement.Service.NhanVienService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +32,8 @@ public class NhanVienController {
 
     @Autowired
     private NhanVienService nvservice ;
+    @Autowired
+    private ChucVuService cvservice ;
     private ResponseData response =  new ResponseData();
 
     @GetMapping("/getallnhanvien")
@@ -289,6 +296,36 @@ public class NhanVienController {
             return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
             response.setMessage("get list Nhan Viens unsuccess!!");
+            response.setData(null);
+            response.setStatusCode(404);
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<ResponseData> filterNhanVien(
+            @RequestParam(required = false) String hoTen,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String soDienThoai,
+            @RequestParam(required = false) String cccd,
+            @RequestParam(required = false) int chucVuId) {
+
+        Iterable<NhanVienDTO> nvDTO;
+        // Nếu `chucVuId` là 0, bỏ qua lọc chức vụ
+        if (chucVuId == 0) {
+            nvDTO = nvservice.filterNhanVien(hoTen, email, soDienThoai, cccd, null);
+        } else {
+            Optional<ChucVuDTO> cvDTO = cvservice.getChucVuById(chucVuId);
+            nvDTO = nvservice.filterNhanVien(hoTen, email, soDienThoai, cccd, ChucVuMapper.toEntity(cvDTO.get()));
+        }
+
+        if(nvDTO.iterator().hasNext()){
+            response.setMessage("get list nhan vien success");
+            response.setData(nvDTO);
+            response.setStatusCode(200);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else {
+            response.setMessage("get list nhanvien unsuccess!!");
             response.setData(null);
             response.setStatusCode(404);
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);

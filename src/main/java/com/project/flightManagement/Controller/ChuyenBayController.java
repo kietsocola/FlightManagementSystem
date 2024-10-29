@@ -244,6 +244,37 @@ public class ChuyenBayController {
         }
     }
 
+    @GetMapping("/filter")
+    public ResponseEntity<ResponseData> filterChuyenBay(
+            @RequestParam(value = "trangThai", required = false) ChuyenBayEnum trangThai,
+            @RequestParam(value = "thoiGianBatDau", required = false) String thoiGianBatDauStr,
+            @RequestParam(value = "thoiGianKetThuc", required = false) String thoiGianKetThucStr) {
+
+        LocalDateTime thoiGianBatDau = null;
+        LocalDateTime thoiGianKetThuc = null;
+
+        // Chuyển đổi từ String sang LocalDateTime
+        if (thoiGianBatDauStr != null && !thoiGianBatDauStr.isEmpty()) {
+            thoiGianBatDau = LocalDateTime.parse(thoiGianBatDauStr);
+        }
+
+        if (thoiGianKetThucStr != null && !thoiGianKetThucStr.isEmpty()) {
+            thoiGianKetThuc = LocalDateTime.parse(thoiGianKetThucStr);
+        }
+        Iterable<ChuyenBayDTO> chuyenBayList = cbservice.getFilterChuyenBay(trangThai, thoiGianBatDau , thoiGianKetThuc);
+        if(chuyenBayList.iterator().hasNext()){
+            response.setMessage("get list chuyen bay success");
+            response.setData(chuyenBayList);
+            response.setStatusCode(200);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else {
+            response.setMessage("get list chuyen bay unsuccess!!");
+            response.setData(null);
+            response.setStatusCode(404);
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
+    }
+
     public static boolean isDifferenceGreaterThanTwoHour(LocalDateTime a, LocalDateTime b) {
         // Tính khoảng thời gian giữa hai LocalDateTime
         Duration duration = Duration.between(a, b);
