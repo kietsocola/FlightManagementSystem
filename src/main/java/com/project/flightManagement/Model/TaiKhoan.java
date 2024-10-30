@@ -47,6 +47,7 @@ public class TaiKhoan {
     private LocalDateTime thoiGianTao;
 
     @OneToMany(mappedBy = "taiKhoan")
+//    @JsonIgnore
     private List<RefreshToken> refreshTokenList;
 
     @Column(name = "active_status")

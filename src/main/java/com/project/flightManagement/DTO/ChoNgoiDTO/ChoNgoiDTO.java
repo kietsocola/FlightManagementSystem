@@ -15,11 +15,11 @@ public class ChoNgoiDTO {
     private int idChoNgoi;
     private HangVe hangVe;
     private MayBay mayBay;
-    private char rowIndex;
-    private int columnIndex;
+    private int rowIndex;
+    private char columnIndex;
     private ActiveEnum trangThaiActive;
 
-    public ChoNgoiDTO(HangVe hv, MayBay mb, char rowIndex, int columnIndex, ActiveEnum trangThaiActive) {
+    public ChoNgoiDTO(HangVe hv, MayBay mb, int rowIndex, char columnIndex, ActiveEnum trangThaiActive) {
         this.hangVe = hv;
         this.mayBay = mb;
         this.rowIndex = rowIndex;

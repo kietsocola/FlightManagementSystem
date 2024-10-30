@@ -36,14 +36,14 @@ public class MayBay {
     private List<ChuyenBay> chuyenBayList;
 
     @Column(name = "so_hang_ghe_thuong", nullable = false)
-    private String soHangGheThuong;
+    private int soHangGheThuong;
     @Column(name = "so_hang_ghe_vip", nullable = false)
-    private String soHangGheVip;
+    private int soHangGheVip;
 
     @Column(name = "so_cot_ghe_thuong", nullable = false)
-    private int soCotGheThuong;
+    private String soCotGheThuong;
     @Column(name = "so_cot_ghe_vip", nullable = false)
-    private int soCotGheVip;
+    private String soCotGheVip;
 
     @Column(name = "so_hieu")
     private String soHieu;

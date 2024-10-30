@@ -6,6 +6,7 @@ import com.project.flightManagement.Enum.ActiveEnum;
 import com.project.flightManagement.Mapper.MayBayMapper;
 import com.project.flightManagement.Model.HangBay;
 import com.project.flightManagement.Model.MayBay;
+import com.project.flightManagement.Model.SanBay;
 import com.project.flightManagement.Repository.MayBayRepository;
 import com.project.flightManagement.Service.MayBayService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -147,5 +148,10 @@ public class MayBayServiceImpl implements MayBayService {
             System.err.println("Plane does not existing!!!");
             return Optional.empty();
         }
+    }
+    @Override
+    public List<MayBayDTO> findMayBayBySanBay(SanBay sanBay) {
+        List<MayBay> listMb = mbRepo.findMayBayBySanBay(sanBay);
+        return listMb.stream().map(MayBayMapper::toDTO).collect(Collectors.toList());
     }
 }

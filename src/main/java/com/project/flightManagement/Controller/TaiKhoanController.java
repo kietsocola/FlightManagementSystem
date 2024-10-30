@@ -8,6 +8,7 @@ import com.project.flightManagement.Payload.ResponseData;
 import com.project.flightManagement.Security.JwtTokenProvider;
 import com.project.flightManagement.Service.TaiKhoanService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -175,5 +177,129 @@ public class TaiKhoanController {
         responseData.setMessage("Đổi mật khẩu thành công!");
         responseData.setData("");
         return new ResponseEntity<>(responseData, HttpStatus.OK);
+    }
+    @GetMapping("/findByKeyWord")
+    public ResponseEntity<ResponseData> findByKeyWord(@RequestParam String keyWord) {
+        Iterable<TaiKhoanDTO> listTKDTO = taiKhoanService.findByKeyword(keyWord);
+        ResponseData responseData = new ResponseData();
+        if (listTKDTO.iterator().hasNext()) {
+            responseData.setMessage("Get accounts by keyword success!!");
+            responseData.setStatusCode(200);
+            responseData.setData(listTKDTO);
+            return new ResponseEntity<>(responseData, HttpStatus.OK);
+        } else {
+            responseData.setStatusCode(404);
+            responseData.setData(null);
+            responseData.setMessage("Get accounts by keyword failed!!");
+            return new ResponseEntity<>(responseData, HttpStatus.NOT_FOUND);
+        }
+    }
+    @GetMapping("/getAllTaiKhoanSorted")
+    public ResponseEntity<ResponseData> getAllTaiKhoanSorted(@RequestParam(defaultValue = "idTaiKhoan") String sortBy,
+                                                             @RequestParam(defaultValue = "asc") String order) {
+        Iterable<TaiKhoanDTO> listTkDTO = taiKhoanService.getAllTaiKhoanSorted(sortBy, order);
+        ResponseData response = new ResponseData();
+        if(listTkDTO.iterator().hasNext()){
+            response.setMessage("get list account sorted success!!");
+            response.setData(listTkDTO);
+            response.setStatusCode(200);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else {
+            response.setMessage("get list account sorted unsuccess!!");
+            response.setData(null);
+            response.setStatusCode(204);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+    }
+    @PostMapping("/addNewTaiKhoan")
+    public ResponseEntity<ResponseData> addNewTaiKhoan(@Valid @RequestBody TaiKhoanDTO taiKhoanDTO, BindingResult bindingResult) {
+        ResponseData response = new ResponseData();
+        if(bindingResult.hasErrors()){
+            Map<String, String> fieldErrors = new HashMap<>();
+            bindingResult.getFieldErrors().forEach(error ->
+                    fieldErrors.put(error.getField(), error.getDefaultMessage()));
+            response.setStatusCode(400);
+            response.setData(fieldErrors);
+            response.setMessage("There are some fields invalid");
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+        if (taiKhoanDTO != null && taiKhoanDTO.getTenDangNhap() != null && taiKhoanDTO.getKhachHang() != null) {
+            if(!taiKhoanService.checkExistTenDangNhap(taiKhoanDTO)){
+                response.setStatusCode(202);
+                response.setMessage("Ten dang nhap exist!!");
+                response.setData(null);
+                return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+            }
+            if(!taiKhoanService.checkExistKhachHang(taiKhoanDTO)) {
+                response.setStatusCode(202);
+                response.setMessage("Khach hang exist!!");
+                response.setData(null);
+                return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+            }
+
+            Optional<TaiKhoanDTO> savedTK = taiKhoanService.addNewTaiKhoan(taiKhoanDTO);
+            if (savedTK.isPresent()) {
+                response.setMessage("Save account successfully!!");
+                response.setData(savedTK.get());
+                response.setStatusCode(201); // Created
+                return new ResponseEntity<>(response, HttpStatus.CREATED);
+            } else {
+                // Xử lý lỗi khi lưu không thành công
+                response.setMessage("Save account unsuccessfully!!");
+                response.setData(null);
+                response.setStatusCode(500); // Internal Server Error
+                return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } else {
+            response.setMessage("Invalid account data!!");
+            response.setData(null);
+            response.setStatusCode(400); // Bad Request
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+    }
+    @PutMapping("/updateTaiKhoan")
+    public ResponseEntity<ResponseData> updateTaiKhoan(@Valid @RequestBody TaiKhoanDTO taiKhoanDTO, BindingResult bindingResult) {
+        ResponseData response = new ResponseData();
+        if(bindingResult.hasErrors()){
+            Map<String, String> fieldErrors = new HashMap<>();
+            bindingResult.getFieldErrors().forEach(error ->
+                    fieldErrors.put(error.getField(), error.getDefaultMessage()));
+            response.setStatusCode(400);
+            response.setData(fieldErrors);
+            response.setMessage("There are some fields invalid");
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+        if (taiKhoanDTO != null && taiKhoanDTO.getTenDangNhap()!= null) {
+            if(!taiKhoanService.checkExistTenDangNhap(taiKhoanDTO)){
+                response.setStatusCode(202);
+                response.setMessage("Ten dang nhap exist!!");
+                response.setData(null);
+                return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+            }
+            if(!taiKhoanService.checkExistKhachHang(taiKhoanDTO)) {
+                response.setStatusCode(202);
+                response.setMessage("Khach hang exist!!");
+                response.setData(null);
+                return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+            }
+            Optional<TaiKhoanDTO> savedTK = taiKhoanService.updateTaiKhoan(taiKhoanDTO);
+            if (savedTK.isPresent()) {
+                response.setMessage("Save account successfully!!");
+                response.setData(savedTK.get());
+                response.setStatusCode(201); // Created
+                return new ResponseEntity<>(response, HttpStatus.CREATED);
+            } else {
+                // Xử lý lỗi khi lưu không thành công
+                response.setMessage("Save account unsuccessfully!!");
+                response.setData(null);
+                response.setStatusCode(500); // Internal Server Error
+                return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } else {
+            response.setMessage("Invalid account data!!");
+            response.setData(null);
+            response.setStatusCode(400); // Bad Request
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
     }
 }

@@ -4,6 +4,7 @@ import com.project.flightManagement.DTO.HangBayDTO.HangBayDTO;
 import com.project.flightManagement.DTO.MayBayDTO.MayBayDTO;
 import com.project.flightManagement.Model.HangBay;
 import com.project.flightManagement.Model.MayBay;
+import com.project.flightManagement.Model.SanBay;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,4 +22,5 @@ public interface MayBayService {
     public Iterable<MayBayDTO> getAllMayBaySorted(String sortBy, String order);
     public Optional<MayBayDTO> blockMayBay(int id);
     public Optional<MayBayDTO> unblockMayBay(int id);
+    public List<MayBayDTO> findMayBayBySanBay(SanBay sanBay);
 }

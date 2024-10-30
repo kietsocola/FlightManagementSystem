@@ -27,4 +27,5 @@ public interface KhachHangService {
     boolean existsKhachHangByCccd(String cccd);
     KhachHangBasicDTO getKhachHangByIdKhachHang_BASIC(int idKhachHang);
     boolean updatePoint(int idKH, int point, boolean isUse);
+    List<KhachHangDTO> getKhachHangChuaCoTaiKhoan();
 }
