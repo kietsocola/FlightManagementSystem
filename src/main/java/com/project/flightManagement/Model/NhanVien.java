@@ -54,6 +54,7 @@ public class NhanVien {
     @Column(name = "gioi_tinh")
     @Enumerated(EnumType.STRING)
     private GioiTinhEnum gioiTinhEnum;
+
     @Column(name = "active_status")
     @Enumerated(EnumType.STRING)
     private ActiveEnum trangThaiActive;

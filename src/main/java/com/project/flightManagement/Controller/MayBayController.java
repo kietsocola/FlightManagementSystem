@@ -37,9 +37,10 @@ public class MayBayController {
     private HangVeService hangVeService;
     @Autowired
     private ChoNgoiService choNgoiService;
-    private ResponseData response = new ResponseData();
     @Autowired
     private SanBayService sanBayService;
+    private ResponseData response = new ResponseData();
+
 
 
     @GetMapping("/getPlane/{id}")
