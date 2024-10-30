@@ -53,6 +53,8 @@ public class KhachHang {
     @Enumerated(EnumType.STRING)
     private ActiveEnum trangThaiActive;
 
+    @Column(name = "point")
+    private int point;
 
 }
 

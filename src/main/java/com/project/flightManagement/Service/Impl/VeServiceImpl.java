@@ -182,4 +182,12 @@ public class VeServiceImpl implements VeService {
             return false;
         }
     }
+
+    @Override
+    public void createAutoVeByIdMayBay(int idMayBay) {
+        // B1: lấy tat ca cho ngoi theo may bay
+        // B2: duyet qua cho ngoi (VIP, thuong,...)
+        // B3: thay doi gia ve tuy vao (VIP, thuong,...) -> nhap % (van chua toi uu lam)
+        // B4: insert vao db
+    }
 }

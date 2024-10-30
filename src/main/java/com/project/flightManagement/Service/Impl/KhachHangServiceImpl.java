@@ -189,4 +189,19 @@ public class KhachHangServiceImpl implements KhachHangService {
         throw new EntityNotFoundException("Khách hàng với ID " + idKhachHang + " không tồn tại.");
     }
 
+    @Override
+    public boolean updatePoint(int idKH, int point, boolean isUse) {
+        Optional<KhachHang> khachHangOptional = khRepo.findById(idKH);
+        if (khachHangOptional.isPresent()) {
+            KhachHang kh = khachHangOptional.get();
+            if(isUse){
+                if(point>kh.getPoint()) return false;
+                kh.setPoint(kh.getPoint()-point);
+            } else kh.setPoint(kh.getPoint()+point);
+            khRepo.save(kh);
+            return true;
+        }
+        throw new EntityNotFoundException("Khách hàng với ID " + idKH + " không tồn tại.");
+    }
+
 }

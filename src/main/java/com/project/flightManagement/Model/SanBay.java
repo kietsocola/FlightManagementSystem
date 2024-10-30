@@ -1,10 +1,13 @@
 package com.project.flightManagement.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.flightManagement.Enum.ActiveEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Entity
 @Table(name = "sanbay")
@@ -38,5 +41,9 @@ public class SanBay {
     @Column(name = "active_status")
     @Enumerated(EnumType.STRING)
     private ActiveEnum trangThaiActive;
+
+    @OneToMany(mappedBy = "sanBay")
+    @JsonIgnore
+    private List<MayBay> listMayBay ;
 }
 

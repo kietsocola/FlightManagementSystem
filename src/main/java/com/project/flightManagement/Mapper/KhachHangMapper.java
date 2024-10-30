@@ -23,6 +23,7 @@ public class KhachHangMapper {
         khDTO.setGioiTinhEnum(kh.getGioiTinhEnum());
         khDTO.setTrangThaiActive(kh.getTrangThaiActive());
         khDTO.setEmail(kh.getEmail());
+        khDTO.setPoint(kh.getPoint());
         return khDTO;
     }
     public static KhachHang toEntity(KhachHangDTO khDTO) {
@@ -35,6 +36,7 @@ public class KhachHangMapper {
         kh.setGioiTinhEnum(khDTO.getGioiTinhEnum());
         kh.setTrangThaiActive(khDTO.getTrangThaiActive());
         kh.setEmail(khDTO.getEmail());
+        kh.setPoint(khDTO.getPoint());
         return kh;
     }
 
