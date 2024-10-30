@@ -258,7 +258,7 @@ public class MayBayController {
                 Iterable<ChoNgoiDTO> choNgoiByMB = choNgoiService.getChoNgoiByMayBay(updatedMB.get());
                 if(choNgoiByMB.iterator().hasNext()) {
                     for (ChoNgoiDTO cn : choNgoiByMB) {
-                        choNgoiService.deleteChoNgoi(cn);
+                        choNgoiService.deleteChoNgoiByMayBay(updatedMB.get());
                     }
                 } else {
                     System.out.println("Cant find any seat by plane when update plane!");
