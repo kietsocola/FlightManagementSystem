@@ -29,10 +29,10 @@ public class ChoNgoi {
     private MayBay mayBay;
 
     @Column(name = "row_index", nullable = false)
-    private char rowIndex;
+    private int rowIndex;
 
     @Column(name = "column_index", nullable = false)
-    private int columnIndex;
+    private char columnIndex;
 
     @Column(name = "active_status")
     @Enumerated(EnumType.STRING)

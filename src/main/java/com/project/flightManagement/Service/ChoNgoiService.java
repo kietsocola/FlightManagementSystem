@@ -13,7 +13,7 @@ public interface ChoNgoiService {
     public Iterable<ChoNgoiDTO> getAllChoNgoi();
     public Iterable<ChoNgoiDTO> getChoNgoiByMayBay(MayBayDTO mayBayDTO);
     public Optional<ChoNgoiDTO> addNewChoNgoi(ChoNgoiDTO choNgoiDTO);
-    public void deleteChoNgoi(ChoNgoiDTO choNgoiDTO);
+    public void deleteChoNgoiByMayBay(MayBayDTO mayBayDTO);
     public Optional<ChoNgoiDTO> getChoNgoiById(int id);
     public List<ChoNgoiDTO> getAllChoNgoiByIdChuyenBayandHangVe(int idCB, int hangVe);
     public Optional<ChoNgoiDTO> blockChoNgoi(int id);

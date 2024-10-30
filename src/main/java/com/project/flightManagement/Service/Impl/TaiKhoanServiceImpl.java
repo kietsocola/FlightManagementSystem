@@ -3,13 +3,16 @@ package com.project.flightManagement.Service.Impl;
 import com.project.flightManagement.DTO.AuthDTO.LoginDTO;
 import com.project.flightManagement.DTO.AuthDTO.SignupDTO;
 import com.project.flightManagement.DTO.KhachHangDTO.KhachHangCreateDTO;
+import com.project.flightManagement.DTO.MayBayDTO.MayBayDTO;
 import com.project.flightManagement.DTO.TaiKhoanDTO.TaiKhoanDTO;
 import com.project.flightManagement.DTO.TaiKhoanDTO.TaiKhoanResponseDTO;
 import com.project.flightManagement.DTO.TaiKhoanDTO.TaiKhoanUpdateNguoiDungDTO;
 import com.project.flightManagement.Enum.ActiveEnum;
 import com.project.flightManagement.Mapper.KhachHangMapper;
+import com.project.flightManagement.Mapper.MayBayMapper;
 import com.project.flightManagement.Mapper.TaiKhoanMapper;
 import com.project.flightManagement.Model.KhachHang;
+import com.project.flightManagement.Model.MayBay;
 import com.project.flightManagement.Model.Quyen;
 import com.project.flightManagement.Model.TaiKhoan;
 import com.project.flightManagement.Repository.TaiKhoanRepository;
@@ -20,11 +23,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
 @Service
 
 public class TaiKhoanServiceImpl implements TaiKhoanService {
@@ -145,5 +155,77 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
     public boolean existsTaiKhoanByTenDangNhap(String userName) {
         return taiKhoanRepository.existsTaiKhoanByTenDangNhap(userName);
     }
+    @Override
+    public Iterable<TaiKhoanDTO> findByKeyword(String keyword) {
+        Iterable<TaiKhoan> taiKhoanList = taiKhoanRepository.findByKeywordContainingIgnoreCase(keyword);
 
+        // Kiểm tra nếu danh sách trống thì trả về null hoặc thông báo.
+        if (!taiKhoanList.iterator().hasNext()) {
+            System.out.println("Không tìm thấy tài khoản theo từ khóa!");
+            return List.of();  // Trả về danh sách rỗng thay vì null để tránh lỗi NullPointerException.
+        }
+
+        // Sử dụng stream để map từng TaiKhoan sang TaiKhoanDTO.
+        return StreamSupport.stream(taiKhoanList.spliterator(), false)
+                .map(taiKhoanMapper::toTaiKhoanDTO)
+                .toList(); // Chuyển về dạng List.
+    }
+    @Override
+    public Iterable<TaiKhoanDTO> getAllTaiKhoanSorted(String field, String order) {
+        try {
+            List<TaiKhoan> TKList;
+            if(order.equals("asc")){
+                TKList = taiKhoanRepository.findAll(Sort.by(Sort.Direction.ASC, field));
+            } else {
+                TKList = taiKhoanRepository.findAll(Sort.by(Sort.Direction.DESC, field));
+            }
+            List<TaiKhoanDTO> taiKhoanDTOList = StreamSupport.stream(TKList.spliterator(), false)
+                    .map(taiKhoanMapper::toTaiKhoanDTO)
+                    .toList();
+            return taiKhoanDTOList;
+        } catch (IllegalArgumentException e) {
+            // Xử lý lỗi nếu tham số sortBy không hợp lệ hoặc có lỗi khác liên quan đến tham số
+            System.err.println("Invalid sorting field: " + field);
+            return Collections.emptyList(); // Trả về danh sách rỗng
+        } catch (Exception e) {
+            // Xử lý các lỗi không lường trước khác
+            System.err.println("An error occurred while fetching sorted planes: " + e.getMessage());
+            return Collections.emptyList(); // Trả về danh sách rỗng nếu có lỗi
+        }
+    }
+    @Override
+    public Optional<TaiKhoanDTO> updateTaiKhoan(TaiKhoanDTO tkDTO) {
+        Optional<TaiKhoan> existingTK = taiKhoanRepository.findById(tkDTO.getIdTaiKhoan());
+        if(existingTK.isPresent()){
+            TaiKhoan tk = TaiKhoanMapper.toTaiKhoan(tkDTO);
+            TaiKhoan tkSaved = taiKhoanRepository.save(tk);
+            return Optional.of(taiKhoanMapper.toTaiKhoanDTO(tkSaved));
+        }else {
+            System.err.println("Account does not existing!!!");
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<TaiKhoanDTO> addNewTaiKhoan(TaiKhoanDTO tkDTO) {
+        try {
+            System.out.println(tkDTO.toString());
+            TaiKhoan tk = taiKhoanMapper.toTaiKhoan(tkDTO);
+            TaiKhoan savedTK = taiKhoanRepository.save(tk);
+            return Optional.of(taiKhoanMapper.toTaiKhoanDTO(savedTK));
+        }catch (Exception e){
+            System.out.println(tkDTO.toString());
+            System.err.println("Error occurred while save account: " + e.getMessage());
+            return null;
+        }
+    }
+    @Override
+    public boolean checkExistTenDangNhap(TaiKhoanDTO tkDTO) {
+        for(TaiKhoan tk : taiKhoanRepository.findAll()){
+            if(tkDTO.getTenDangNhap().equals(tk.getTenDangNhap())){
+                return false;
+            }
+        }
+        return true;
+    }
 }

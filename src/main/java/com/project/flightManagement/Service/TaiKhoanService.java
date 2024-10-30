@@ -24,6 +24,10 @@ public interface TaiKhoanService {
     boolean updateTaiKhoan(String userName, TaiKhoanUpdateNguoiDungDTO taiKhoanUpdateNguoiDungDTO);
 
     boolean updateTaiKhoan_RefreshPassword(TaiKhoan taiKhoan);
-
+    Iterable<TaiKhoanDTO> findByKeyword(String keyword);
+    Iterable<TaiKhoanDTO> getAllTaiKhoanSorted(String field, String order);
+    Optional<TaiKhoanDTO> updateTaiKhoan(TaiKhoanDTO tkDTO);
+    Optional<TaiKhoanDTO> addNewTaiKhoan(TaiKhoanDTO tkDTO);
+    boolean checkExistTenDangNhap(TaiKhoanDTO tkDTO);
 
 }
