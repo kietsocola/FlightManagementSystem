@@ -25,7 +25,6 @@ public class MayBayDTO {
 
     @Min(value = 1, message = "Số hàng ghế thường phải là số nguyên dương")
     private int soHangGheThuong;
-
     @Min(value = 1, message = "Số hàng ghế VIP phải là số nguyên dương")
     private int soHangGheVip;
 

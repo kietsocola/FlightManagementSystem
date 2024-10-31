@@ -17,6 +17,7 @@ public interface MayBayRepository extends JpaRepository<MayBay, Integer> {
             "LOWER(k.tenMayBay) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "LOWER(k.soHieu) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "LOWER(k.hangBay.tenHangBay) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-            "LOWER(k.icaoMayBay) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+            "LOWER(k.icaoMayBay) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "LOWER(k.sanBay.tenSanBay) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     List<MayBay> findByKeywordContainingIgnoreCase(@Param("keyword") String keyword);
 }
