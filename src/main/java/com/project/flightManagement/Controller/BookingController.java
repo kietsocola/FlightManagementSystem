@@ -1,5 +1,7 @@
 package com.project.flightManagement.Controller;
 
+import com.google.zxing.WriterException;
+import com.itextpdf.text.DocumentException;
 import com.project.flightManagement.DTO.ChoNgoiDTO.ChoNgoiDTO;
 import com.project.flightManagement.DTO.HanhKhachDTO.HanhKhachDTO;
 import com.project.flightManagement.DTO.HoldSeatDTO.HoldSeatRequest;
@@ -7,16 +9,24 @@ import com.project.flightManagement.Enum.VeEnum;
 import com.project.flightManagement.Model.Ve;
 import com.project.flightManagement.Payload.ResponseData;
 import com.project.flightManagement.Repository.VeRepository;
-import com.project.flightManagement.Service.ChoNgoiService;
-import com.project.flightManagement.Service.HoldSeatService;
-import com.project.flightManagement.Service.PaymentService;
-import com.project.flightManagement.Service.SocketIOService;
+import com.project.flightManagement.Service.*;
+import com.project.flightManagement.Service.Impl.PdfService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring6.SpringTemplateEngine;
+import org.xhtmlrenderer.pdf.ITextRenderer;
+import org.xhtmlrenderer.simple.PDFRenderer;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
@@ -32,6 +42,8 @@ public class BookingController {
     private VeRepository veRepo;
     @Autowired
     private PaymentService paymentService;
+    @Autowired
+    private PdfService pdfService;
 
     // Endpoint to get seats for a flight by flight ID
     @GetMapping("/getChoNgoiByChuyenBayAndHangVe")
@@ -165,6 +177,30 @@ public class BookingController {
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    @GetMapping(value = "/pdf/{idVe}", produces = MediaType.APPLICATION_PDF_VALUE)
+    public ResponseEntity<byte[]> generateTicketPDF(@PathVariable int idVe) throws IOException, WriterException {
+        Optional<Ve> optionalVe = veRepo.findById(idVe);
+
+        if (!optionalVe.isPresent()) {
+            return ResponseEntity.notFound().build(); // Trả về 404 nếu không tìm thấy vé
+        }
+
+        Ve ve = optionalVe.get();
+        Context context = pdfService.createContext(ve);
+        String htmlContent = pdfService.templateEngine.process("email/pdf", context);
+
+        byte[] pdfBytes = pdfService.generatePdfFromHtml(htmlContent);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "inline; filename=boarding_pass.pdf");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdfBytes);
+    }
+
 
 
 }

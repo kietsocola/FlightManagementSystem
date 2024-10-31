@@ -1,8 +1,11 @@
 package com.project.flightManagement.DTO.NhanVienDTO;
 
+import com.project.flightManagement.DTO.ChuyenBayDTO.ChuyenBayDTO;
 import com.project.flightManagement.Enum.ActiveEnum;
 import com.project.flightManagement.Enum.ChucVuEnum;
 import com.project.flightManagement.Enum.GioiTinhEnum;
+import com.project.flightManagement.Model.ChucVu;
+import com.project.flightManagement.Model.ChuyenBay;
 import com.project.flightManagement.Model.QuyDinh;
 import com.project.flightManagement.Model.TaiKhoan;
 import jakarta.persistence.*;
@@ -52,5 +55,7 @@ public class NhanVienDTO {
     private ActiveEnum trangThaiActive;
 
     @NotNull(message = "Chuc vu không được bỏ trống")
-    private ChucVuEnum chucVu;
+    private ChucVu chucVu;
+
+    private ChuyenBay chuyenBay;
 }

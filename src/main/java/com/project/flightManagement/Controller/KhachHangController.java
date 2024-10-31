@@ -315,5 +315,20 @@ public class KhachHangController {
             return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
         }
     }
+    @GetMapping("/getKhachHangChuaCoTaiKhoan")
+    public ResponseEntity<ResponseData> getKhachHangChuaCoTaiKhoan() {
+        Iterable<KhachHangDTO> listKhDTO = khachHangService.getKhachHangChuaCoTaiKhoan();
+        if(listKhDTO.iterator().hasNext()){
+            response.setMessage("get list customers has not account success!!");
+            response.setData(listKhDTO);
+            response.setStatusCode(200);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else {
+            response.setMessage("get list customers has not account unsuccess!!");
+            response.setData(null);
+            response.setStatusCode(204);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+    }
 
 }

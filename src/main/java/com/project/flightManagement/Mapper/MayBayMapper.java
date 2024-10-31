@@ -18,6 +18,7 @@ public class MayBayMapper {
         mbDTO.setSoHangGheVip(mb.getSoHangGheVip());
         mbDTO.setNamSanXuat(mb.getNamSanXuat());
         mbDTO.setTrangThaiActive(mb.getTrangThaiActive());
+        mbDTO.setSanBay(mb.getSanBay());
         return mbDTO;
     }
     public static MayBay toEntity(MayBayDTO mbDTO) {
@@ -33,6 +34,7 @@ public class MayBayMapper {
         mb.setSoHangGheVip(mbDTO.getSoHangGheVip());
         mb.setNamSanXuat(mbDTO.getNamSanXuat());
         mb.setTrangThaiActive(mbDTO.getTrangThaiActive());
+        mb.setSanBay(mbDTO.getSanBay());
         return mb;
     }
 
@@ -43,7 +45,7 @@ public class MayBayMapper {
         mbDTO.setHangBay(HangBayMapper.toDTO(mb.getHangBay()));
         mbDTO.setIcaoMayBay(mb.getIcaoMayBay());
         mbDTO.setSoHieu(mb.getSoHieu());
-        mbDTO.setTrangThaiActive(mb.getTrangThaiActive());
+        mbDTO.setTrangThaiActive(mb.getTrangThaiActive()) ;
         return mbDTO;
     }
 

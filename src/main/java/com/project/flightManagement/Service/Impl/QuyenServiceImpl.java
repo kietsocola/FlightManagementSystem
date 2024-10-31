@@ -115,6 +115,7 @@ public class QuyenServiceImpl implements QuyenService {
             throw new IllegalArgumentException("Tên quyền đã tồn tại.");
         }
         quyen.setTenQuyen(quyenCreateDTO.getTenQuyen());
+        quyen.setTrangThaiActive(quyenCreateDTO.getActiveEnum());
 
         deleteAllChiTietQuyenByIdQuyen(idQuyen);
 
@@ -144,5 +145,23 @@ public class QuyenServiceImpl implements QuyenService {
                 chiTietQuyenRepository.delete(chiTietQuyen);
             }
         }
+    }
+
+    @Override
+    public Page<QuyenResponseDTO> searchQuyenByName(String tenQuyen, int page, int size) {
+        // Chuyển đổi tên sang định dạng để tìm kiếm (có thể áp dụng các quy tắc tìm kiếm khác nhau)
+
+        Page<Quyen> quyenPage = quyenRepository.findByTenQuyenContainingIgnoreCase(tenQuyen, PageRequest.of(page, size));
+        return quyenPage.map(quyenMapper::toQuyenResponseDTO);
+    }
+
+    @Override
+    public boolean existsQuyenByTenQuyen(String tenQuyen) {
+        return quyenRepository.existsByTenQuyen(tenQuyen);
+    }
+
+    @Override
+    public boolean existsByTenQuyenAndNotIdQuyenNot(String tenQuyen, int idQuyen) {
+        return quyenRepository.existsByTenQuyenAndIdQuyenNot(tenQuyen, idQuyen);
     }
 }

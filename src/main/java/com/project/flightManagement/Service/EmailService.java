@@ -7,9 +7,9 @@ import org.springframework.mail.javamail.JavaMailSender;
 
 public interface EmailService {
 
-    String sendTextEmail(Email email);
-    String sendHtmlEMail(Email email, String resetLink, String userName);
-    String sendEmailWithAttachment(Email email);
+    void sendTextEmail(Email email);
+    void sendHtmlEMail(Email email, String resetLink, String userName);
+    void sendEmailWithAttachment(Email email);
 
-    String sendHtmlVeOnlineEmail(Email email);
+    void sendHtmlVeOnlineEmail(Email email);
 }

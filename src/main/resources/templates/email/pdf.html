@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Boarding Pass</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f3f3f3;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            display: flex;
+        }
+
+        .left-border {
+            width: 30px;
+            background-color: #4CAF50);
+            background-size: 10px 10px;
+            border-top-left-radius: 8px;
+            border-bottom-left-radius: 8px;
+        }
+
+        .ticket {
+            width: 600px;
+            background-color: #fff;
+            border: 2px solid #4CAF50;
+            padding: 0;
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
+            border-left: 30px solid #4CAF50;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .header, .footer {
+            display: table;
+            width: 100%;
+            border-top: 1px solid #cdcccc;
+            border-bottom: 1px solid #cdcccc;
+            color: #4CAF50;
+            font-size: 1em;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .header{
+            padding: 0 0;
+        }
+        .footer{
+            padding: 5px 0;
+        }
+
+        .header .column, .footer .column {
+            display: table-cell;
+            vertical-align: middle;
+        }
+
+        .footer {
+            font-size: 0.6em; /* Reduced font size */
+        }
+
+        .ticket-content {
+            display: table;
+            width: 100%;
+            padding: 0;
+            margin-top: 10px;
+            text-align: left; /* Align content to the left */
+        }
+
+        .ticket-section {
+            display: table-cell;
+            width: 33%;
+            padding: 10px;
+            font-size: 0.9em;
+            text-align: left; /* Align text to the left within sections */
+        }
+
+        .ticket-section:first-child {
+            border-left: none;
+        }
+
+        .info-title {
+            color: gray;
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 0.8em;
+            text-transform: uppercase;
+            text-align: left;
+        }
+
+        .info-detail {
+            margin-bottom: 10px;
+            font-size: 1em;
+            text-align: left;
+        }
+
+        .barcode {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .barcode img {
+            width: 180px;
+            height: 40px;
+        }
+
+        .imgLogoRight{
+            background-color: #4CAF50;
+            height:100%;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="left-border"></div>
+
+    <div class="ticket">
+        <div class="header">
+            <div class="column">
+                <img th:src="${logoUrl}" alt="Logo" height="30px"></img>
+            </div>
+            <div class="column">ECONOMY CLASS</div>
+            <div class="column imgLogoRight">
+                <img th:src="${logoUrl}" alt="Logo" height="30px"></img>
+            </div>
+        </div>
+
+        <div class="ticket-content">
+            <div class="ticket-section">
+                <div class="info-title">Hanh Khach</div>
+                <div class="info-detail" th:text="${ticket.hanhKhach.hoTen}"></div>
+
+                <div class="info-title">Noi Di</div>
+                <div class="info-detail" th:text="${ticket.chuyenBay.tuyenBay.sanBayBatDau.diaChi}"></div>
+
+                <div class="info-title">Noi Den</div>
+                <div class="info-detail" th:text="${ticket.chuyenBay.tuyenBay.sanBayKetThuc.diaChi}"></div>
+
+                <div class="info-title">Thoi gian di</div>
+                <div class="info-detail" th:text="${ticket.chuyenBay.tuyenBay.thoiGianChuyenBay}"></div>
+            </div>
+
+            <div class="ticket-section">
+                <div class="info-title">Chuyen Bay/Flight</div>
+                <div class="info-detail" th:text="${ticket.chuyenBay.iataChuyenBay}"></div>
+
+                <div class="info-title">Ngay/Date</div>
+                <div class="info-detail" th:text="${ticket.chuyenBay.ngayBay}"></div>
+
+                <div class="info-title">Ghe/Seat</div>
+                <div class="info-detail" th:text="${ticket.choNgoi.columnIndex}"></div>
+
+                <div class="barcode">
+                    <img th:src="${barcodeUrl}" alt="barcode"></img>
+                </div>
+            </div>
+
+            <div class="ticket-section">
+                <div class="info-title">Ma Ve</div>
+                <div class="info-detail" th:text="${ticket.maVe}"></div>
+
+                <div class="info-title">Ma Chuyen</div>
+                <div class="info-detail" th:text="${ticket.chuyenBay.icaoChuyenBay}"></div>
+
+                <div class="info-title">Cong</div>
+                <div class="info-detail" th:text="${ticket.chuyenBay.cong.tenCong}"></div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="column">
+                <img style="transform: scaleX(-1); width:10px; height:auto;" th:src="${arrowIconUrl}" alt="Arrow Icon"> Đưa vào</img>
+            </div>
+            <div class="column">The len may bay / Boarding Pass</div>
+            <div class="column">www.bambooairways.com</div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

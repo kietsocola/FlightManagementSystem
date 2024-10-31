@@ -54,11 +54,16 @@ public class NhanVien {
     @Column(name = "gioi_tinh")
     @Enumerated(EnumType.STRING)
     private GioiTinhEnum gioiTinhEnum;
+
     @Column(name = "active_status")
     @Enumerated(EnumType.STRING)
     private ActiveEnum trangThaiActive;
 
-    @Column(name = "chuc_vu")
-    @Enumerated(EnumType.STRING)
-    private ChucVuEnum chucVu;
+    @ManyToOne
+    @JoinColumn(name = "idChucVu")
+    private ChucVu chucVu ;
+
+    @ManyToOne
+    @JoinColumn(name = "id_chuyen_bay")
+    private ChuyenBay chuyenBay ;
 }

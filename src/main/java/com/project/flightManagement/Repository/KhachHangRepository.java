@@ -24,4 +24,8 @@ public interface KhachHangRepository extends JpaRepository<KhachHang, Integer> {
             "LOWER(k.cccd) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     List<KhachHang> findByKeywordContainingIgnoreCase(@Param("keyword") String keyword);
     Optional<KhachHang> findKhachHangByIdKhachHang(int idKhachHang);
+    @Query("SELECT k FROM KhachHang k " +
+            "LEFT JOIN k.taiKhoan t " +  // Giả sử rằng bạn đã định nghĩa mối quan hệ giữa KhachHang và TaiKhoan
+            "WHERE t IS NULL")
+    List<KhachHang> findKhachHangChuaCoTaiKhoan();
 }

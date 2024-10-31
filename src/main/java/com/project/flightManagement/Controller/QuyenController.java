@@ -7,6 +7,7 @@ import com.project.flightManagement.DTO.TaiKhoanDTO.TaiKhoanDTO;
 import com.project.flightManagement.Payload.ResponseData;
 import com.project.flightManagement.Service.QuyenService;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
@@ -33,6 +34,7 @@ public class QuyenController {
         if (quyenResponseDTOPage.isEmpty()) {
             responseData.setStatusCode(204);
             responseData.setMessage("No quyen found.");
+            responseData.setData("");
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body(responseData);
         }
 
@@ -44,24 +46,34 @@ public class QuyenController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<ResponseData> createQuyen(@RequestBody QuyenCreateDTO quyenCreateDTO) {
+    public ResponseEntity<ResponseData> createQuyen(@Valid @RequestBody QuyenCreateDTO quyenCreateDTO) {
         ResponseData responseData = new ResponseData();
         try {
-            boolean isSusscess = quyenService.createQuyen(quyenCreateDTO);
-            // Kiểm tra đăng nhập
-            if (isSusscess) {
-                responseData.setStatusCode(200);
-                responseData.setMessage("created role success");
+            // Kiểm tra xem quyền đã tồn tại theo tên hay chưa
+            if (quyenService.existsQuyenByTenQuyen(quyenCreateDTO.getTenQuyen())) {
+                responseData.setStatusCode(HttpStatus.BAD_REQUEST.value());
+                responseData.setMessage("Tạo quyền thất bại: Tên quyền đã tồn tại");
                 responseData.setData("");
-                return new ResponseEntity<>(responseData, HttpStatus.OK);
+                return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
+            }
+
+            // Thử tạo quyền
+            boolean isSuccess = quyenService.createQuyen(quyenCreateDTO);
+            if (isSuccess) {
+                responseData.setStatusCode(HttpStatus.CREATED.value()); // Sử dụng 201 Created cho việc tạo thành công
+                responseData.setMessage("Tạo quyền thành công");
+                responseData.setData(""); // Tùy chọn: bao gồm chi tiết đối tượng đã tạo nếu cần
+                return new ResponseEntity<>(responseData, HttpStatus.CREATED);
             } else {
-                responseData.setStatusCode(400);
-                responseData.setMessage("create role failed");
+                responseData.setStatusCode(HttpStatus.BAD_REQUEST.value());
+                responseData.setMessage("Tạo quyền thất bại: Không thể tạo quyền");
+                responseData.setData("");
                 return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
             }
         } catch (Exception e) {
-            responseData.setStatusCode(500);
-            responseData.setMessage("create role failed: " + e.getMessage());
+            responseData.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            responseData.setMessage("Tạo quyền thất bại: " + e.getMessage());
+            responseData.setData("");
             return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -90,9 +102,16 @@ public class QuyenController {
         }
     }
     @PostMapping("/update/{idQuyen}")
-    public ResponseEntity<ResponseData> updateQuyen(@PathVariable int idQuyen, @RequestBody QuyenCreateDTO quyenCreateDTO) {
+    public ResponseEntity<ResponseData> updateQuyen(@PathVariable int idQuyen,@Valid @RequestBody QuyenCreateDTO quyenCreateDTO) {
         ResponseData responseData = new ResponseData();
         try {
+            // Kiểm tra xem quyền đã tồn tại theo tên hay chưa
+            if (quyenService.existsByTenQuyenAndNotIdQuyenNot(quyenCreateDTO.getTenQuyen(), idQuyen)) {
+                responseData.setStatusCode(234);
+                responseData.setMessage("Cập nhật quyền thất bại: Tên quyền đã tồn tại");
+                responseData.setData("");
+                return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
+            }
             quyenService.updateQuyen(idQuyen, quyenCreateDTO);
             responseData.setStatusCode(200);
             responseData.setMessage("Cập nhật quyền thành công");
@@ -101,16 +120,43 @@ public class QuyenController {
         } catch (IllegalArgumentException e) {
             responseData.setStatusCode(400);
             responseData.setMessage(e.getMessage());
+            responseData.setData("");
             return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
         } catch (ResourceNotFoundException e) {
             responseData.setStatusCode(204);
             responseData.setMessage(e.getMessage());
+            responseData.setData("");
             return new ResponseEntity<>(responseData, HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             responseData.setStatusCode(500);
             responseData.setMessage("Có lỗi xảy ra: " + e.getMessage());
+            responseData.setData("");
             return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<?> searchQuyenByName(@RequestParam String name,
+                                               @RequestParam(defaultValue = "0") int page,
+                                               @RequestParam(defaultValue = "10") int size) {
+        ResponseData responseData = new ResponseData();
+
+        // Lấy danh sách quyen theo tên
+        Page<QuyenResponseDTO> quyenResponseDTOPage = quyenService.searchQuyenByName(name, page, size);
+
+        // Kiểm tra nếu danh sách quyen trống
+        if (quyenResponseDTOPage.isEmpty()) {
+            responseData.setStatusCode(204);
+            responseData.setMessage("No quyen found.");
+            responseData.setData("");
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(responseData);
+        }
+
+        // Nếu có dữ liệu
+        responseData.setStatusCode(200);
+        responseData.setData(quyenResponseDTOPage);
+        responseData.setMessage("Successfully retrieved quyen by name.");
+        return ResponseEntity.ok(responseData);
     }
 
 }

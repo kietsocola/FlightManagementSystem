@@ -16,4 +16,10 @@ public interface QuyenService {
 
     void updateQuyen(int idQuyen, QuyenCreateDTO quyenCreateDTO);
 
+    Page<QuyenResponseDTO> searchQuyenByName(String name, int page, int size);
+
+    boolean existsQuyenByTenQuyen(String tenQuyen);
+
+    boolean existsByTenQuyenAndNotIdQuyenNot(String tenQuyen, int idQuyen);
+
 }
