@@ -1,5 +1,6 @@
 package com.project.flightManagement.DTO.TaiKhoanDTO;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.project.flightManagement.DTO.KhachHangDTO.KhachHangBasicDTO;
 import com.project.flightManagement.DTO.NhanVienDTO.NhanVienDTO;
@@ -12,6 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -25,6 +27,7 @@ public class TaiKhoanDTO {
     private QuyenBasicDTO quyen;
     private KhachHangBasicDTO khachHang;
     private NhanVienDTO nhanVien;
-    private LocalDateTime thoiGianTao;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDate thoiGianTao;
     private ActiveEnum trangThaiActive;
 }
