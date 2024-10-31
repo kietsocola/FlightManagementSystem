@@ -1,14 +1,17 @@
 package com.project.flightManagement.Service.Impl;
 
 import com.project.flightManagement.DTO.ChiTietHoaDonDTO.ChiTietHoaDonDTO;
+import com.project.flightManagement.DTO.HangHoaDTO.HangHoaDTO;
 import com.project.flightManagement.DTO.HoaDonDTO.HoaDonDTO;
 import com.project.flightManagement.Mapper.ChiTietHoaDonMapper;
+import com.project.flightManagement.Mapper.HangHoaMapper;
 import com.project.flightManagement.Mapper.HoaDonMapper;
 import com.project.flightManagement.Model.ChiTietHoaDon;
 import com.project.flightManagement.Model.HoaDon;
 import com.project.flightManagement.Repository.ChiTietHoaDonRepository;
 import com.project.flightManagement.Service.ChiTietHoaDonService;
 
+import com.project.flightManagement.Service.HangHoaService;
 import com.project.flightManagement.Service.HoaDonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -26,7 +29,10 @@ public class ChiTietHoaDonServiceImpl implements ChiTietHoaDonService {
 
     @Autowired
     ChiTietHoaDonRepository chiTietHoaDonReposity;
+    @Autowired
     HoaDonService hoaDonService;
+    @Autowired
+    HangHoaService hangHoaService;
     @Override
     public Iterable<ChiTietHoaDonDTO> getAllChiTietHoaDon() {
         try {
@@ -55,8 +61,18 @@ public class ChiTietHoaDonServiceImpl implements ChiTietHoaDonService {
     public Optional<ChiTietHoaDonDTO> addChiTietHoaDon(ChiTietHoaDonDTO chiTietHoaDonDTO) {
         Optional<ChiTietHoaDon> existingCTHD = chiTietHoaDonReposity.findById(chiTietHoaDonDTO.getIdChiTietHoaDon());
         if (!existingCTHD.isPresent()) {
+            Optional<HangHoaDTO> hangHoa = hangHoaService.getHangHoaByIdHangHoa(chiTietHoaDonDTO.getHangHoa().getIdHangHoa());
+            chiTietHoaDonDTO.setHangHoa(HangHoaMapper.toEntity(hangHoa.get()));
+            if (chiTietHoaDonDTO.getVe() == null) {
+                System.out.println("hang hoa " + chiTietHoaDonDTO.getHangHoa());
+                chiTietHoaDonDTO.setSoTien(chiTietHoaDonDTO.getHangHoa().getGiaPhatSinh());
+                System.out.println("sotien: "+ chiTietHoaDonDTO.getSoTien());
+            } else {
+                chiTietHoaDonDTO.setSoTien(chiTietHoaDonDTO.getHangHoa().getGiaPhatSinh()+chiTietHoaDonDTO.getVe().getGiaVe());
+            }
             ChiTietHoaDon chiTietHoaDon = ChiTietHoaDonMapper.toEntity(chiTietHoaDonDTO);
             ChiTietHoaDon savedCTHD = chiTietHoaDonReposity.save(chiTietHoaDon);
+            System.out.println("saved cthd:" + savedCTHD);
             return Optional.of(ChiTietHoaDonMapper.toDTO(savedCTHD));
         } else {
             System.err.println("Chi tiết hóa đơn đã tồn tại!");

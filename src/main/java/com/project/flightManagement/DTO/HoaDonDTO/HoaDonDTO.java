@@ -21,7 +21,7 @@ public class HoaDonDTO {
     private double tongTien;
     private LoaiHoaDon loaiHoaDon;
     private PhuongThucThanhToan phuongThucThanhToan;
-    private List<ChiTietHoaDonDTO> chiTietHoaDonList;
+//    private List<ChiTietHoaDonDTO> chiTietHoaDonList;
     private LocalDateTime thoiGianLap;
     private HoaDonEnum status;
 }
