@@ -28,7 +28,7 @@ public class Quyen {
     private List<TaiKhoan> taiKhoanList;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "quyen")
+    @OneToMany(mappedBy = "quyen",fetch = FetchType.EAGER)
     private List<ChiTietQuyen> chiTietQuyenList;
 
     @Column(name = "active_status")

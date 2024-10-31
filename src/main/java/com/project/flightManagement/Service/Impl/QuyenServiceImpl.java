@@ -145,4 +145,12 @@ public class QuyenServiceImpl implements QuyenService {
             }
         }
     }
+
+    @Override
+    public Page<QuyenResponseDTO> searchQuyenByName(String tenQuyen, int page, int size) {
+        // Chuyển đổi tên sang định dạng để tìm kiếm (có thể áp dụng các quy tắc tìm kiếm khác nhau)
+
+        Page<Quyen> quyenPage = quyenRepository.findByTenQuyenContainingIgnoreCase(tenQuyen, PageRequest.of(page, size));
+        return quyenPage.map(quyenMapper::toQuyenResponseDTO);
+    }
 }

@@ -63,6 +63,7 @@ public class QuyenMapper {
         quyenResponseDTO.setChiTietQuyenDTOList( toChiTietQuyenDTOList(quyen.getChiTietQuyenList() ) );
         quyenResponseDTO.setIdQuyen( quyen.getIdQuyen() );
         quyenResponseDTO.setTenQuyen( quyen.getTenQuyen() );
+        quyenResponseDTO.setTrangThaiActive(quyen.getTrangThaiActive());
 
         return quyenResponseDTO;
     }
