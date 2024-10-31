@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ChucNangDTO {
     private int idChucNang;
-    private int tenChucNang;
+    private String tenChucNang;
 }
