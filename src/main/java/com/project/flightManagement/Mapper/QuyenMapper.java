@@ -48,7 +48,8 @@ public class QuyenMapper {
 
         Quyen quyen = new Quyen();
 
-        quyen.setTenQuyen( quyenCreateDTO.getTenQuyen() );
+        quyen.setTenQuyen( quyenCreateDTO.getTenQuyen());
+        quyen.setTrangThaiActive(quyenCreateDTO.getActiveEnum());
 
         return quyen;
     }
