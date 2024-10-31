@@ -113,4 +113,27 @@ public class QuyenController {
         }
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<?> searchQuyenByName(@RequestParam String name,
+                                               @RequestParam(defaultValue = "0") int page,
+                                               @RequestParam(defaultValue = "10") int size) {
+        ResponseData responseData = new ResponseData();
+
+        // Lấy danh sách quyen theo tên
+        Page<QuyenResponseDTO> quyenResponseDTOPage = quyenService.searchQuyenByName(name, page, size);
+
+        // Kiểm tra nếu danh sách quyen trống
+        if (quyenResponseDTOPage.isEmpty()) {
+            responseData.setStatusCode(204);
+            responseData.setMessage("No quyen found.");
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(responseData);
+        }
+
+        // Nếu có dữ liệu
+        responseData.setStatusCode(200);
+        responseData.setData(quyenResponseDTOPage);
+        responseData.setMessage("Successfully retrieved quyen by name.");
+        return ResponseEntity.ok(responseData);
+    }
+
 }

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -24,7 +25,8 @@ public class EmailServiceImpl implements EmailService {
     @Autowired
     private TemplateEngine templateEngine;
     @Override
-    public String sendTextEmail(Email email) {
+    @Async
+    public void sendTextEmail(Email email) {
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
 
         simpleMailMessage.setTo(email.getToEmail());
@@ -33,7 +35,6 @@ public class EmailServiceImpl implements EmailService {
         simpleMailMessage.setFrom(email_host);
         try {
             javaMailSender.send(simpleMailMessage);
-            return "Email sent text successfuly";
         }catch (Exception e) {
             System.out.println("Sent email fail");
             throw new RuntimeException(e);
@@ -41,7 +42,8 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public String sendHtmlEMail(Email email, String resetLink, String userName) {
+    @Async
+    public void sendHtmlEMail(Email email, String resetLink, String userName) {
         try { // ham nay la gui html cho chuc nang quen mat khau
             // Create Thymeleaf context and add variables
             Context context = new Context();
@@ -61,7 +63,6 @@ public class EmailServiceImpl implements EmailService {
             mimeMessageHelper.setFrom(email_host);
 
             javaMailSender.send(mimeMessage);
-            return "Email sent with Thymeleaf template successfully";
         } catch (Exception e) {
             System.out.println("Failed to send email with Thymeleaf HTML");
             throw new RuntimeException(e);
@@ -69,7 +70,8 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public String sendEmailWithAttachment(Email email) { // co the khong can ham nay -> du
+    @Async
+    public void sendEmailWithAttachment(Email email) { // co the khong can ham nay -> du
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
@@ -83,7 +85,6 @@ public class EmailServiceImpl implements EmailService {
             mimeMessageHelper.addAttachment("Attachment", email.getAttachment());
 
             javaMailSender.send(mimeMessage);
-            return "Email with attachment sent successfully";
         } catch (MessagingException e) {
             System.out.println("Failed to send email with attachment");
             throw new RuntimeException(e);
@@ -91,7 +92,8 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public String sendHtmlVeOnlineEmail(Email email) { // ham gui ve online -> thieu file pdf gui kem theo
+    @Async
+    public void sendHtmlVeOnlineEmail(Email email) { // ham gui ve online -> thieu file pdf gui kem theo
         try {
             Context context = new Context(); // dat cac bien de thay doi noi dung html o day
 //            context.setVariable("name", userName);
@@ -110,7 +112,6 @@ public class EmailServiceImpl implements EmailService {
             mimeMessageHelper.setFrom(email_host);
 
             javaMailSender.send(mimeMessage);
-            return "Email sent with Thymeleaf template successfully";
         } catch (Exception e) {
             System.out.println("Failed to send email with Thymeleaf HTML");
             throw new RuntimeException(e);

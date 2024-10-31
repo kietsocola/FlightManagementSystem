@@ -11,5 +11,6 @@ public interface QuyenRepository extends JpaRepository<Quyen, Integer> {
     Optional<Quyen> findQuyenByIdQuyen(int idQuyen);
     Optional<Quyen> findQuyenByTenQuyen(String tenQuyen);
     Page<Quyen> findAll(Pageable pageable);
+    Page<Quyen> findByTenQuyenContainingIgnoreCase(String name, Pageable pageable);
 
 }
