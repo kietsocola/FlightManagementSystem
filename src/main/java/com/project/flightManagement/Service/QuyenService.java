@@ -18,4 +18,8 @@ public interface QuyenService {
 
     Page<QuyenResponseDTO> searchQuyenByName(String name, int page, int size);
 
+    boolean existsQuyenByTenQuyen(String tenQuyen);
+
+    boolean existsByTenQuyenAndNotIdQuyenNot(String tenQuyen, int idQuyen);
+
 }

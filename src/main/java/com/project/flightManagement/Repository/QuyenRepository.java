@@ -13,4 +13,8 @@ public interface QuyenRepository extends JpaRepository<Quyen, Integer> {
     Page<Quyen> findAll(Pageable pageable);
     Page<Quyen> findByTenQuyenContainingIgnoreCase(String name, Pageable pageable);
 
+    boolean existsByTenQuyen(String tenQuyen);
+
+    boolean existsByTenQuyenAndIdQuyenNot(String tenQuyen, int idQuyen);
+
 }
