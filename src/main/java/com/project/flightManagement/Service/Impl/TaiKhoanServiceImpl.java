@@ -25,6 +25,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -137,7 +138,7 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
             quyen.setIdQuyen(1);
             taiKhoan.setQuyen(quyen);
             taiKhoan.setTrangThaiActive(ActiveEnum.ACTIVE);
-            taiKhoan.setThoiGianTao(LocalDateTime.now());
+            taiKhoan.setThoiGianTao(LocalDate.now());
             taiKhoanRepository.save(taiKhoan);
             return true;
         }catch (Exception e) {
@@ -224,8 +225,8 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
     }
     @Override
     public boolean checkExistKhachHang(TaiKhoanDTO taiKhoanDTO) {
-        for(KhachHangDTO it : khachHangService.getAllKhachHang()){
-            if(it.getIdKhachHang() == taiKhoanDTO.getKhachHang().getIdKhachHang()) {
+        for(TaiKhoan tk : taiKhoanRepository.findAll()){
+            if(tk.getKhachHang().getIdKhachHang() == taiKhoanDTO.getKhachHang().getIdKhachHang()) {
                 return false;
             }
         }

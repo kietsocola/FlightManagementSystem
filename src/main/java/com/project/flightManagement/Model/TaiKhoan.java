@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
@@ -44,7 +45,7 @@ public class TaiKhoan {
     @JoinColumn(name = "id_nhan_vien", nullable = true)
     private NhanVien nhanVien;
     @Column(name = "thoi_gian_tao", nullable = false)
-    private LocalDateTime thoiGianTao;
+    private LocalDate thoiGianTao;
 
     @OneToMany(mappedBy = "taiKhoan")
 //    @JsonIgnore
