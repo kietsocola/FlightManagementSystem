@@ -180,5 +180,21 @@ public class VeController {
             return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    @PostMapping("/create_auto/{idMayBay}")
+    public ResponseEntity<?> createAutoVe(@PathVariable int idMayBay) {
+        ResponseData responseData = new ResponseData();
+        try {
+            veService.createAutoVeByIdMayBay(idMayBay);
+            responseData.setStatusCode(200);
+            responseData.setMessage("tao ve tu dong");
+            responseData.setData("");
+            return new ResponseEntity<>(responseData, HttpStatus.OK);
+        } catch (Exception e) {
+            responseData.setStatusCode(500);
+            responseData.setMessage("tao ve tu dong that bai " + e);
+            responseData.setData("");
+            return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 }

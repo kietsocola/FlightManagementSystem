@@ -48,8 +48,10 @@ public class TaiKhoan {
     private LocalDate thoiGianTao;
 
     @OneToMany(mappedBy = "taiKhoan")
-//    @JsonIgnore
     private List<RefreshToken> refreshTokenList;
+
+    @Column(name = "so_lan_nhap_sai")
+    private int soLanNhapSai = 0;
 
     @Column(name = "active_status")
     @Enumerated(EnumType.STRING)
