@@ -46,13 +46,25 @@ public class AuthController {
     @Autowired
     private EmailService emailService;
 
+
+    private static final int MAX_FAILED_ATTEMPTS = 5;
+
     @PostMapping("/login")
     public ResponseEntity<ResponseData> login(@RequestBody LoginDTO loginDTO) {
+        // 999 bi khoa
         ResponseData responseData = new ResponseData();
         try {
-            // Kiểm tra đăng nhập
-            if (taiKhoanService.checkLogin(loginDTO)) {
 
+            int checkLogin = taiKhoanService.checkLogin(loginDTO);
+            // 0 thanh cong
+            // 1 sai mat khau
+            // 2 khong tim thay tk
+            if (checkLogin == -1) {
+                responseData.setStatusCode(999);
+                responseData.setMessage("Đăng nhập thất bại: Tai khoan da bi khoa");
+                return new ResponseEntity<>(responseData, HttpStatus.OK);
+            }
+            else if (checkLogin == 0) {
                 // Tạo access token và refresh token
                 String accessToken = jwtTokenProvider.generateToken(loginDTO.getUserName());
                 String refreshToken = jwtTokenProvider.generateRefreshToken(loginDTO.getUserName());
@@ -79,9 +91,15 @@ public class AuthController {
                 responseData.setStatusCode(200);
                 responseData.setMessage("Đăng nhập thành công");
                 responseData.setData(accessToken);
+                resetFailedAttempts(loginDTO.getUserName());
                 return ResponseEntity.ok()
                         .header(HttpHeaders.SET_COOKIE, responseCookie.toString())
                         .body(responseData);
+            } else if (checkLogin == 1) {
+                increaseFailedAttempts(loginDTO.getUserName());
+                responseData.setStatusCode(401);
+                responseData.setMessage("Đăng nhập thất bại: Sai thông tin đăng nhập");
+                return new ResponseEntity<>(responseData, HttpStatus.OK);
             } else {
                 responseData.setStatusCode(401);
                 responseData.setMessage("Đăng nhập thất bại: Sai thông tin đăng nhập");
@@ -92,6 +110,27 @@ public class AuthController {
             responseData.setMessage("Đăng nhập thất bại: " + e.getMessage());
             return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    private void increaseFailedAttempts(String userName) {
+        Optional<TaiKhoan> taiKhoanOptional = taiKhoanService.getTaiKhoanByTenDangNhap(userName);
+
+        TaiKhoan taiKhoan = taiKhoanOptional.get();
+        int newFailAttempts = taiKhoan.getSoLanNhapSai() + 1;
+        taiKhoan.setSoLanNhapSai(newFailAttempts);
+
+        if (newFailAttempts >= MAX_FAILED_ATTEMPTS) {
+            taiKhoan.setTrangThaiActive(ActiveEnum.IN_ACTIVE);
+        }
+        taiKhoanService.saveTaiKhoan(taiKhoan);
+    }
+
+    private void resetFailedAttempts(String userName) {
+        Optional<TaiKhoan> taiKhoanOptional = taiKhoanService.getTaiKhoanByTenDangNhap(userName);
+
+        TaiKhoan taiKhoan = taiKhoanOptional.get();
+        taiKhoan.setSoLanNhapSai(0);
+        taiKhoanService.saveTaiKhoan(taiKhoan);
     }
 
     @PostMapping("/signup")

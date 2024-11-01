@@ -1,7 +1,9 @@
 package com.project.flightManagement.Service.Impl;
 
+import com.project.flightManagement.DTO.ChoNgoiDTO.ChoNgoiDTO;
 import com.project.flightManagement.DTO.HanhKhachDTO.HanhKhachCreateDTO;
 import com.project.flightManagement.DTO.HanhKhachDTO.HanhKhachUpdateDTO;
+import com.project.flightManagement.DTO.MayBayDTO.MayBayDTO;
 import com.project.flightManagement.DTO.VeDTO.VeCreateDTO;
 import com.project.flightManagement.DTO.VeDTO.VeDTO;
 import com.project.flightManagement.DTO.VeDTO.VeUpdateDTO;
@@ -20,9 +22,7 @@ import com.project.flightManagement.Model.Ve;
 import com.project.flightManagement.Repository.HanhKhachRepository;
 import com.project.flightManagement.Repository.KhachHangRepository;
 import com.project.flightManagement.Repository.VeRepository;
-import com.project.flightManagement.Service.HanhKhachService;
-import com.project.flightManagement.Service.KhachHangService;
-import com.project.flightManagement.Service.VeService;
+import com.project.flightManagement.Service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
@@ -44,9 +44,12 @@ public class VeServiceImpl implements VeService {
     @Autowired
     @Lazy
     private HanhKhachService hanhKhachService;
-
     @Autowired
     private HanhKhachMapper hanhKhachMapper;
+    @Autowired
+    private MayBayService mayBayService;
+    @Autowired
+    private ChoNgoiService choNgoiService;
 
 
     @Override
@@ -185,6 +188,10 @@ public class VeServiceImpl implements VeService {
 
     @Override
     public void createAutoVeByIdMayBay(int idMayBay) {
+
+        Iterable<ChoNgoiDTO> listCN = choNgoiService.getChoNgoiByMayBay(mayBayService.getMayBayById(idMayBay).get());
+
+        System.out.println(listCN);
         // B1: lấy tat ca cho ngoi theo may bay
         // B2: duyet qua cho ngoi (VIP, thuong,...)
         // B3: thay doi gia ve tuy vao (VIP, thuong,...) -> nhap % (van chua toi uu lam)

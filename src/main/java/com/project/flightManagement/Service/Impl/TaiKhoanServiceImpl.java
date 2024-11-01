@@ -46,16 +46,21 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
     @Autowired
     private TaiKhoanMapper taiKhoanMapper;
     @Override
-    public boolean checkLogin(LoginDTO loginDTO) {
+    public int checkLogin(LoginDTO loginDTO) {
         Optional<TaiKhoan> optionalTaiKhoan = taiKhoanRepository.findTaiKhoanByTenDangNhap(loginDTO.getUserName());
 
         if (optionalTaiKhoan.isPresent()) {
             TaiKhoan taiKhoan = optionalTaiKhoan.get();
-            if (passwordEncoder.matches(loginDTO.getPassword(), taiKhoan.getMatKhau())) {
-                return true; // Đăng nhập thành công
+            if (taiKhoan.getTrangThaiActive() == ActiveEnum.IN_ACTIVE) {
+                return -1; // tai khoan da bi khoa
+            }
+            else if (passwordEncoder.matches(loginDTO.getPassword(), taiKhoan.getMatKhau())) {
+                return 0; // Đăng nhập thành công
+            } else {
+                return 1; // Sai mật khẩu
             }
         }
-        return false; // Sai mật khẩu hoặc không tìm thấy tài khoản
+        return 2; // Không tìm thấy tài khoản
     }
 
 
@@ -231,5 +236,10 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
             }
         }
         return true;
+    }
+
+    @Override
+    public void saveTaiKhoan(TaiKhoan taiKhoan) {
+        taiKhoanRepository.save(taiKhoan);
     }
 }

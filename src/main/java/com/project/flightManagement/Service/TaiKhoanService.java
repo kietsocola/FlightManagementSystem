@@ -15,7 +15,7 @@ import java.util.Optional;
 public interface TaiKhoanService {
     boolean createTaiKhoan(SignupDTO signupDTO);
     boolean existsTaiKhoanByTenDangNhap(String userName);
-    boolean checkLogin(LoginDTO loginDTO);
+    int checkLogin(LoginDTO loginDTO);
     Optional<TaiKhoan> getTaiKhoanByTenDangNhap(String userName);
     TaiKhoanResponseDTO getTaiKhoanByIdTaiKhoan(int idTaiKhoan);
     Page<TaiKhoanDTO> getAllTaiKhoan(int page, int size);
@@ -32,5 +32,7 @@ public interface TaiKhoanService {
     Optional<TaiKhoanDTO> addNewTaiKhoan(TaiKhoanDTO tkDTO);
     boolean checkExistTenDangNhap(TaiKhoanDTO tkDTO);
     boolean checkExistKhachHang(TaiKhoanDTO tkDTO);
+
+    void saveTaiKhoan(TaiKhoan taiKhoan);
 
 }
