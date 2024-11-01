@@ -6,13 +6,11 @@ import com.project.flightManagement.DTO.HoaDonDTO.HoaDonDTO;
 
 import com.project.flightManagement.Enum.HoaDonEnum;
 import com.project.flightManagement.Mapper.HoaDonMapper;
-import com.project.flightManagement.Model.ChiTietHoaDon;
 import com.project.flightManagement.Payload.ResponseData;
 import com.project.flightManagement.Service.ChiTietHoaDonService;
 import com.project.flightManagement.Service.HoaDonService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -28,6 +26,7 @@ import java.util.Optional;
 public class HoaDonController {
     @Autowired
     private HoaDonService hoaDonService;
+    @Autowired
     private ChiTietHoaDonService chiTietHoaDonService;
     private ResponseData response = new ResponseData();
 
@@ -284,20 +283,24 @@ public class HoaDonController {
             response.setMessage("There are some fields invalid!");
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
-
+        double tongTien = 0;
 
         // Tiến hành lưu hóa đơn
         Optional<HoaDonDTO> savedHoaDon = hoaDonService.addHoaDon(hoaDonCreateDTO.getHoaDonDTO());
         if (savedHoaDon.isPresent()) {
-            int hoaDonId = savedHoaDon.get().getIdHoaDon(); // Lấy ID hóa đơn vừa lưu
-
             // Thêm chi tiết hóa đơn
             if (hoaDonCreateDTO.getChiTietHoaDonDTOList() != null) {
-                for (ChiTietHoaDonDTO chiTiet : hoaDonCreateDTO.getChiTietHoaDonDTOList()) {
-                    chiTiet.setHoaDon(HoaDonMapper.toEntity(hoaDonCreateDTO.getHoaDonDTO())); // Gán ID hóa đơn cho chi tiết
-                    chiTietHoaDonService.addChiTietHoaDon(chiTiet); // Gọi service để thêm chi tiết hóa đơn
+                for (ChiTietHoaDonDTO chiTietHoaDonDTO : hoaDonCreateDTO.getChiTietHoaDonDTOList()) {
+                    chiTietHoaDonDTO.setHoaDon(HoaDonMapper.toEntity(savedHoaDon.get())); // Gán ID hóa đơn cho chi tiết
+                    Optional<ChiTietHoaDonDTO> savedCTHD =  chiTietHoaDonService.addChiTietHoaDon(chiTietHoaDonDTO); // Gọi service để thêm chi tiết hóa đơn
+                    tongTien+=savedCTHD.get().getSoTien();
                 }
             }
+            System.out.println(tongTien);
+            savedHoaDon = hoaDonService.getHoaDonById(savedHoaDon.get().getIdHoaDon());
+            savedHoaDon.get().setTongTien(tongTien);
+            hoaDonService.updateHoaDon(savedHoaDon.get());
+
             response.setMessage("Save Hoa Don successfully!");
             response.setData(savedHoaDon.get());
             response.setStatusCode(200);
