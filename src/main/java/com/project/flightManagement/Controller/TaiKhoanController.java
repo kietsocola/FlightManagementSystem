@@ -230,20 +230,23 @@ public class TaiKhoanController {
                 response.setData(null);
                 return new ResponseEntity<>(response, HttpStatus.CONFLICT);
             }
-            if(taiKhoanService.checkExistKhachHang(taiKhoanDTO)) {
-                response.setStatusCode(202);
-                response.setMessage("Khach hang exist!!");
-                response.setData(null);
-                return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+            if (taiKhoanDTO.getKhachHang() != null) {
+                if(taiKhoanService.checkExistKhachHang(taiKhoanDTO)) {
+                    response.setStatusCode(202);
+                    response.setMessage("Khach hang exist!!");
+                    response.setData(null);
+                    return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+                }
+            } else {
+                if(taiKhoanService.checkExistNhanVien(taiKhoanDTO)) {
+                    response.setStatusCode(202);
+                    response.setMessage("Nhan vien exist!!");
+                    response.setData(null);
+                    return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+                }
             }
-            if(taiKhoanService.checkExistNhanVien(taiKhoanDTO)) {
-                response.setStatusCode(202);
-                response.setMessage("Nhan vien exist!!");
-                response.setData(null);
-                return new ResponseEntity<>(response, HttpStatus.CONFLICT);
-            }
-
             Optional<TaiKhoanDTO> savedTK = taiKhoanService.addNewTaiKhoan(taiKhoanDTO);
+
             if (savedTK.isPresent()) {
                 response.setMessage("Save account successfully!!");
                 response.setData(savedTK.get());
@@ -263,8 +266,8 @@ public class TaiKhoanController {
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
     }
-    @PutMapping("/updateTaiKhoan")
-    public ResponseEntity<ResponseData> updateTaiKhoan(@Valid @RequestBody TaiKhoanDTO taiKhoanDTO, BindingResult bindingResult) {
+    @PutMapping("/updateTaiKhoan/{idTK}")
+    public ResponseEntity<ResponseData> updateTaiKhoan(@PathVariable("idTK") int idTK, @Valid @RequestBody TaiKhoanDTO taiKhoanDTO, BindingResult bindingResult) {
         ResponseData response = new ResponseData();
         if(bindingResult.hasErrors()){
             Map<String, String> fieldErrors = new HashMap<>();
@@ -275,18 +278,33 @@ public class TaiKhoanController {
             response.setMessage("There are some fields invalid");
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
-        if (taiKhoanDTO != null && taiKhoanDTO.getTenDangNhap()!= null) {
-            if(!taiKhoanService.checkExistTenDangNhap(taiKhoanDTO)){
-                response.setStatusCode(202);
-                response.setMessage("Ten dang nhap exist!!");
-                response.setData(null);
-                return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+        if (taiKhoanDTO != null && taiKhoanDTO.getTenDangNhap() != null && (taiKhoanDTO.getKhachHang() != null || taiKhoanDTO.getNhanVien() != null)) {
+            System.out.println(taiKhoanDTO);
+            if (!taiKhoanService.getTaiKhoanByIdTaiKhoan(idTK).getTenDangNhap().equals(taiKhoanDTO.getTenDangNhap())){
+                if(taiKhoanService.checkExistTenDangNhap(taiKhoanDTO)){
+                    response.setStatusCode(202);
+                    response.setMessage("Ten dang nhap exist!");
+                    response.setData(null);
+                    return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+                }
             }
-            if(!taiKhoanService.checkExistKhachHang(taiKhoanDTO)) {
-                response.setStatusCode(202);
-                response.setMessage("Khach hang exist!!");
-                response.setData(null);
-                return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+
+            if (taiKhoanDTO.getKhachHang() != null) {
+                if (taiKhoanService.getTaiKhoanByIdTaiKhoan(idTK).getKhachHang().getIdKhachHang() != taiKhoanDTO.getKhachHang().getIdKhachHang()) {
+                    if(taiKhoanService.checkExistKhachHang(taiKhoanDTO)) {
+                        response.setStatusCode(202);
+                        response.setMessage("Khach hang exist!!");
+                        response.setData(null);
+                        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+                    }
+                }
+            } else {
+                if(taiKhoanService.getTaiKhoanByIdTaiKhoan(idTK).getNhanVien().getIdNhanVien() != taiKhoanDTO.getNhanVien().getIdNhanVien() && taiKhoanService.checkExistNhanVien(taiKhoanDTO)) {
+                    response.setStatusCode(202);
+                    response.setMessage("Nhan vien exist!!");
+                    response.setData(null);
+                    return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+                }
             }
             Optional<TaiKhoanDTO> savedTK = taiKhoanService.updateTaiKhoan(taiKhoanDTO);
             if (savedTK.isPresent()) {

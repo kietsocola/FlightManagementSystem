@@ -3,6 +3,7 @@ package com.project.flightManagement.Service.Impl;
 import com.project.flightManagement.DTO.ChiTietHoaDonDTO.ChiTietHoaDonDTO;
 import com.project.flightManagement.DTO.HangHoaDTO.HangHoaDTO;
 import com.project.flightManagement.DTO.HoaDonDTO.HoaDonDTO;
+import com.project.flightManagement.DTO.VeDTO.VeDTO;
 import com.project.flightManagement.Mapper.ChiTietHoaDonMapper;
 import com.project.flightManagement.Mapper.HangHoaMapper;
 import com.project.flightManagement.Mapper.HoaDonMapper;
@@ -13,6 +14,7 @@ import com.project.flightManagement.Service.ChiTietHoaDonService;
 
 import com.project.flightManagement.Service.HangHoaService;
 import com.project.flightManagement.Service.HoaDonService;
+import com.project.flightManagement.Service.VeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -33,6 +35,8 @@ public class ChiTietHoaDonServiceImpl implements ChiTietHoaDonService {
     HoaDonService hoaDonService;
     @Autowired
     HangHoaService hangHoaService;
+    @Autowired
+    VeService veService;
     @Override
     public Iterable<ChiTietHoaDonDTO> getAllChiTietHoaDon() {
         try {
@@ -64,8 +68,9 @@ public class ChiTietHoaDonServiceImpl implements ChiTietHoaDonService {
             if (chiTietHoaDonDTO.getHangHoa() != null && chiTietHoaDonDTO.getVe() != null) {
                 Optional<HangHoaDTO> hangHoa = hangHoaService.getHangHoaByIdHangHoa(chiTietHoaDonDTO.getHangHoa().getIdHangHoa());
                 chiTietHoaDonDTO.setHangHoa(HangHoaMapper.toEntity(hangHoa.get()));
-
-                chiTietHoaDonDTO.setSoTien(chiTietHoaDonDTO.getHangHoa().getGiaPhatSinh()+chiTietHoaDonDTO.getVe().getGiaVe());
+                VeDTO veDTO = veService.getVeById(chiTietHoaDonDTO.getVe().getIdVe());
+                double giaVe = veDTO.getGiaVe();
+                chiTietHoaDonDTO.setSoTien(chiTietHoaDonDTO.getHangHoa().getGiaPhatSinh()+giaVe);
 
             } else {
                 if (chiTietHoaDonDTO.getVe() == null && chiTietHoaDonDTO.getHangHoa() != null) {
@@ -73,8 +78,13 @@ public class ChiTietHoaDonServiceImpl implements ChiTietHoaDonService {
                     chiTietHoaDonDTO.setSoTien(chiTietHoaDonDTO.getHangHoa().getGiaPhatSinh());
                     System.out.println("sotien: "+ chiTietHoaDonDTO.getSoTien());
                 } else {
-                    if (chiTietHoaDonDTO.getHangHoa() == null && chiTietHoaDonDTO.getVe() != null)
-                    chiTietHoaDonDTO.setSoTien(chiTietHoaDonDTO.getVe().getGiaVe());
+                    if (chiTietHoaDonDTO.getHangHoa() == null && chiTietHoaDonDTO.getVe() != null){
+                        System.out.println("3");
+                        VeDTO veDTO = veService.getVeById(chiTietHoaDonDTO.getVe().getIdVe());
+                        double giaVe = veDTO.getGiaVe();
+                        chiTietHoaDonDTO.setSoTien(giaVe);
+                    }
+
                 }
             }
 
