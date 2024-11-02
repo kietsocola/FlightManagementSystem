@@ -44,10 +44,12 @@ public class PaymentController {
                 // Thanh toán thành công
                 // lấy thông tin hành khách từ session khi triển khai
 //                HanhKhachDTO hanhKhach = (HanhKhachDTO) request.getSession().getAttribute("hanhKhach");
+                System.out.println(vnp_OrderInfo);
                 String[] parts = vnp_OrderInfo.split("\\+"); // Chia chuỗi thành mảng
                 List<String> ticketIds = new ArrayList<>();
 
                 for (String part : parts) {
+                    System.out.println(part);
                     if (part.matches("\\d+")) { // Kiểm tra nếu phần tử là số
                         ticketIds.add(part); // Thêm phần tử vào danh sách ID vé
                     }

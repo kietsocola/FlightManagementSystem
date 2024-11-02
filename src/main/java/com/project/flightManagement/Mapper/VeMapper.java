@@ -9,6 +9,7 @@ import com.project.flightManagement.Model.ChoNgoi;
 import com.project.flightManagement.Model.HanhKhach;
 import com.project.flightManagement.Model.LoaiVe;
 import com.project.flightManagement.Model.Ve;
+import com.project.flightManagement.Repository.HangVeRepository;
 import com.project.flightManagement.Service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -29,6 +30,10 @@ public class VeMapper {
     private LoaiVeService loaiVeService;
     @Autowired
     private HanhKhachService hanhKhachService;
+    @Autowired
+    private HangVeService hangVeService;
+    @Autowired
+    private HangVeRepository hangVeRepository;
 
     public VeDTO toDto(Ve ve) {
         if (ve == null) {
@@ -89,6 +94,7 @@ public class VeMapper {
             return null;
         }
         ve.setLoaiVe(loaiVeOptional.get());
+        ve.setHangVe(hangVeRepository.findById(veCreateDTO.getIdHangVe()).get());
         ve.setTrangThaiActive(ActiveEnum.ACTIVE);
         ve.setTrangThai(VeEnum.EMPTY);
         return ve;

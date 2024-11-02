@@ -19,6 +19,6 @@ public interface VeService {
     boolean createVe(VeCreateDTO veCreateDTO);
     boolean updateHanhKhachVe(VeUpdateHanhKhachDTO veUpdateHanhKhachDTO);
 
-    void createAutoVeByIdMayBay(int idMayBay);
+    void createAutoVeByIdMayBay(int idChuyenBay, int idMayBay, double giaVeHangPhoThong, double giaVeHangThuongGia, double giaVeHangNhat);
 
 }

@@ -23,6 +23,7 @@ import com.project.flightManagement.Repository.HanhKhachRepository;
 import com.project.flightManagement.Repository.KhachHangRepository;
 import com.project.flightManagement.Repository.VeRepository;
 import com.project.flightManagement.Service.*;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
@@ -50,6 +51,10 @@ public class VeServiceImpl implements VeService {
     private MayBayService mayBayService;
     @Autowired
     private ChoNgoiService choNgoiService;
+
+    @Autowired
+    @Lazy
+    private VeService veService;
 
 
     @Override
@@ -160,14 +165,9 @@ public class VeServiceImpl implements VeService {
 
     @Override
     public boolean createVe(VeCreateDTO veCreateDTO) {
-        try {
-            Ve ve = veMapper.toEntity(veCreateDTO);
-            veRepository.save(ve);
-            return true;
-        }catch (Exception e) {
-            System.out.println("loi tao ve: " + e);
-            return false;
-        }
+        Ve ve = veMapper.toEntity(veCreateDTO);
+        veRepository.save(ve);
+        return true;
     }
 
     @Override
@@ -187,14 +187,24 @@ public class VeServiceImpl implements VeService {
     }
 
     @Override
-    public void createAutoVeByIdMayBay(int idMayBay) {
-
+    @Transactional
+    public void createAutoVeByIdMayBay(int idChuyenBay, int idMayBay, double giaVeHangPhoThong, double giaVeHangThuongGia, double giaVeHangNhat) {
+        System.out.println("hello createAutoVeByIdMayBay");
         Iterable<ChoNgoiDTO> listCN = choNgoiService.getChoNgoiByMayBay(mayBayService.getMayBayById(idMayBay).get());
-
-        System.out.println(listCN);
-        // B1: lấy tat ca cho ngoi theo may bay
-        // B2: duyet qua cho ngoi (VIP, thuong,...)
-        // B3: thay doi gia ve tuy vao (VIP, thuong,...) -> nhap % (van chua toi uu lam)
-        // B4: insert vao db
+        for (ChoNgoiDTO c : listCN) {
+            VeCreateDTO veCreateDTO = new VeCreateDTO();
+            veCreateDTO.setIdChuyenBay(idChuyenBay);
+            veCreateDTO.setIdChoNgoi(c.getIdChoNgoi());
+            veCreateDTO.setIdHangVe(c.getHangVe().getIdHangVe());
+            veCreateDTO.setIdLoaiVe(1);
+            if(c.getHangVe().getIdHangVe() == 1) { // hang pho thong
+                veCreateDTO.setGiaVe(giaVeHangPhoThong);
+            } else if (c.getHangVe().getIdHangVe() == 2) { // hang thuong gia
+                veCreateDTO.setGiaVe(giaVeHangThuongGia);
+            } else { // hang nhat
+                veCreateDTO.setGiaVe(giaVeHangNhat);
+            }
+            veService.createVe(veCreateDTO);
+        }
     }
 }

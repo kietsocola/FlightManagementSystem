@@ -374,6 +374,8 @@ public class AuthController {
             return new ResponseEntity<>(responseData, HttpStatus.CONFLICT);
         }
         taiKhoan.setMatKhau(resetPasswordDTO.getNewPassword());
+        taiKhoan.setSoLanNhapSai(0);
+        taiKhoan.setTrangThaiActive(ActiveEnum.ACTIVE);
 
         // Cập nhật tài khoản với mật khẩu mới
         boolean isSuccess = taiKhoanService.updateTaiKhoan_RefreshPassword(taiKhoan);
