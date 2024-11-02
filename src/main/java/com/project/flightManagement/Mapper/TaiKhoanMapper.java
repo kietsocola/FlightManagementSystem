@@ -26,11 +26,13 @@ public class TaiKhoanMapper {
         taiKhoan.setIdTaiKhoan(taiKhoanDTO.getIdTaiKhoan());
 
         if(taiKhoanDTO.getKhachHang() != null) {
-
+            KhachHang khachHang = new KhachHang();
+            khachHang.setIdKhachHang(taiKhoanDTO.getKhachHang().getIdKhachHang());
+            taiKhoan.setKhachHang(khachHang); // chua tra ve nguyen doi tuong khach hang
+        } else {
+            taiKhoan.setKhachHang(null);
         }
-        KhachHang khachHang = new KhachHang();
-        khachHang.setIdKhachHang(taiKhoanDTO.getKhachHang().getIdKhachHang());
-        taiKhoan.setKhachHang(khachHang); // chua tra ve nguyen doi tuong khach hang
+
 
         taiKhoan.setMatKhau(taiKhoanDTO.getMatKhau());
         taiKhoan.setTenDangNhap(taiKhoanDTO.getTenDangNhap());
@@ -41,6 +43,8 @@ public class TaiKhoanMapper {
             NhanVien nhanVien = new NhanVien();
             nhanVien.setIdNhanVien(taiKhoanDTO.getNhanVien().getIdNhanVien());
             taiKhoan.setNhanVien(nhanVien);
+        } else {
+            taiKhoan.setNhanVien(null);
         }
 
 

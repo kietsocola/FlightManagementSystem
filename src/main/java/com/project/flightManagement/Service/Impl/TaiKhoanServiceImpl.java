@@ -223,19 +223,28 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
     public boolean checkExistTenDangNhap(TaiKhoanDTO tkDTO) {
         for(TaiKhoan tk : taiKhoanRepository.findAll()){
             if(tkDTO.getTenDangNhap().equals(tk.getTenDangNhap())){
-                return false;
+                return true;
             }
         }
-        return true;
+        return false;
     }
     @Override
     public boolean checkExistKhachHang(TaiKhoanDTO taiKhoanDTO) {
         for(TaiKhoan tk : taiKhoanRepository.findAll()){
             if(tk.getKhachHang().getIdKhachHang() == taiKhoanDTO.getKhachHang().getIdKhachHang()) {
-                return false;
+                return true;
             }
         }
-        return true;
+        return false;
+    }
+    @Override
+    public boolean checkExistNhanVien(TaiKhoanDTO taiKhoanDTO) {
+        for(TaiKhoan tk : taiKhoanRepository.findAll()){
+            if(tk.getNhanVien().getIdNhanVien() == taiKhoanDTO.getNhanVien().getIdNhanVien()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

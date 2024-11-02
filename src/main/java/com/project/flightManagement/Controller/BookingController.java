@@ -3,9 +3,12 @@ package com.project.flightManagement.Controller;
 import com.google.zxing.WriterException;
 import com.itextpdf.text.DocumentException;
 import com.project.flightManagement.DTO.ChoNgoiDTO.ChoNgoiDTO;
+import com.project.flightManagement.DTO.HanhKhachDTO.HanhKhachCreateDTO;
 import com.project.flightManagement.DTO.HanhKhachDTO.HanhKhachDTO;
 import com.project.flightManagement.DTO.HoldSeatDTO.HoldSeatRequest;
 import com.project.flightManagement.Enum.VeEnum;
+import com.project.flightManagement.Mapper.HanhKhachMapper;
+import com.project.flightManagement.Model.HanhKhach;
 import com.project.flightManagement.Model.Ve;
 import com.project.flightManagement.Payload.ResponseData;
 import com.project.flightManagement.Repository.VeRepository;
@@ -44,6 +47,8 @@ public class BookingController {
     private PaymentService paymentService;
     @Autowired
     private PdfService pdfService;
+    @Autowired
+    private HanhKhachService hanhKhachService;
 
     // Endpoint to get seats for a flight by flight ID
     @GetMapping("/getChoNgoiByChuyenBayAndHangVe")
@@ -124,7 +129,6 @@ public class BookingController {
                     response.setStatusCode(400); // Bad Request
                     return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
                 }
-
                 // Kiểm tra xem vé có tồn tại không
                 Optional<Ve> optionalVe = veRepo.findById(hanhKhach.getIdVe());
                 if (!optionalVe.isPresent()) {
@@ -148,7 +152,11 @@ public class BookingController {
 
                 // Thêm thông tin vé vào orderInfo
                 orderInfo.append(ve.getIdVe()).append(", ");
-
+                // Tạo hành khách, sau đó lưu hanh khach, sau đó set idHanhKhach của vé là hành khách trả ve sau khi lưu
+                HanhKhach hanhkhachEntity = HanhKhachMapper.toEntity(hanhKhach);
+                HanhKhach hkAfterSave = hanhKhachService.saveNewHanhKhachWhenBooking(hanhkhachEntity);
+                ve.setHanhKhach(hkAfterSave);
+                veRepo.save(ve);
                 // Lưu thông tin hành khách trong session (tùy chọn)
                 request.getSession().setAttribute("hanhKhach_" + hanhKhach.getIdVe(), hanhKhach);
             }

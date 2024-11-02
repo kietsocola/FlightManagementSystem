@@ -14,4 +14,6 @@ public interface HanhKhachService {
     Optional<HanhKhach> getHanhKhachById(int idHanhKhach);
 
     HanhKhach updateHanhKhach(HanhKhachUpdateDTO hanhKhachUpdateDTO);
+
+    HanhKhach saveNewHanhKhachWhenBooking(HanhKhach hk);
 }

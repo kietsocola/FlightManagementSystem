@@ -61,15 +61,23 @@ public class ChiTietHoaDonServiceImpl implements ChiTietHoaDonService {
     public Optional<ChiTietHoaDonDTO> addChiTietHoaDon(ChiTietHoaDonDTO chiTietHoaDonDTO) {
         Optional<ChiTietHoaDon> existingCTHD = chiTietHoaDonReposity.findById(chiTietHoaDonDTO.getIdChiTietHoaDon());
         if (!existingCTHD.isPresent()) {
-            Optional<HangHoaDTO> hangHoa = hangHoaService.getHangHoaByIdHangHoa(chiTietHoaDonDTO.getHangHoa().getIdHangHoa());
-            chiTietHoaDonDTO.setHangHoa(HangHoaMapper.toEntity(hangHoa.get()));
-            if (chiTietHoaDonDTO.getVe() == null) {
-                System.out.println("hang hoa " + chiTietHoaDonDTO.getHangHoa());
-                chiTietHoaDonDTO.setSoTien(chiTietHoaDonDTO.getHangHoa().getGiaPhatSinh());
-                System.out.println("sotien: "+ chiTietHoaDonDTO.getSoTien());
-            } else {
+            if (chiTietHoaDonDTO.getHangHoa() != null && chiTietHoaDonDTO.getVe() != null) {
+                Optional<HangHoaDTO> hangHoa = hangHoaService.getHangHoaByIdHangHoa(chiTietHoaDonDTO.getHangHoa().getIdHangHoa());
+                chiTietHoaDonDTO.setHangHoa(HangHoaMapper.toEntity(hangHoa.get()));
+
                 chiTietHoaDonDTO.setSoTien(chiTietHoaDonDTO.getHangHoa().getGiaPhatSinh()+chiTietHoaDonDTO.getVe().getGiaVe());
+
+            } else {
+                if (chiTietHoaDonDTO.getVe() == null && chiTietHoaDonDTO.getHangHoa() != null) {
+                    System.out.println("hang hoa " + chiTietHoaDonDTO.getHangHoa());
+                    chiTietHoaDonDTO.setSoTien(chiTietHoaDonDTO.getHangHoa().getGiaPhatSinh());
+                    System.out.println("sotien: "+ chiTietHoaDonDTO.getSoTien());
+                } else {
+                    if (chiTietHoaDonDTO.getHangHoa() == null && chiTietHoaDonDTO.getVe() != null)
+                    chiTietHoaDonDTO.setSoTien(chiTietHoaDonDTO.getVe().getGiaVe());
+                }
             }
+
             ChiTietHoaDon chiTietHoaDon = ChiTietHoaDonMapper.toEntity(chiTietHoaDonDTO);
             ChiTietHoaDon savedCTHD = chiTietHoaDonReposity.save(chiTietHoaDon);
             System.out.println("saved cthd:" + savedCTHD);

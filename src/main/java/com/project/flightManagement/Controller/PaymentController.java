@@ -14,9 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/payment")
@@ -38,8 +36,7 @@ public class PaymentController {
 
         String responseCode = params.get("vnp_ResponseCode");
         String vnp_OrderInfo = params.get("vnp_OrderInfo"); // Lấy giá trị từ tham số trả về
-        String[] parts = vnp_OrderInfo.split("\\+"); // Chia chuỗi thành mảng
-        String ticketId = parts[parts.length - 1];
+
 
         try {
             // Kiểm tra kết quả thanh toán từ VNPay
@@ -47,25 +44,40 @@ public class PaymentController {
                 // Thanh toán thành công
                 // lấy thông tin hành khách từ session khi triển khai
 //                HanhKhachDTO hanhKhach = (HanhKhachDTO) request.getSession().getAttribute("hanhKhach");
-                Optional<Ve> optionalVe = veRepo.findById(Integer.parseInt(ticketId));
-                if (optionalVe.isPresent()) {
-                    Ve ve = optionalVe.get();
-                    ve.setTrangThai(VeEnum.BOOKED); // Cập nhật trạng thái vé
-                    veRepo.save(ve);
-                    boolean rs = khService.updatePoint(1, (int) (ve.getGiaVe()*5/100), false);
-                    response.setMessage("Thanh toán thành công cho vé " + ve.getIdVe() + rs);
-                    response.setStatusCode(200); // OK
-                } else {
+                String[] parts = vnp_OrderInfo.split("\\+"); // Chia chuỗi thành mảng
+                List<String> ticketIds = new ArrayList<>();
+
+                for (String part : parts) {
+                    if (part.matches("\\d+")) { // Kiểm tra nếu phần tử là số
+                        ticketIds.add(part); // Thêm phần tử vào danh sách ID vé
+                    }
+                }
+                int totalPoints = 0;
+// ticketIds giờ chứa các phần tử là số (ID vé)
+                for (String ticketId : ticketIds) {
+                    Optional<Ve> optionalVe = veRepo.findById(Integer.parseInt(ticketId));
+                    if (optionalVe.isPresent()) {
+                        Ve ve = optionalVe.get();
+                        ve.setTrangThai(VeEnum.BOOKED); // Cập nhật trạng thái vé
+                        veRepo.save(ve);
+                        // Cập nhật điểm thưởng hoặc các thao tác khác nếu cần
+                        int points = (int) (ve.getGiaVe() * 5 / 100);
+                        totalPoints += points;
+                    } else {
                     response.setMessage("Vé không tồn tại." + "ticketId: "+ticketId);
                     response.setStatusCode(404); // Not Found
-                }
+                }}
+                boolean rs = khService.updatePoint(1, totalPoints, false);
+                response.setMessage("Thanh toán thành công cho các vé: " + String.join(", ", ticketIds) + ". Điểm cộng: " + rs);
+                response.setData(ticketIds);
+                response.setStatusCode(200);
             } else {
-                response.setMessage("Thanh toán thất bại: " + responseCode + "ticketId: "+ticketId);
+                response.setMessage("Thanh toán thất bại: " + responseCode);
                 response.setStatusCode(400); // Bad Request
             }
 
         } catch (Exception e) {
-            response.setMessage("Có lỗi xảy ra: " + e.getMessage() + "ticketId: "+ticketId);
+            response.setMessage("Có lỗi xảy ra: " + e.getMessage());
             response.setStatusCode(500); // Internal Server Error
         }
 

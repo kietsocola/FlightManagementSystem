@@ -223,16 +223,22 @@ public class TaiKhoanController {
             response.setMessage("There are some fields invalid");
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
-        if (taiKhoanDTO != null && taiKhoanDTO.getTenDangNhap() != null && taiKhoanDTO.getKhachHang() != null) {
-            if(!taiKhoanService.checkExistTenDangNhap(taiKhoanDTO)){
+        if (taiKhoanDTO != null && taiKhoanDTO.getTenDangNhap() != null && (taiKhoanDTO.getKhachHang() != null || taiKhoanDTO.getNhanVien() != null)) {
+            if(taiKhoanService.checkExistTenDangNhap(taiKhoanDTO)){
                 response.setStatusCode(202);
                 response.setMessage("Ten dang nhap exist!!");
                 response.setData(null);
                 return new ResponseEntity<>(response, HttpStatus.CONFLICT);
             }
-            if(!taiKhoanService.checkExistKhachHang(taiKhoanDTO)) {
+            if(taiKhoanService.checkExistKhachHang(taiKhoanDTO)) {
                 response.setStatusCode(202);
                 response.setMessage("Khach hang exist!!");
+                response.setData(null);
+                return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+            }
+            if(taiKhoanService.checkExistNhanVien(taiKhoanDTO)) {
+                response.setStatusCode(202);
+                response.setMessage("Nhan vien exist!!");
                 response.setData(null);
                 return new ResponseEntity<>(response, HttpStatus.CONFLICT);
             }

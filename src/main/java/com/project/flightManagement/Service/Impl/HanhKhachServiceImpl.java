@@ -39,4 +39,9 @@ public class HanhKhachServiceImpl implements HanhKhachService {
         HanhKhach hanhKhach = HanhKhachMapper.toHanhKhachFromHanhKhachUpdateDTO(hanhKhachUpdateDTO);
         return hanhKhachRepository.save(hanhKhach);
     }
+
+    @Override
+    public HanhKhach saveNewHanhKhachWhenBooking(HanhKhach hk) {
+        return hanhKhachRepository.save(hk);
+    }
 }
