@@ -117,7 +117,7 @@ public class BookingController {
     public ResponseEntity<ResponseData> confirmBooking(@RequestBody List<HanhKhachDTO> hanhKhachList, HttpServletRequest request) {
         ResponseData response = new ResponseData();
         int totalAmount = 0;  // Tổng số tiền cho tất cả các vé
-        StringBuilder orderInfo = new StringBuilder("Thanh toan cho cac ve: ");
+        StringBuilder orderInfo = new StringBuilder("Thanh toan cho cac ve ");
         List<String> passengerNames = new ArrayList<>();
 
         try {
@@ -151,7 +151,7 @@ public class BookingController {
                 passengerNames.add(hanhKhach.getHoTen());
 
                 // Thêm thông tin vé vào orderInfo
-                orderInfo.append(ve.getIdVe()).append(", ");
+                orderInfo.append(ve.getIdVe()).append(" ");
                 // Tạo hành khách, sau đó lưu hanh khach, sau đó set idHanhKhach của vé là hành khách trả ve sau khi lưu
                 HanhKhach hanhkhachEntity = HanhKhachMapper.toEntity(hanhKhach);
                 HanhKhach hkAfterSave = hanhKhachService.saveNewHanhKhachWhenBooking(hanhkhachEntity);
@@ -163,7 +163,7 @@ public class BookingController {
 
             // Xóa dấu phẩy cuối cùng trong orderInfo
             if (orderInfo.length() > 0) {
-                orderInfo.setLength(orderInfo.length() - 2);
+                orderInfo.setLength(orderInfo.length() - 1);
             }
 
             // Tạo một URL thanh toán với tổng số tiền
@@ -177,6 +177,7 @@ public class BookingController {
             responseData.put("passengers", passengerNames);
             response.setData(responseData);
             response.setStatusCode(200); // OK
+            response.setMessage(orderInfo.toString());
             return new ResponseEntity<>(response, HttpStatus.OK);
 
         } catch (Exception e) {
