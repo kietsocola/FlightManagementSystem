@@ -68,14 +68,11 @@ public class ChiTietHoaDonServiceImpl implements ChiTietHoaDonService {
             if (chiTietHoaDonDTO.getHangHoa() != null && chiTietHoaDonDTO.getVe() != null) {
                 Optional<HangHoaDTO> hangHoa = hangHoaService.getHangHoaByIdHangHoa(chiTietHoaDonDTO.getHangHoa().getIdHangHoa());
                 chiTietHoaDonDTO.setHangHoa(HangHoaMapper.toEntity(hangHoa.get()));
-<<<<<<< HEAD
 
-                chiTietHoaDonDTO.setSoTien(chiTietHoaDonDTO.getHangHoa().getGiaPhatSinh()+chiTietHoaDonDTO.getVe().getGiaVe());
-=======
+               
                 VeDTO veDTO = veService.getVeById(chiTietHoaDonDTO.getVe().getIdVe());
                 double giaVe = veDTO.getGiaVe();
                 chiTietHoaDonDTO.setSoTien(chiTietHoaDonDTO.getHangHoa().getGiaPhatSinh()+giaVe);
->>>>>>> 2527488d3b12affe49753882bbd0c43fa80fc425
 
             } else {
                 if (chiTietHoaDonDTO.getVe() == null && chiTietHoaDonDTO.getHangHoa() != null) {
@@ -83,10 +80,6 @@ public class ChiTietHoaDonServiceImpl implements ChiTietHoaDonService {
                     chiTietHoaDonDTO.setSoTien(chiTietHoaDonDTO.getHangHoa().getGiaPhatSinh());
                     System.out.println("sotien: "+ chiTietHoaDonDTO.getSoTien());
                 } else {
-<<<<<<< HEAD
-                    if (chiTietHoaDonDTO.getHangHoa() == null && chiTietHoaDonDTO.getVe() != null)
-                        chiTietHoaDonDTO.setSoTien(chiTietHoaDonDTO.getVe().getGiaVe());
-=======
                     if (chiTietHoaDonDTO.getHangHoa() == null && chiTietHoaDonDTO.getVe() != null){
                         System.out.println("3");
                         VeDTO veDTO = veService.getVeById(chiTietHoaDonDTO.getVe().getIdVe());
@@ -94,7 +87,6 @@ public class ChiTietHoaDonServiceImpl implements ChiTietHoaDonService {
                         chiTietHoaDonDTO.setSoTien(giaVe);
                     }
 
->>>>>>> 2527488d3b12affe49753882bbd0c43fa80fc425
                 }
             }
 
