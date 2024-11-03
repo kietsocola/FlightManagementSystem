@@ -1,13 +1,16 @@
 package com.project.flightManagement.Service.Impl;
 
 import com.project.flightManagement.DTO.ChoNgoiDTO.ChoNgoiDTO;
+import com.project.flightManagement.DTO.ChoNgoiDTO.ChoNgoi_VeDTO;
 import com.project.flightManagement.DTO.MayBayDTO.MayBayDTO;
 import com.project.flightManagement.Enum.ActiveEnum;
 import com.project.flightManagement.Mapper.ChoNgoiMapper;
 import com.project.flightManagement.Mapper.MayBayMapper;
 import com.project.flightManagement.Model.ChoNgoi;
 import com.project.flightManagement.Model.MayBay;
+import com.project.flightManagement.Model.Ve;
 import com.project.flightManagement.Repository.ChoNgoiRepository;
+import com.project.flightManagement.Repository.VeRepository;
 import com.project.flightManagement.Service.ChoNgoiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -23,7 +26,8 @@ import java.util.stream.StreamSupport;
 public class ChoNgoiServicelmpl implements ChoNgoiService {
     @Autowired
     private ChoNgoiRepository cnRepo;
-
+    @Autowired
+    private VeRepository veRepo;
     @Override
     public Iterable<ChoNgoiDTO> getAllChoNgoi() {
         try {
@@ -93,8 +97,8 @@ public class ChoNgoiServicelmpl implements ChoNgoiService {
         }
     }
     @Override
-    public List<ChoNgoiDTO> getAllChoNgoiByIdChuyenBayandHangVe(int idCB, int hangVe) {
-        List<ChoNgoi> choNgoiList = cnRepo.findByMayBay_ChuyenBayList_IdChuyenBayAndHangVe_IdHangVe(idCB, hangVe);
+    public List<ChoNgoi_VeDTO> getAllChoNgoiByIdChuyenBayandHangVe(int idCB, int hangVe) {
+        List<Ve> choNgoiList = veRepo.findByChuyenBay_IdChuyenBayAndHangVe_IdHangVe(idCB, hangVe);
         return choNgoiList.stream()
                 .map(ChoNgoiMapper::toDTO)
                 .collect(Collectors.toList());
