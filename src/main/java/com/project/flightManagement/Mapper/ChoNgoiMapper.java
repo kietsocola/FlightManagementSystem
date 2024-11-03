@@ -25,6 +25,7 @@ public class ChoNgoiMapper {
         choNgoiDTO.setColumnIndex(ve.getChoNgoi().getColumnIndex());
         choNgoiDTO.setTrangThaiActive(ve.getChoNgoi().getTrangThaiActive());
         choNgoiDTO.setIdVe(ve.getIdVe());
+        choNgoiDTO.setTrangThai(ve.getTrangThai());
         return choNgoiDTO;
     }
     public static ChoNgoi toEntity(ChoNgoiDTO choNgoiDTO) {

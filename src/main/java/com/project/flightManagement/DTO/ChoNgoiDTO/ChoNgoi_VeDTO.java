@@ -1,6 +1,7 @@
 package com.project.flightManagement.DTO.ChoNgoiDTO;
 
 import com.project.flightManagement.Enum.ActiveEnum;
+import com.project.flightManagement.Enum.VeEnum;
 import com.project.flightManagement.Model.HangVe;
 import com.project.flightManagement.Model.MayBay;
 import lombok.AllArgsConstructor;
@@ -18,4 +19,5 @@ public class ChoNgoi_VeDTO {
     private char columnIndex;
     private ActiveEnum trangThaiActive;
     private int idVe;
+    private VeEnum trangThai;
 }
