@@ -103,7 +103,8 @@ public class VeController {
     public ResponseEntity<ResponseData> sendHtmlVeOnlineEmail(@RequestBody Email email) {
         ResponseData responseData = new ResponseData();
         try {
-            emailService.sendHtmlVeOnlineEmail(email);
+            VeDTO veDTO = veService.getVeById(23);
+            emailService.sendHtmlVeOnlineEmail(email, veDTO);
             responseData.setMessage("Email sent successfully.");
             responseData.setStatusCode(200);
             return ResponseEntity.ok(responseData);
