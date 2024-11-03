@@ -4,10 +4,13 @@ package com.project.flightManagement.Controller;
 import com.project.flightManagement.DTO.ChuyenBayDTO.ChuyenBayDTO;
 import com.project.flightManagement.DTO.CongDTO.CongDTO;
 import com.project.flightManagement.DTO.NhanVienDTO.NhanVienDTO;
+import com.project.flightManagement.DTO.SanBayDTO.SanBayDTO;
+import com.project.flightManagement.Mapper.SanBayMapper;
 import com.project.flightManagement.Model.SanBay;
 import com.project.flightManagement.Payload.ResponseData;
 import com.project.flightManagement.Service.CongService;
 import com.project.flightManagement.Service.NhanVienService;
+import com.project.flightManagement.Service.SanBayService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +25,8 @@ import java.util.Optional;
 public class CongController {
     @Autowired
     private CongService congService;
+    @Autowired
+    private SanBayService sanBayService;
     private ResponseData response =  new ResponseData();
 
     @GetMapping("/getallcong")
@@ -40,17 +45,25 @@ public class CongController {
         }
     }
 
-    @GetMapping("/getcongbysanbay/{sanBay}")
-    public ResponseEntity<ResponseData> getcongbysanbay(@PathVariable SanBay sanBay){
+    @GetMapping("/getcongbysanbay/{idSanBay}")
+    public ResponseEntity<ResponseData> getcongbysanbay(@PathVariable String idSanBay){
+        if(idSanBay.isEmpty() ){
+            response.setMessage("get list cong unsuccess , id san bay trong!!");
+            response.setData(null);
+            response.setStatusCode(204);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        int id = Integer.parseInt(idSanBay);
         System.out.println("dang thuc hien chuc nang get cong by san bay");
-        Iterable<CongDTO> dscongDTO = congService.getCongBySanBay(sanBay);
+        Optional<SanBayDTO> sanBay = sanBayService.getSanBayById(id);
+        Iterable<CongDTO> dscongDTO = congService.getCongBySanBay(SanBayMapper.toEntity(sanBay.get()));
         if(dscongDTO.iterator().hasNext()){
-            response.setMessage("get list Nhan Viens success!!");
+            response.setMessage("get list cong success!!");
             response.setData(dscongDTO);
             response.setStatusCode(200);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
-            response.setMessage("get list Nhan Viens unsuccess!!");
+            response.setMessage("get list cong unsuccess!!");
             response.setData(null);
             response.setStatusCode(204);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);

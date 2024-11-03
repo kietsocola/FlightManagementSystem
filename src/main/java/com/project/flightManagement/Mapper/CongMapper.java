@@ -13,7 +13,7 @@ public class CongMapper {
         cong.setIdCong(congDTO.getIdCong());
         cong.setTenCong(congDTO.getTenCong());
         cong.setTrangThaiActive(congDTO.getTrangThaiActive());
-        cong.setSanBay(SanBayMapper.toEntity(congDTO.getSanBay()));
+        cong.setSanBay(congDTO.getSanBay());
 
         return cong;
     }
@@ -24,7 +24,7 @@ public class CongMapper {
         congDTO.setIdCong(cong.getIdCong());
         congDTO.setTenCong(cong.getTenCong());
         congDTO.setTrangThaiActive(cong.getTrangThaiActive());
-        congDTO.setSanBay(SanBayMapper.toDTO(cong.getSanBay()));
+        congDTO.setSanBay(cong.getSanBay());
 
         return congDTO;
     }
