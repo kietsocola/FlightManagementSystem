@@ -1,6 +1,7 @@
 package com.project.flightManagement.Service;
 
 import com.project.flightManagement.DTO.ChoNgoiDTO.ChoNgoiDTO;
+import com.project.flightManagement.DTO.ChoNgoiDTO.ChoNgoi_VeDTO;
 import com.project.flightManagement.DTO.MayBayDTO.MayBayDTO;
 import com.project.flightManagement.Model.ChoNgoi;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,7 @@ public interface ChoNgoiService {
     public Optional<ChoNgoiDTO> addNewChoNgoi(ChoNgoiDTO choNgoiDTO);
     public void deleteChoNgoiByMayBay(MayBayDTO mayBayDTO);
     public Optional<ChoNgoiDTO> getChoNgoiById(int id);
-    public List<ChoNgoiDTO> getAllChoNgoiByIdChuyenBayandHangVe(int idCB, int hangVe);
+    public List<ChoNgoi_VeDTO> getAllChoNgoiByIdChuyenBayandHangVe(int idCB, int hangVe);
     public Optional<ChoNgoiDTO> blockChoNgoi(int id);
     public Optional<ChoNgoiDTO> unblockChoNgoi(int id);
 

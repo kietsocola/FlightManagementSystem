@@ -68,6 +68,8 @@ public class ChiTietHoaDonServiceImpl implements ChiTietHoaDonService {
             if (chiTietHoaDonDTO.getHangHoa() != null && chiTietHoaDonDTO.getVe() != null) {
                 Optional<HangHoaDTO> hangHoa = hangHoaService.getHangHoaByIdHangHoa(chiTietHoaDonDTO.getHangHoa().getIdHangHoa());
                 chiTietHoaDonDTO.setHangHoa(HangHoaMapper.toEntity(hangHoa.get()));
+
+               
                 VeDTO veDTO = veService.getVeById(chiTietHoaDonDTO.getVe().getIdVe());
                 double giaVe = veDTO.getGiaVe();
                 chiTietHoaDonDTO.setSoTien(chiTietHoaDonDTO.getHangHoa().getGiaPhatSinh()+giaVe);
@@ -97,7 +99,6 @@ public class ChiTietHoaDonServiceImpl implements ChiTietHoaDonService {
             return null;
         }
     }
-
     @Override
     public Optional<ChiTietHoaDonDTO> updateChiTietHoaDon(ChiTietHoaDonDTO chiTietHoaDonDTO) {
         Optional<ChiTietHoaDon> existingCTHD = chiTietHoaDonReposity.findById(chiTietHoaDonDTO.getIdChiTietHoaDon());

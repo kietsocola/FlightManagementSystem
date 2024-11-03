@@ -1,12 +1,16 @@
 package com.project.flightManagement.Controller;
 
 import com.project.flightManagement.DTO.MayBayDTO.MayBayDTO;
+import com.project.flightManagement.DTO.QuocGiaDTO.QuocGiaDTO;
 import com.project.flightManagement.DTO.SanBayDTO.SanBayDTO;
 import com.project.flightManagement.DTO.ThanhPhoDTO.ThanhPhoDTO;
 import com.project.flightManagement.Enum.ActiveEnum;
+import com.project.flightManagement.Mapper.QuocGiaMapper;
 import com.project.flightManagement.Mapper.ThanhPhoMapper;
+import com.project.flightManagement.Model.QuocGia;
 import com.project.flightManagement.Model.ThanhPho;
 import com.project.flightManagement.Payload.ResponseData;
+import com.project.flightManagement.Service.QuocGiaService;
 import com.project.flightManagement.Service.SanBayService;
 import com.project.flightManagement.Service.ThanhPhoService;
 import jakarta.validation.Valid;
@@ -26,6 +30,8 @@ public class SanBayController {
     private SanBayService sanBayService;
     @Autowired
     private ThanhPhoService thanhPhoService;
+    @Autowired
+    private QuocGiaService quocGiaService;
 
     private ResponseData response = new ResponseData();
     @GetMapping("/getAirport/{idSanBay}")
@@ -109,6 +115,31 @@ public class SanBayController {
             }
         } else {
             response.setMessage("Not found this city");
+            response.setData(null);
+            response.setStatusCode(404);
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
+    }
+    @GetMapping("/getAirportByNation/{idQuocGia}")
+    public ResponseEntity<ResponseData> getSanBayByQuocGia(@PathVariable int idQuocGia){
+        Optional<QuocGiaDTO> qgDTO = quocGiaService.getQuocGiaById(idQuocGia);
+
+        if(qgDTO.isPresent()){
+            QuocGia qg = QuocGiaMapper.toEntity(qgDTO.get());
+            List<SanBayDTO> sbList = sanBayService.getSanBayByQuocGia(qg);
+            if (sbList.iterator().hasNext()){
+                response.setData(sbList);
+                response.setMessage("Get airport by nation success!!");
+                response.setStatusCode(200);
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                response.setStatusCode(404);
+                response.setMessage("Get airport by nation failed!!");
+                response.setData(null);
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            }
+        } else {
+            response.setMessage("Not found this nation");
             response.setData(null);
             response.setStatusCode(404);
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);

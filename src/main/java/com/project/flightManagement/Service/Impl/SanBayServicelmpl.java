@@ -2,18 +2,24 @@ package com.project.flightManagement.Service.Impl;
 
 import com.project.flightManagement.DTO.MayBayDTO.MayBayDTO;
 import com.project.flightManagement.DTO.SanBayDTO.SanBayDTO;
+import com.project.flightManagement.DTO.ThanhPhoDTO.ThanhPhoDTO;
 import com.project.flightManagement.Enum.ActiveEnum;
 import com.project.flightManagement.Mapper.MayBayMapper;
 import com.project.flightManagement.Mapper.SanBayMapper;
+import com.project.flightManagement.Mapper.ThanhPhoMapper;
 import com.project.flightManagement.Model.MayBay;
+import com.project.flightManagement.Model.QuocGia;
 import com.project.flightManagement.Model.SanBay;
 import com.project.flightManagement.Model.ThanhPho;
+import com.project.flightManagement.Repository.QuocGiaRepository;
 import com.project.flightManagement.Repository.SanBayRepository;
+import com.project.flightManagement.Repository.ThanhPhoRepository;
 import com.project.flightManagement.Service.SanBayService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +30,10 @@ import java.util.stream.StreamSupport;
 public class SanBayServicelmpl implements SanBayService {
     @Autowired
     SanBayRepository sanBayRepository;
+    @Autowired
+    ThanhPhoRepository thanhPhoRepository;
+    @Autowired
+    QuocGiaRepository quocGiaRepository;
     @Override
     public Optional<SanBayDTO> getSanBayById(int id) {
         try{
@@ -82,6 +92,15 @@ public class SanBayServicelmpl implements SanBayService {
         List<SanBay> sanBayList = sanBayRepository.findSanBayByThanhPho(thanhPho);
         return sanBayList.stream().map(SanBayMapper::toDTO).collect(Collectors.toList());
     }
+    @Override
+    public List<SanBayDTO> getSanBayByQuocGia(QuocGia quocGia) {
+        List<ThanhPho> listTP = thanhPhoRepository.findByQuocGia(quocGia);
+        return listTP.stream()
+                .flatMap(tp -> sanBayRepository.findSanBayByThanhPho(tp).stream())
+                .map(SanBayMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
     @Override
     public Optional<SanBayDTO> addNewSanBay(SanBayDTO sanBayDTO){
         try{

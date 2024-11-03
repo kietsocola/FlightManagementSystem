@@ -1,6 +1,7 @@
 package com.project.flightManagement.Service;
 
 import com.project.flightManagement.DTO.SanBayDTO.SanBayDTO;
+import com.project.flightManagement.Model.QuocGia;
 import com.project.flightManagement.Model.ThanhPho;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,7 @@ public interface SanBayService {
     public List<SanBayDTO> findSanBayByKeyword(String keyword);
     public List<SanBayDTO> getAllSanBaySorted(String sortBy, String order);
     public List<SanBayDTO> getSanBayByThanhPho(ThanhPho thanhPho);
+    public List<SanBayDTO> getSanBayByQuocGia(QuocGia quocGia);
     public Optional<SanBayDTO> addNewSanBay(SanBayDTO sanBayDTO);
     public Optional<SanBayDTO> updateSanBay(SanBayDTO sanBayDTO);
     public Optional<SanBayDTO> getSanBayByIcaoSanBay(String icaoSanBay);
