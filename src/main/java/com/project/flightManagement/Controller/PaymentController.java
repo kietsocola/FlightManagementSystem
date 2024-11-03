@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.net.URI;
+import java.net.URLEncoder;
 import java.util.*;
 
 @RestController
@@ -28,7 +30,7 @@ public class PaymentController {
     }
 
     @GetMapping("/vnpayReturn")
-    public ResponseEntity<ResponseData> vnpayReturn(HttpServletRequest request) {
+    public ResponseEntity<?> vnpayReturn(HttpServletRequest request) {
         Map<String, String> params = new HashMap<>();
         request.getParameterMap().forEach((key, value) -> params.put(key, value[0]));
 
@@ -73,6 +75,11 @@ public class PaymentController {
                 response.setMessage("Thanh toán thành công cho các vé: " + String.join(", ", ticketIds) + ". Điểm cộng: " + rs);
                 response.setData(ticketIds);
                 response.setStatusCode(200);
+
+                String redirectUrl = "http://localhost:5173/?statusCode=" + response.getStatusCode() +
+                        "&message=" + URLEncoder.encode(response.getMessage(), "UTF-8") +
+                        "&ticketIds=" + String.join(",", ticketIds);
+                return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(redirectUrl)).build();
             } else {
                 response.setMessage("Thanh toán thất bại: " + responseCode);
                 response.setStatusCode(400); // Bad Request
