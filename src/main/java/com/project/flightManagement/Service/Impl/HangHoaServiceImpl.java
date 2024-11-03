@@ -1,8 +1,11 @@
 package com.project.flightManagement.Service.Impl;
 
 import com.project.flightManagement.DTO.HangHoaDTO.HangHoaDTO;
+import com.project.flightManagement.DTO.KhachHangDTO.KhachHangDTO;
 import com.project.flightManagement.Mapper.HangHoaMapper;
+import com.project.flightManagement.Mapper.KhachHangMapper;
 import com.project.flightManagement.Model.HangHoa;
+import com.project.flightManagement.Model.KhachHang;
 import com.project.flightManagement.Model.LoaiHangHoa;
 import com.project.flightManagement.Repository.HangHoaRepository;
 import com.project.flightManagement.Repository.LoaiHangHoaRepository;
@@ -15,9 +18,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -42,6 +47,8 @@ public class HangHoaServiceImpl implements HangHoaService {
         }
     }
 
+
+
     @Override
     public Optional<HangHoaDTO> getHangHoaByIdHangHoa(int idHangHoa) {
         try {
@@ -52,9 +59,16 @@ public class HangHoaServiceImpl implements HangHoaService {
         }
     }
 
+    private String generateUniqueCode() {
+        // Sử dụng UUID để tạo mã hàng hóa duy nhất
+        return UUID.randomUUID().toString();
+    }
+
     @Override
     public Optional<HangHoaDTO> addNewHangHoa(HangHoaDTO hangHoaDTO) {
         try {
+            System.out.println("Giá trị của maHangHoa trước khi thiết lập: " + hangHoaDTO.getMaHangHoa());
+
             // Tìm và lấy đối tượng LoaiHangHoa từ cơ sở dữ liệu
             Optional<LoaiHangHoa> loaiHangHoaOpt = loaiHangHoaRepo.findById(hangHoaDTO.getIdLoaiHangHoa());
 
@@ -63,6 +77,10 @@ public class HangHoaServiceImpl implements HangHoaService {
                 System.err.println("Loại hàng hóa không tìm thấy: ID = " + hangHoaDTO.getIdLoaiHangHoa());
                 return Optional.empty();
             }
+
+            // Tạo mã hàng hóa duy nhất
+            hangHoaDTO.setMaHangHoa(generateUniqueCode());
+            System.out.println("Mã hàng hóa được thiết lập: " + hangHoaDTO.getMaHangHoa());
 
             // Chuyển đổi DTO sang thực thể HangHoa
             HangHoa hangHoa = HangHoaMapper.toEntity(hangHoaDTO);
@@ -95,18 +113,36 @@ public class HangHoaServiceImpl implements HangHoaService {
     @Override
     public Iterable<HangHoaDTO> getAllHangHoaSorted(String sortBy, String direction) {
         try {
-            Sort sort = Sort.by("asc".equalsIgnoreCase(direction) ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
-            return hangHoaRepo.findAll(sort).stream()
-                    .map(HangHoaMapper::toDTO)
+            List<HangHoa> hhList;
+            if (direction.equals("asc")) {
+                hhList = hangHoaRepo.findAll(Sort.by(Sort.Direction.ASC, sortBy));
+            } else {
+                hhList = hangHoaRepo.findAll(Sort.by(Sort.Direction.DESC, sortBy));
+            }
+
+            List<HangHoaDTO> hangHoaDTOList = hhList.stream()
+                    .map(hangHoa -> {
+                        try {
+                            return HangHoaMapper.toDTO(hangHoa);
+                        } catch (Exception e) {
+                            System.err.println("Error converting HangHoa to HangHoaDTO: " + e.getMessage());
+                            return null; // Hoặc xử lý cách khác
+                        }
+                    })
+                    .filter(Objects::nonNull) // Lọc bỏ giá trị null
                     .collect(Collectors.toList());
+
+            return hangHoaDTOList;
+
         } catch (IllegalArgumentException e) {
             System.err.println("Invalid sorting field: " + sortBy);
             return Collections.emptyList();
         } catch (Exception e) {
-            System.err.println("Error occurred while fetching sorted products: " + e.getMessage());
+            System.err.println("An error occurred while fetching sorted merchans: " + e.getMessage());
             return Collections.emptyList();
         }
     }
+
 
     @Override
     public List<HangHoaDTO> findByTenHangHoa(String keyword) {

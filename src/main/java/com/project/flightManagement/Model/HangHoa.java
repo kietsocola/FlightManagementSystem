@@ -18,6 +18,9 @@ public class HangHoa {
     @Column(name = "id_hang_hoa", nullable = false)
     private int idHangHoa;
 
+    @Column(unique = true)
+    private String maHangHoa;
+
     @ManyToOne
     @JoinColumn(name = "id_loai_hang_hoa", nullable = false)
     private LoaiHangHoa loaiHangHoa;
