@@ -10,6 +10,7 @@ import com.project.flightManagement.Model.NhanVien;
 import com.project.flightManagement.Model.Quyen;
 import com.project.flightManagement.Model.TaiKhoan;
 import com.project.flightManagement.Service.KhachHangService;
+import com.project.flightManagement.Service.NhanVienService;
 import com.project.flightManagement.Service.QuyenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,16 +22,20 @@ public class TaiKhoanMapper {
     private KhachHangService khachHangService;
     @Autowired
     private QuyenService quyenService;
+    @Autowired
+    private NhanVienService nhanVienService;
     public static TaiKhoan toTaiKhoan(TaiKhoanDTO taiKhoanDTO) {
         TaiKhoan taiKhoan = new TaiKhoan();
         taiKhoan.setIdTaiKhoan(taiKhoanDTO.getIdTaiKhoan());
 
         if(taiKhoanDTO.getKhachHang() != null) {
-
+            KhachHang khachHang = new KhachHang();
+            khachHang.setIdKhachHang(taiKhoanDTO.getKhachHang().getIdKhachHang());
+            taiKhoan.setKhachHang(khachHang); // chua tra ve nguyen doi tuong khach hang
+        } else {
+            taiKhoan.setKhachHang(null);
         }
-        KhachHang khachHang = new KhachHang();
-        khachHang.setIdKhachHang(taiKhoanDTO.getKhachHang().getIdKhachHang());
-        taiKhoan.setKhachHang(khachHang); // chua tra ve nguyen doi tuong khach hang
+
 
         taiKhoan.setMatKhau(taiKhoanDTO.getMatKhau());
         taiKhoan.setTenDangNhap(taiKhoanDTO.getTenDangNhap());
@@ -41,6 +46,8 @@ public class TaiKhoanMapper {
             NhanVien nhanVien = new NhanVien();
             nhanVien.setIdNhanVien(taiKhoanDTO.getNhanVien().getIdNhanVien());
             taiKhoan.setNhanVien(nhanVien);
+        } else {
+            taiKhoan.setNhanVien(null);
         }
 
 
@@ -70,9 +77,8 @@ public class TaiKhoanMapper {
         // Ánh xạ NhanVien
         NhanVien nhanVien = taiKhoan.getNhanVien();
         if (nhanVien != null) {
-            NhanVienDTO nhanVienDTO = new NhanVienDTO();
-            nhanVienDTO.setIdNhanVien(taiKhoan.getNhanVien().getIdNhanVien());
-            taiKhoan.setNhanVien(nhanVien);
+            Optional<NhanVienDTO> nhanVienDTO = nhanVienService.getNhanVienByIdNhanVien(nhanVien.getIdNhanVien());
+            nhanVienDTO.ifPresent(taiKhoanDTO::setNhanVien); // Chỉ set nếu nhanVienDTO có giá trị
         }
 
         // Ánh xạ Quyen
@@ -105,7 +111,7 @@ public class TaiKhoanMapper {
         if (nhanVien != null) {
             NhanVienDTO nhanVienDTO = new NhanVienDTO();
             nhanVienDTO.setIdNhanVien(taiKhoan.getNhanVien().getIdNhanVien());
-            taiKhoan.setNhanVien(nhanVien);
+            taiKhoanDTO.setNhanVien(nhanVienDTO);
         }
 
         // Ánh xạ Quyen

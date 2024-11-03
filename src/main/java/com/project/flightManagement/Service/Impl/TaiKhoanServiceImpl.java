@@ -199,6 +199,7 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
         Optional<TaiKhoan> existingTK = taiKhoanRepository.findById(tkDTO.getIdTaiKhoan());
         if(existingTK.isPresent()){
             TaiKhoan tk = TaiKhoanMapper.toTaiKhoan(tkDTO);
+            tk.setMatKhau(passwordEncoder.encode(tkDTO.getMatKhau()));
             TaiKhoan tkSaved = taiKhoanRepository.save(tk);
             return Optional.of(taiKhoanMapper.toTaiKhoanDTO(tkSaved));
         }else {
@@ -211,6 +212,7 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
         try {
             System.out.println(tkDTO.toString());
             TaiKhoan tk = taiKhoanMapper.toTaiKhoan(tkDTO);
+            tk.setMatKhau(passwordEncoder.encode(tkDTO.getMatKhau()));
             TaiKhoan savedTK = taiKhoanRepository.save(tk);
             return Optional.of(taiKhoanMapper.toTaiKhoanDTO(savedTK));
         }catch (Exception e){
@@ -223,19 +225,28 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
     public boolean checkExistTenDangNhap(TaiKhoanDTO tkDTO) {
         for(TaiKhoan tk : taiKhoanRepository.findAll()){
             if(tkDTO.getTenDangNhap().equals(tk.getTenDangNhap())){
-                return false;
+                return true;
             }
         }
-        return true;
+        return false;
     }
     @Override
     public boolean checkExistKhachHang(TaiKhoanDTO taiKhoanDTO) {
         for(TaiKhoan tk : taiKhoanRepository.findAll()){
-            if(tk.getKhachHang().getIdKhachHang() == taiKhoanDTO.getKhachHang().getIdKhachHang()) {
-                return false;
+            if(tk.getKhachHang() != null && tk.getKhachHang().getIdKhachHang() == taiKhoanDTO.getKhachHang().getIdKhachHang()) {
+                return true;
             }
         }
-        return true;
+        return false;
+    }
+    @Override
+    public boolean checkExistNhanVien(TaiKhoanDTO taiKhoanDTO) {
+        for(TaiKhoan tk : taiKhoanRepository.findAll()){
+            if (tk.getNhanVien() != null &&  tk.getNhanVien().getIdNhanVien() == taiKhoanDTO.getNhanVien().getIdNhanVien()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

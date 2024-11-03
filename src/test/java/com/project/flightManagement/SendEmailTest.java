@@ -1,5 +1,6 @@
 package com.project.flightManagement;
 
+import com.project.flightManagement.Service.VeService;
 import com.project.flightManagement.Util.EmailSenderUtil;
 import jakarta.validation.constraints.Email;
 import org.junit.jupiter.api.Test;
@@ -14,6 +15,9 @@ import java.io.IOException;
 public class SendEmailTest {
     @Autowired
     private EmailSenderUtil emailSenderUtil;
+
+    @Autowired
+    private VeService veService;
 
     @Test
     void sendTextEmail() {
@@ -34,4 +38,9 @@ public class SendEmailTest {
         String htmlContent = new String(resource.getInputStream().readAllBytes());
         emailSenderUtil.sendTextEmail(to, subject, htmlContent);
     }
+    @Test
+    void createAutoVe() {
+        veService.createAutoVeByIdMayBay(1, 1, 1, 2, 3);
+    }
+
 }

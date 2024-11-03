@@ -32,7 +32,7 @@ public interface TaiKhoanService {
     Optional<TaiKhoanDTO> addNewTaiKhoan(TaiKhoanDTO tkDTO);
     boolean checkExistTenDangNhap(TaiKhoanDTO tkDTO);
     boolean checkExistKhachHang(TaiKhoanDTO tkDTO);
-
+    boolean checkExistNhanVien(TaiKhoanDTO tkDTO);
     void saveTaiKhoan(TaiKhoan taiKhoan);
 
 }

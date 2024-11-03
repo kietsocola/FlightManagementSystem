@@ -284,21 +284,27 @@ public class HoaDonController {
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
         double tongTien = 0;
-
+        int soLuongVe = 0;
         // Tiến hành lưu hóa đơn
         Optional<HoaDonDTO> savedHoaDon = hoaDonService.addHoaDon(hoaDonCreateDTO.getHoaDonDTO());
         if (savedHoaDon.isPresent()) {
             // Thêm chi tiết hóa đơn
             if (hoaDonCreateDTO.getChiTietHoaDonDTOList() != null) {
                 for (ChiTietHoaDonDTO chiTietHoaDonDTO : hoaDonCreateDTO.getChiTietHoaDonDTOList()) {
+                    System.out.println("dto tien: " + chiTietHoaDonDTO.getSoTien());
                     chiTietHoaDonDTO.setHoaDon(HoaDonMapper.toEntity(savedHoaDon.get())); // Gán ID hóa đơn cho chi tiết
                     Optional<ChiTietHoaDonDTO> savedCTHD =  chiTietHoaDonService.addChiTietHoaDon(chiTietHoaDonDTO); // Gọi service để thêm chi tiết hóa đơn
+                    System.out.println("entiy tien: " + savedCTHD.get().getSoTien());
+                    if (savedCTHD.get().getVe() != null) {
+                        soLuongVe++;
+                    }
                     tongTien+=savedCTHD.get().getSoTien();
                 }
             }
             System.out.println(tongTien);
             savedHoaDon = hoaDonService.getHoaDonById(savedHoaDon.get().getIdHoaDon());
             savedHoaDon.get().setTongTien(tongTien);
+            savedHoaDon.get().setSoLuongVe(soLuongVe);
             hoaDonService.updateHoaDon(savedHoaDon.get());
 
             response.setMessage("Save Hoa Don successfully!");

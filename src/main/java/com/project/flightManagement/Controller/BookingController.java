@@ -3,6 +3,7 @@ package com.project.flightManagement.Controller;
 import com.google.zxing.WriterException;
 import com.itextpdf.text.DocumentException;
 import com.project.flightManagement.DTO.ChoNgoiDTO.ChoNgoiDTO;
+import com.project.flightManagement.DTO.ChoNgoiDTO.ChoNgoi_VeDTO;
 import com.project.flightManagement.DTO.HanhKhachDTO.HanhKhachCreateDTO;
 import com.project.flightManagement.DTO.HanhKhachDTO.HanhKhachDTO;
 import com.project.flightManagement.DTO.HoldSeatDTO.HoldSeatRequest;
@@ -54,7 +55,7 @@ public class BookingController {
     @GetMapping("/getChoNgoiByChuyenBayAndHangVe")
     public ResponseEntity<ResponseData> getSeatsByFlight(@RequestParam int idChuyenBay, @RequestParam int idHangVe) {
         ResponseData response = new ResponseData();
-        List<ChoNgoiDTO> listCN = choNgoiService.getAllChoNgoiByIdChuyenBayandHangVe(idChuyenBay, idHangVe);
+        List<ChoNgoi_VeDTO> listCN = choNgoiService.getAllChoNgoiByIdChuyenBayandHangVe(idChuyenBay, idHangVe);
         if(!listCN.isEmpty()){
             response.setMessage("Get cho ngoi by id chuyen bay "+idChuyenBay+" and id hang ve "+idHangVe+" successfully");
             response.setData(listCN);
