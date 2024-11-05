@@ -207,6 +207,7 @@ public class ChuyenBayController {
         ChuyenBayEnum completed = ChuyenBayEnum.COMPLETED;
         ChuyenBayEnum in_flight = ChuyenBayEnum.IN_FLIGHT;
         ChuyenBayEnum status = cbOld.get().getTrangThai();
+        LocalDateTime timeCurrent = LocalDateTime.now();
         if(status.name().equals(cancled.name()) || status.name().equals(completed.name()) || status.name().equals(in_flight.name())){
             if(status.name().equals(cancled.name()))
             {
@@ -221,7 +222,7 @@ public class ChuyenBayController {
                 response.setMessage("Chuyến bay đã hoàn thành.Không thể thay đổi thông tin");
                 return new ResponseEntity<>(response, HttpStatus.OK);
             }
-            else {
+            else if(status.name().equals(in_flight.name()) && timeCurrent.isBefore(cbOld.get().getThoiGianKetThucThucTe())){
                 response.setStatusCode(200);
                 response.setData(null);
                 response.setMessage("Chuyến bay đang diễn ra.Không thể thay đổi thông tin");
