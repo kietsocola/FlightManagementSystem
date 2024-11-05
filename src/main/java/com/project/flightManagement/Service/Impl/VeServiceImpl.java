@@ -31,6 +31,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 @Service
@@ -209,8 +210,14 @@ public class VeServiceImpl implements VeService {
     }
 
     @Override
+    public Page<VeDTO> searchVeMaVaAndDateBay(String maVe, LocalDate startDate, LocalDate endDate, int page, int size) {
+        Page<Ve> vePage = veRepository.findByMaVeContainingIgnoreCaseAndNgayBayBetween(maVe, startDate, endDate ,PageRequest.of(page, size));
+        return vePage.map(veMapper::toDto);
+    }
+
+    @Override
     public Page<VeDTO> searchVeMaVa(String maVe, int page, int size) {
-        Page<Ve> vePage = veRepository.findByMaVeContainingIgnoreCase(maVe, PageRequest.of(page, size));
+        Page<Ve> vePage = veRepository.findByMaVeContainingIgnoreCase(maVe,PageRequest.of(page, size));
         return vePage.map(veMapper::toDto);
     }
 }
