@@ -36,7 +36,7 @@ public class HangHoaMapper {
         hangHoa.setTenHangHoa(dto.getTenHangHoa());
         hangHoa.setTaiTrong(dto.getTaiTrong());
         hangHoa.setGiaPhatSinh(dto.getGiaPhatSinh());
-
+        hangHoa.setTrangThaiActive(dto.getTrangThaiActive());
         return hangHoa;
     }
 }

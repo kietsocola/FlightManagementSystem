@@ -86,27 +86,49 @@ public class HangHoaServiceImpl implements HangHoaService {
             HangHoa hangHoa = HangHoaMapper.toEntity(hangHoaDTO);
             hangHoa.setLoaiHangHoa(loaiHangHoaOpt.get());
 
+            // Tính giá phát sinh
+            calculateGiaPhatSinh(hangHoa, loaiHangHoaOpt.get());
+
             // Lưu đối tượng HangHoa
             HangHoa savedHangHoa = hangHoaRepo.save(hangHoa);
             return Optional.of(HangHoaMapper.toDTO(savedHangHoa));
         } catch (Exception e) {
-            System.err.println("Error occurred while adding new product: " + e.getMessage());
+            System.err.println("Lỗi xảy ra trong quá trình thêm sản phẩm mới: " + e.getMessage());
             return Optional.empty();
         }
     }
 
+    @Override
     public Optional<HangHoaDTO> updateHangHoa(Integer idHangHoa, HangHoaDTO dto) {
         Optional<LoaiHangHoa> loaiHangHoaOpt = loaiHangHoaRepo.findById(dto.getIdLoaiHangHoa());
         if (!loaiHangHoaOpt.isPresent()) {
-            throw new EntityNotFoundException("LoaiHangHoa not found for id: " + dto.getIdLoaiHangHoa());
+            throw new EntityNotFoundException("LoaiHangHoa không tìm thấy cho id: " + dto.getIdLoaiHangHoa());
         }
 
         LoaiHangHoa loaiHangHoa = loaiHangHoaOpt.get();
         HangHoa hangHoa = HangHoaMapper.toEntity(dto);
         hangHoa.setIdHangHoa(idHangHoa);
 
+        // Tính giá phát sinh
+        calculateGiaPhatSinh(hangHoa, loaiHangHoa);
+
         HangHoa updatedHangHoa = hangHoaRepo.save(hangHoa);
         return Optional.of(HangHoaMapper.toDTO(updatedHangHoa));
+    }
+
+    private void calculateGiaPhatSinh(HangHoa hangHoa, LoaiHangHoa loaiHangHoa) {
+        double gioiHanKg = loaiHangHoa.getGioiHanKg();
+        double taiTrong = hangHoa.getTaiTrong();
+
+        // Khởi tạo giá phát sinh mặc định là 0
+        hangHoa.setGiaPhatSinh(0);
+
+        // Nếu trọng tải lớn hơn giới hạn kg, tính giá phát sinh
+        if (taiTrong > gioiHanKg) {
+            double excessWeight = taiTrong - gioiHanKg;
+            // Tính giá phát sinh, giả sử bạn muốn tính giá cho mỗi kg vượt mức gấp 3 lần giá thêm mới
+            hangHoa.setGiaPhatSinh(excessWeight * loaiHangHoa.getGiaThemMoiKg() );
+        }
     }
 
 
