@@ -1,5 +1,6 @@
 package com.project.flightManagement.Service;
 
+import com.project.flightManagement.DTO.QuyenDTO.QuyenResponseDTO;
 import com.project.flightManagement.DTO.VeDTO.VeCreateDTO;
 import com.project.flightManagement.DTO.VeDTO.VeDTO;
 import com.project.flightManagement.DTO.VeDTO.VeUpdateDTO;
@@ -20,5 +21,7 @@ public interface VeService {
     boolean updateHanhKhachVe(VeUpdateHanhKhachDTO veUpdateHanhKhachDTO);
 
     void createAutoVeByIdMayBay(int idChuyenBay, int idMayBay, double giaVeHangPhoThong, double giaVeHangThuongGia, double giaVeHangNhat);
+
+    Page<VeDTO> searchVeMaVa(String maVe, int page, int size);
 
 }

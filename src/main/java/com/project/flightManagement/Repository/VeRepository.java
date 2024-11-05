@@ -1,8 +1,8 @@
 package com.project.flightManagement.Repository;
 
-import com.project.flightManagement.Model.ChoNgoi;
 import com.project.flightManagement.Model.Ve;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -17,4 +17,6 @@ public interface VeRepository extends JpaRepository<Ve, Integer> {
     boolean existsByHanhKhach_IdHanhKhach(int idHanhKhach);
 
     List<Ve> findByChuyenBay_IdChuyenBayAndHangVe_IdHangVe(int idChuyenBay, int idHangVe);
+
+    Page<Ve> findByMaVeContainingIgnoreCase(String maVe, Pageable pageable);
 }

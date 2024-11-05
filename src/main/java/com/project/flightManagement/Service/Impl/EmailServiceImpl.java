@@ -1,7 +1,9 @@
 package com.project.flightManagement.Service.Impl;
 
 import com.project.flightManagement.Config.ThymeleafConfig;
+import com.project.flightManagement.DTO.VeDTO.VeDTO;
 import com.project.flightManagement.Model.Email;
+import com.project.flightManagement.Model.TuyenBay;
 import com.project.flightManagement.Service.EmailService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -14,6 +16,10 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Service
 public class EmailServiceImpl implements EmailService {
@@ -93,12 +99,41 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     @Async
-    public void sendHtmlVeOnlineEmail(Email email) { // ham gui ve online -> thieu file pdf gui kem theo
+    public void sendHtmlVeOnlineEmail(Email email, VeDTO veDTO) { // ham gui ve online -> thieu file pdf gui kem theo
         try {
+            TuyenBay tuyenBay = new TuyenBay();
             Context context = new Context(); // dat cac bien de thay doi noi dung html o day
-//            context.setVariable("name", userName);
-//            context.setVariable("resetLink", resetLink);
+            context.setVariable("passengerName", veDTO.getHanhKhach().getHoTen());
+            context.setVariable("bookingCode", veDTO.getIdChoNgoi());
+            context.setVariable("ticketCode", veDTO.getMaVe());
+            // Lấy ngày hiện tại
+            LocalDate today = LocalDate.now();
 
+            // Định dạng ngày thành "dd/MM/yyyy" (tuỳ chỉnh định dạng nếu cần)
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            String formattedDate = today.format(formatter);
+// Parse chuỗi vào LocalDateTime
+
+
+            context.setVariable("issueDate", formattedDate);
+            context.setVariable("departureCity", veDTO.getChuyenBay().getTuyenBay().getSanBayBatDau().getTenSanBay());
+            context.setVariable("arrivalCity", veDTO.getChuyenBay().getTuyenBay().getSanBayKetThuc().getTenSanBay());
+            context.setVariable("nameDepartCity", veDTO.getChuyenBay().getTuyenBay().getSanBayBatDau().getThanhPho().getTenThanhPho() + " ");
+            context.setVariable("nameArriveCity", veDTO.getChuyenBay().getTuyenBay().getSanBayKetThuc().getThanhPho().getTenThanhPho() + " ");
+            context.setVariable("flightNumber", veDTO.getChuyenBay().getMayBay().getSoHieu());
+            String timeDepart = formatFromDateTimeToTime(String.valueOf(veDTO.getChuyenBay().getThoiGianBatDauDuTinh()));
+            String timeArrive = formatFromDateTimeToTime(String.valueOf(veDTO.getChuyenBay().getThoiGianKetThucDuTinh()));
+            context.setVariable("departureTime", timeDepart);
+            context.setVariable("arrivalTime", timeArrive);
+            context.setVariable("departureGate", veDTO.getChuyenBay().getCong().getTenCong());
+            String departDate = formatFromDateTimeToDate(String.valueOf(veDTO.getChuyenBay().getThoiGianBatDauDuTinh()));
+            context.setVariable("departureDate", departDate);
+            String dateArrive = formatFromDateTimeToDate(String.valueOf(veDTO.getChuyenBay().getThoiGianKetThucDuTinh()));
+            context.setVariable("arriveDate", dateArrive);
+            context.setVariable("seatClass", veDTO.getHangVe().getTenHangVe());
+            context.setVariable("carrier", "BAMBOO AIRLINE");
+            context.setVariable("flightDuration", tuyenBay.convertMinutesToHours(veDTO.getChuyenBay().getTuyenBay().getThoiGianChuyenBay()));
+            context.setVariable("issuingCarrier", "BAMBOO AIRLINE");
             // Process HTML template with Thymeleaf
             String emailContent = templateEngine.process("email/veOnline", context);
 
@@ -117,4 +152,21 @@ public class EmailServiceImpl implements EmailService {
             throw new RuntimeException(e);
         }
     }
+    private String formatFromDateTimeToTime(String dateTimeString) {
+        LocalDateTime dateTime = LocalDateTime.parse(dateTimeString);
+        // Định dạng lại để lấy giờ và phút, thêm "h" ở giữa
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH'h'mm");
+        String timeOnly = dateTime.format(timeFormatter);
+        return timeOnly;
+    }
+
+    private String formatFromDateTimeToDate(String dateTimeString) {
+        LocalDateTime dateTime = LocalDateTime.parse(dateTimeString);
+        // Định dạng để lấy ngày và tháng
+        DateTimeFormatter dayMonthFormatter = DateTimeFormatter.ofPattern("dd/MM/YYYY");
+        String dayMonthOnly = dateTime.format(dayMonthFormatter);
+        return dayMonthOnly;
+    }
 }
+
+

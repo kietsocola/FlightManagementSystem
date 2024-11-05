@@ -114,19 +114,29 @@ public class TuyenBayServiceImpl implements TuyenBayService {
 
     @Override
     public Iterable<TuyenBayDTO> getAllTuyenBaySorted(String sortBy, String direction) {
+        // Default to idTuyenBay and ASC if invalid inputs
+        if (sortBy == null || sortBy.isEmpty()) sortBy = "idTuyenBay";
+        if (direction == null || (!direction.equalsIgnoreCase("asc") && !direction.equalsIgnoreCase("desc")))
+            direction = "asc";
+
+        // Validate if the sortBy field exists in TuyenBay class
+        List<String> validFields = List.of("idTuyenBay", "thoiGianChuyenBay", "sanBayBatDau.tenSanBay", "sanBayKetThuc.tenSanBay");
+        if (!validFields.contains(sortBy)) {
+            System.err.println("Invalid sortBy field: " + sortBy);
+            sortBy = "idTuyenBay"; // fallback to default
+        }
+
         try {
-            Sort sort = Sort.by("asc".equalsIgnoreCase(direction) ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
+            Sort sort = Sort.by(direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
             return tbRepo.findAll(sort).stream()
                     .map(TuyenBayMapper::toDTO)
                     .collect(Collectors.toList());
-        } catch (IllegalArgumentException e) {
-            System.err.println("Invalid sorting field: " + sortBy);
-            return Collections.emptyList();
         } catch (Exception e) {
             System.err.println("Error occurred while fetching sorted routes: " + e.getMessage());
             return Collections.emptyList();
         }
     }
+
 
     @Override
     public List<TuyenBayDTO> findBySanBayBatDau(String keyword) {

@@ -1,6 +1,7 @@
 package com.project.flightManagement.Controller;
 
 import com.project.flightManagement.DTO.LoaiVeDTO.LoaiVeDTO;
+import com.project.flightManagement.DTO.QuyenDTO.QuyenResponseDTO;
 import com.project.flightManagement.DTO.VeDTO.VeCreateDTO;
 import com.project.flightManagement.DTO.VeDTO.VeDTO;
 import com.project.flightManagement.DTO.VeDTO.VeUpdateDTO;
@@ -102,7 +103,8 @@ public class VeController {
     public ResponseEntity<ResponseData> sendHtmlVeOnlineEmail(@RequestBody Email email) {
         ResponseData responseData = new ResponseData();
         try {
-            emailService.sendHtmlVeOnlineEmail(email);
+            VeDTO veDTO = veService.getVeById(23);
+            emailService.sendHtmlVeOnlineEmail(email, veDTO);
             responseData.setMessage("Email sent successfully.");
             responseData.setStatusCode(200);
             return ResponseEntity.ok(responseData);
@@ -179,6 +181,30 @@ public class VeController {
             responseData.setMessage("An error occurred while creating ve: " + e.getMessage());
             return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<?> searchVeByMaVe(@RequestParam String maVe,
+                                               @RequestParam(defaultValue = "0") int page,
+                                               @RequestParam(defaultValue = "10") int size) {
+        ResponseData responseData = new ResponseData();
+
+        // Lấy danh sách quyen theo tên
+        Page<VeDTO> veDTOPage = veService.searchVeMaVa(maVe, page, size);
+
+        // Kiểm tra nếu danh sách quyen trống
+        if (veDTOPage.isEmpty()) {
+            responseData.setStatusCode(204);
+            responseData.setMessage("No ve found.");
+            responseData.setData("");
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(responseData);
+        }
+
+        // Nếu có dữ liệu
+        responseData.setStatusCode(200);
+        responseData.setData(veDTOPage);
+        responseData.setMessage("Successfully retrieved ve by ma ve.");
+        return ResponseEntity.ok(responseData);
     }
 
 }

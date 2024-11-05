@@ -1,5 +1,6 @@
 package com.project.flightManagement.Service;
 
+import com.project.flightManagement.DTO.VeDTO.VeDTO;
 import com.project.flightManagement.Model.Email;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,5 +12,5 @@ public interface EmailService {
     void sendHtmlEMail(Email email, String resetLink, String userName);
     void sendEmailWithAttachment(Email email);
 
-    void sendHtmlVeOnlineEmail(Email email);
+    void sendHtmlVeOnlineEmail(Email email, VeDTO veDTO);
 }

@@ -42,6 +42,17 @@ public class TuyenBay {
     @JsonIgnore
     private List<ChuyenBay> chuyenBayList;
 
+    public String convertMinutesToHours(int minutes) {
+        int hours = minutes / 60;  // Tính số giờ
+        int remainingMinutes = minutes % 60;  // Tính số phút còn lại
+
+        if (remainingMinutes == 0) {
+            return hours + "h";  // Chỉ hiển thị giờ nếu không có phút
+        } else {
+            return hours + "h" + remainingMinutes;  // Hiển thị cả giờ và phút
+        }
+    }
+
 
 
 }

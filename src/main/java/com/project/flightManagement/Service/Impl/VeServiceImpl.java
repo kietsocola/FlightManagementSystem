@@ -207,4 +207,10 @@ public class VeServiceImpl implements VeService {
             veService.createVe(veCreateDTO);
         }
     }
+
+    @Override
+    public Page<VeDTO> searchVeMaVa(String maVe, int page, int size) {
+        Page<Ve> vePage = veRepository.findByMaVeContainingIgnoreCase(maVe, PageRequest.of(page, size));
+        return vePage.map(veMapper::toDto);
+    }
 }

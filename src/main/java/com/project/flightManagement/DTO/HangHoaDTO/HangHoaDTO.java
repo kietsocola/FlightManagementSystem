@@ -19,6 +19,8 @@ public class HangHoaDTO {
 //    @NotNull(message = "Loại hàng hóa không được để trống")
     private int idLoaiHangHoa;
 
+    private String maHangHoa;
+
     @NotBlank(message = "Tên hàng hóa không được để trống")
     @Pattern(regexp = "^[\\p{L}0-9\\s]+$", message = "Tên hàng hóa chỉ được chứa chữ cái (có dấu), số và khoảng trắng")
     private String tenHangHoa;
