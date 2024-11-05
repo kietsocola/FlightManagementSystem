@@ -8,6 +8,7 @@ import com.project.flightManagement.DTO.VeDTO.VeCreateDTO;
 import com.project.flightManagement.DTO.VeDTO.VeDTO;
 import com.project.flightManagement.DTO.VeDTO.VeUpdateDTO;
 import com.project.flightManagement.DTO.VeDTO.VeUpdateHanhKhachDTO;
+import com.project.flightManagement.Enum.VeEnum;
 import com.project.flightManagement.Exception.IdMismatchException;
 import com.project.flightManagement.Exception.NoUpdateRequiredException;
 import com.project.flightManagement.Exception.ResourceNotFoundException;
@@ -32,6 +33,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -219,5 +222,8 @@ public class VeServiceImpl implements VeService {
     public Page<VeDTO> searchVeMaVa(String maVe, int page, int size) {
         Page<Ve> vePage = veRepository.findByMaVeContainingIgnoreCase(maVe,PageRequest.of(page, size));
         return vePage.map(veMapper::toDto);
+    }
+    public List<VeEnum> getAllVeStatuses() {
+        return Arrays.asList(VeEnum.values());
     }
 }

@@ -1,5 +1,6 @@
 package com.project.flightManagement.DTO.VeDTO;
 
+import com.project.flightManagement.DTO.ChoNgoiDTO.ChoNgoi_VeReturnDTO;
 import com.project.flightManagement.DTO.ChuyenBayDTO.ChuyenBay_VeDTO;
 import com.project.flightManagement.DTO.HangVeDTO.HangVeDTO;
 import com.project.flightManagement.DTO.HanhKhachDTO.HanhKhach_VeDTO;
@@ -24,7 +25,7 @@ public class VeDTO {
     private ChuyenBay_VeDTO chuyenBay;
     private double giaVe;
     private HangVeDTO hangVe;
-    private int idChoNgoi;
+    private ChoNgoi_VeReturnDTO choNgoi;
     private HanhKhach_VeDTO hanhKhach;
     private LoaiVeDTO loaiVe;
     private ActiveEnum trangThaiActive;

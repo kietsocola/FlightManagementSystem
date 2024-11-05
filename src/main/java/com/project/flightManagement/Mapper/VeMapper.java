@@ -45,7 +45,7 @@ public class VeMapper {
         veDTO.setChuyenBay(chuyenBayMapper.toChuyenBay_VeDTO(ve.getChuyenBay()));
         veDTO.setHangVe(HangVeMapper.toDTO(ve.getHangVe()));
         veDTO.setGiaVe(ve.getGiaVe());
-        veDTO.setIdChoNgoi(ve.getChoNgoi().getIdChoNgoi());
+        veDTO.setChoNgoi(ChoNgoiMapper.toChoNgoi_veReturnDTO(ve.getChoNgoi()));
         if(ve.getHanhKhach() != null) {
             veDTO.setHanhKhach(HanhKhachMapper.toHanhKhach_VeDTO(ve.getHanhKhach()));
         }

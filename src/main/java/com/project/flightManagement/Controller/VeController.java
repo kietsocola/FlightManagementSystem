@@ -237,4 +237,21 @@ public class VeController {
         responseData.setMessage("Successfully retrieved ve by ma ve.");
         return ResponseEntity.ok(responseData);
     }
+
+    @GetMapping("/statuses")
+    public ResponseEntity<?> getAllStatus() {
+        ResponseData responseData = new ResponseData();
+        try {
+            responseData.setMessage("get all status of ve");
+            responseData.setStatusCode(200);
+            responseData.setData(veService.getAllVeStatuses());
+            return new ResponseEntity<>(responseData, HttpStatus.OK);
+        }
+        catch (Exception e) {
+            responseData.setMessage("fail get all status of ve");
+            responseData.setStatusCode(400);
+            responseData.setData("");
+            return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
+        }
+    }
 }
