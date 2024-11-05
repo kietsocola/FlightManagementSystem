@@ -66,7 +66,13 @@ public class HangHoaServiceImpl implements HangHoaService {
 
     @Override
     public Optional<HangHoaDTO> addNewHangHoa(HangHoaDTO hangHoaDTO) {
+        if (hangHoaDTO == null) {
+            System.err.println("DTO hàng hóa không thể null");
+            return Optional.empty();
+        }
+
         try {
+            // Kiểm tra giá trị mã hàng hóa trước khi thiết lập
             System.out.println("Giá trị của maHangHoa trước khi thiết lập: " + hangHoaDTO.getMaHangHoa());
 
             // Tìm và lấy đối tượng LoaiHangHoa từ cơ sở dữ liệu
@@ -94,9 +100,11 @@ public class HangHoaServiceImpl implements HangHoaService {
             return Optional.of(HangHoaMapper.toDTO(savedHangHoa));
         } catch (Exception e) {
             System.err.println("Lỗi xảy ra trong quá trình thêm sản phẩm mới: " + e.getMessage());
+            // Bạn có thể ném một Exception tùy chỉnh ở đây nếu cần
             return Optional.empty();
         }
     }
+
 
     @Override
     public Optional<HangHoaDTO> updateHangHoa(Integer idHangHoa, HangHoaDTO dto) {
@@ -105,15 +113,19 @@ public class HangHoaServiceImpl implements HangHoaService {
             throw new EntityNotFoundException("LoaiHangHoa không tìm thấy cho id: " + dto.getIdLoaiHangHoa());
         }
 
-        LoaiHangHoa loaiHangHoa = loaiHangHoaOpt.get();
-        HangHoa hangHoa = HangHoaMapper.toEntity(dto);
-        hangHoa.setIdHangHoa(idHangHoa);
+        // Tìm đối tượng HangHoa hiện tại từ cơ sở dữ liệu
+        HangHoa existingHangHoa = hangHoaRepo.findById(idHangHoa)
+                .orElseThrow(() -> new EntityNotFoundException("HangHoa không tìm thấy cho id: " + idHangHoa));
 
-        // Tính giá phát sinh
-        calculateGiaPhatSinh(hangHoa, loaiHangHoa);
+        // Chuyển đổi DTO thành Entity, nhưng giữ nguyên mã hàng hóa
+        HangHoa updatedHangHoa = HangHoaMapper.toEntity(dto, existingHangHoa);
 
-        HangHoa updatedHangHoa = hangHoaRepo.save(hangHoa);
-        return Optional.of(HangHoaMapper.toDTO(updatedHangHoa));
+        // Tính giá phát sinh (nếu cần)
+        calculateGiaPhatSinh(updatedHangHoa, loaiHangHoaOpt.get());
+
+        // Lưu cập nhật vào cơ sở dữ liệu
+        HangHoa savedHangHoa = hangHoaRepo.save(updatedHangHoa);
+        return Optional.of(HangHoaMapper.toDTO(savedHangHoa));
     }
 
     private void calculateGiaPhatSinh(HangHoa hangHoa, LoaiHangHoa loaiHangHoa) {

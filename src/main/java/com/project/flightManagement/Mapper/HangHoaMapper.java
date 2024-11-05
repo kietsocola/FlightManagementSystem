@@ -15,6 +15,7 @@ public class HangHoaMapper {
         }
 
         HangHoaDTO dto = new HangHoaDTO();
+        dto.setIdLoaiHangHoa(hangHoa.getLoaiHangHoa().getIdLoaiHangHoa());
         dto.setIdHangHoa(hangHoa.getIdHangHoa());
         dto.setMaHangHoa(hangHoa.getMaHangHoa());
         dto.setTenHangHoa(hangHoa.getTenHangHoa());
@@ -29,14 +30,34 @@ public class HangHoaMapper {
         if (dto == null) {
             return null;
         }
-
         HangHoa hangHoa = new HangHoa();
         hangHoa.setIdHangHoa(dto.getIdHangHoa());
-        hangHoa.setMaHangHoa(dto.getMaHangHoa());
+        LoaiHangHoa loaiHangHoa=new LoaiHangHoa();
+        loaiHangHoa.setIdLoaiHangHoa(dto.getIdLoaiHangHoa());
+        hangHoa.setLoaiHangHoa(loaiHangHoa);
+
         hangHoa.setTenHangHoa(dto.getTenHangHoa());
         hangHoa.setTaiTrong(dto.getTaiTrong());
         hangHoa.setGiaPhatSinh(dto.getGiaPhatSinh());
         hangHoa.setTrangThaiActive(dto.getTrangThaiActive());
         return hangHoa;
+    }
+
+    public static HangHoa toEntity(HangHoaDTO dto, HangHoa existingHangHoa) {
+        if (dto == null || existingHangHoa == null) {
+            return null;
+        }
+
+        existingHangHoa.setTenHangHoa(dto.getTenHangHoa());
+        existingHangHoa.setTaiTrong(dto.getTaiTrong());
+        existingHangHoa.setGiaPhatSinh(dto.getGiaPhatSinh());
+        existingHangHoa.setTrangThaiActive(dto.getTrangThaiActive());
+
+        // Thiết lập loại hàng hóa
+        LoaiHangHoa loaiHangHoa = new LoaiHangHoa();
+        loaiHangHoa.setIdLoaiHangHoa(dto.getIdLoaiHangHoa());
+        existingHangHoa.setLoaiHangHoa(loaiHangHoa);
+
+        return existingHangHoa;
     }
 }
