@@ -7,6 +7,7 @@ import com.project.flightManagement.Service.HangHoaService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -178,7 +179,7 @@ public class HangHoaController {
     public ResponseEntity<ResponseData> deleteHangHoa(@PathVariable int idHH) {
         try {
             HangHoaService.deleteHangHoa(idHH);
-            response.setMessage("merchandise deleted successfully!!");
+            response.setMessage("Route deleted successfully!!");
             response.setData(null);
             response.setStatusCode(200);
             return new ResponseEntity<>(response, HttpStatus.OK);
@@ -187,8 +188,13 @@ public class HangHoaController {
             response.setData(null);
             response.setStatusCode(404);
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        } catch (DataIntegrityViolationException e) {
+            response.setMessage("Cannot delete merchanse as it is associated with other data.");
+            response.setData(null);
+            response.setStatusCode(409); // 409 Conflict status code
+            return new ResponseEntity<>(response, HttpStatus.CONFLICT);
         } catch (Exception e) {
-            response.setMessage("Error occurred while deleting the merchandise: " + e.getMessage());
+            response.setMessage("Error occurred while deleting the merchanse: " + e.getMessage());
             response.setData(null);
             response.setStatusCode(500);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
