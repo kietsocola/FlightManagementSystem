@@ -131,7 +131,7 @@ public class ChuyenBayController {
                     && scheduled.name().equals(status.name())){
                 System.out.println("id chuyen bay : " +  cb.getIdChuyenBay());
                 System.out.println("khoang thoi gian >  2 gio : " + !isDifferenceGreaterThanTwoHour(cb.getThoiGianBatDauDuTinh() , cbDTO.getThoiGianBatDauThucTe()));
-                response.setMessage("Tuyến bay và thời gian này gần với chuyến bay : " + cb.getIdChuyenBay());
+                response.setMessage("Thời gian xảy ra gần với chuyến bay khác");
                 response.setData(null);
                 response.setStatusCode(409);
                 return new ResponseEntity<>(response, HttpStatus.CONFLICT);
