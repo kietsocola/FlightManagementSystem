@@ -41,8 +41,6 @@ public class MayBayController {
     private SanBayService sanBayService;
     private ResponseData response = new ResponseData();
 
-
-
     @GetMapping("/getPlane/{id}")
     public ResponseEntity<ResponseData> getPlaneById(@PathVariable int id) {
         Optional<MayBayDTO> mbDTO = mayBayService.getMayBayById(id);

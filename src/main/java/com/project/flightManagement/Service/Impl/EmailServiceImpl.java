@@ -104,7 +104,7 @@ public class EmailServiceImpl implements EmailService {
             TuyenBay tuyenBay = new TuyenBay();
             Context context = new Context(); // dat cac bien de thay doi noi dung html o day
             context.setVariable("passengerName", veDTO.getHanhKhach().getHoTen());
-            context.setVariable("bookingCode", veDTO.getIdChoNgoi());
+            context.setVariable("bookingCode", veDTO.getChoNgoi().getIdChoNgoi());
             context.setVariable("ticketCode", veDTO.getMaVe());
             // Lấy ngày hiện tại
             LocalDate today = LocalDate.now();

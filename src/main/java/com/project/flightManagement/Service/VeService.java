@@ -5,9 +5,12 @@ import com.project.flightManagement.DTO.VeDTO.VeCreateDTO;
 import com.project.flightManagement.DTO.VeDTO.VeDTO;
 import com.project.flightManagement.DTO.VeDTO.VeUpdateDTO;
 import com.project.flightManagement.DTO.VeDTO.VeUpdateHanhKhachDTO;
+import com.project.flightManagement.Enum.VeEnum;
 import com.project.flightManagement.Model.Ve;
 import org.springframework.data.domain.Page;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 public interface VeService {
@@ -22,6 +25,9 @@ public interface VeService {
 
     void createAutoVeByIdMayBay(int idChuyenBay, int idMayBay, double giaVeHangPhoThong, double giaVeHangThuongGia, double giaVeHangNhat);
 
+    Page<VeDTO> searchVeMaVaAndDateBay(String maVe, LocalDate startDate, LocalDate endDate, int page, int size);
+
     Page<VeDTO> searchVeMaVa(String maVe, int page, int size);
 
+    List<VeEnum> getAllVeStatuses();
 }

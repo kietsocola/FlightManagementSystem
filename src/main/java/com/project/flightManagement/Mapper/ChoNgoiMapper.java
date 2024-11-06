@@ -2,6 +2,7 @@ package com.project.flightManagement.Mapper;
 
 import com.project.flightManagement.DTO.ChoNgoiDTO.ChoNgoiDTO;
 import com.project.flightManagement.DTO.ChoNgoiDTO.ChoNgoi_VeDTO;
+import com.project.flightManagement.DTO.ChoNgoiDTO.ChoNgoi_VeReturnDTO;
 import com.project.flightManagement.Model.ChoNgoi;
 import com.project.flightManagement.Model.Ve;
 
@@ -37,5 +38,14 @@ public class ChoNgoiMapper {
         choNgoi.setColumnIndex(choNgoiDTO.getColumnIndex());
         choNgoi.setTrangThaiActive(choNgoiDTO.getTrangThaiActive());
         return choNgoi;
+    }
+
+    public static ChoNgoi_VeReturnDTO toChoNgoi_veReturnDTO(ChoNgoi choNgoi) {
+        ChoNgoi_VeReturnDTO choNgoi_veReturnDTO = new ChoNgoi_VeReturnDTO();
+        choNgoi_veReturnDTO.setIdChoNgoi(choNgoi.getIdChoNgoi());
+        choNgoi_veReturnDTO.setRowIndex(choNgoi.getRowIndex());
+        choNgoi_veReturnDTO.setColumnIndex(choNgoi.getColumnIndex());
+        choNgoi_veReturnDTO.setTrangThaiActive(choNgoi.getTrangThaiActive());
+        return choNgoi_veReturnDTO;
     }
 }
