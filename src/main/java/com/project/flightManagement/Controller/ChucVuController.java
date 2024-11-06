@@ -1,6 +1,7 @@
 package com.project.flightManagement.Controller;
 
 import com.project.flightManagement.DTO.ChucVuDTO.ChucVuDTO;
+import com.project.flightManagement.Enum.ActiveEnum;
 import com.project.flightManagement.Payload.ResponseData;
 import com.project.flightManagement.Service.ChucVuService;
 import jakarta.validation.Valid;
@@ -106,6 +107,60 @@ public class ChucVuController {
             response.setData(null);
             response.setStatusCode(500); // Internal Server Error
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping("/updatechucvu/{idChucVu}")
+    public ResponseEntity<ResponseData> updateChucVu(@PathVariable("idChucVu") Integer idChucVu , @Valid @RequestBody ChucVuDTO cvDTO, BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            Map<String, String> fieldErrors = new HashMap<>();
+            bindingResult.getFieldErrors().forEach(error ->
+                    fieldErrors.put(error.getField(), error.getDefaultMessage()));
+            response.setStatusCode(400);
+            response.setData(fieldErrors);
+            response.setMessage("There are some fields invalid");
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+
+        Optional<ChucVuDTO> existTenChucVu =  cvservice.getChucVuByTen(cvDTO.getTen().trim());
+        if (existTenChucVu.isPresent() && existTenChucVu.get().getIdChucVu() != idChucVu){
+            response.setMessage("chuc vu nay da ton tai!!");
+            response.setData(null);
+            response.setStatusCode(409);
+            return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+        }
+
+        Optional<ChucVuDTO> saveCv = cvservice.addChucVu(cvDTO);
+        if (saveCv.isPresent()) {
+            response.setMessage("Sửa Chuc Vu successfully!!");
+            response.setData(saveCv.get()); // Trả về dữ liệu của khách hàng đã lưu
+            response.setStatusCode(201); // Created
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+        } else {
+            // Xử lý lỗi khi lưu không thành công
+            response.setMessage("Sửa chuc vu unsuccessfully!!");
+            response.setData(null);
+            response.setStatusCode(500); // Internal Server Error
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<ResponseData> filterChucVu(
+            @RequestParam(required = false) String ten,
+            @RequestParam(required = false) ActiveEnum trangThaiActive) {
+            Iterable<ChucVuDTO> listCV = cvservice.searchChucVu(ten , trangThaiActive);
+        if(listCV.iterator().hasNext()){
+            response.setMessage("filter list Chuc vu success!!");
+            response.setData(listCV);
+            response.setStatusCode(200);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else {
+            response.setMessage("filter list chuc vu unsuccess!!");
+            response.setData(null);
+            response.setStatusCode(204);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
     }
 }

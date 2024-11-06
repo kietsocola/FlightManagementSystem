@@ -122,16 +122,35 @@ public class ChuyenBayController {
 
         Iterable<ChuyenBayDTO> listCB = cbservice.getAllChuyenBay();
         ChuyenBayEnum scheduled = ChuyenBayEnum.SCHEDULED;
+        ChuyenBayEnum cancled = ChuyenBayEnum.CANCELED;
+        ChuyenBayEnum completed = ChuyenBayEnum.COMPLETED;
+        ChuyenBayEnum in_flight = ChuyenBayEnum.IN_FLIGHT;
 
         for(ChuyenBayDTO cb : listCB){
             ChuyenBayEnum status = cb.getTrangThai() ;
             if (cb.getIdChuyenBay() != cbDTO.getIdChuyenBay()
                     && cb.getTuyenBay().getIdTuyenBay() == cbDTO.getTuyenBay().getIdTuyenBay()
                     && !isDifferenceGreaterThanTwoHour(cb.getThoiGianBatDauDuTinh() , cbDTO.getThoiGianBatDauThucTe())
-                    && scheduled.name().equals(status.name())){
+                    && !completed.name().equals(status.name())
+                    && !cancled.name().equals(status.name())){
                 System.out.println("id chuyen bay : " +  cb.getIdChuyenBay());
                 System.out.println("khoang thoi gian >  2 gio : " + !isDifferenceGreaterThanTwoHour(cb.getThoiGianBatDauDuTinh() , cbDTO.getThoiGianBatDauThucTe()));
-                response.setMessage("Thời gian xảy ra gần với chuyến bay khác");
+                response.setMessage("Chuyến bay này gần với thời gian của một chuyến bay khác có cùng tuyến bay : " + cb.getThoiGianBatDauDuTinh() + ".Phải cách nhau hơn 2 tiếng");
+                response.setData(null);
+                response.setStatusCode(409);
+                return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+            }
+        }
+
+        for(ChuyenBayDTO cb : listCB) {
+            ChuyenBayEnum status = cb.getTrangThai();
+            if (cb.getIdChuyenBay() != cbDTO.getIdChuyenBay()
+                    && cb.getMayBay().getIdMayBay() == cbDTO.getMayBay().getIdMayBay()
+                    && !isDifferenceGreaterThanTwoHour(cb.getThoiGianKetThucThucTe(), cbDTO.getThoiGianBatDauThucTe())
+                    && completed.name().equals(status.name())) {
+                System.out.println("id chuyen bay : " + cb.getIdChuyenBay());
+                System.out.println("khoang thoi gian >  2 gio : " + !isDifferenceGreaterThanTwoHour(cb.getThoiGianKetThucThucTe(), cbDTO.getThoiGianBatDauThucTe()));
+                response.setMessage("Máy bay này vừa kết thúc chuyến bay luc : " + cb.getThoiGianKetThucThucTe() + ".Hãy đợi 2 tiếng để có thể tạo chuyến bay với máy bay này");
                 response.setData(null);
                 response.setStatusCode(409);
                 return new ResponseEntity<>(response, HttpStatus.CONFLICT);
@@ -184,16 +203,35 @@ public class ChuyenBayController {
 
         Iterable<ChuyenBayDTO> listCB = cbservice.getAllChuyenBay();
         ChuyenBayEnum scheduled = ChuyenBayEnum.SCHEDULED;
+        ChuyenBayEnum cancled = ChuyenBayEnum.CANCELED;
+        ChuyenBayEnum completed = ChuyenBayEnum.COMPLETED;
+        ChuyenBayEnum in_flight = ChuyenBayEnum.IN_FLIGHT;
 
         for(ChuyenBayDTO cb : listCB){
             ChuyenBayEnum status = cb.getTrangThai() ;
             if (cb.getIdChuyenBay() != cbDTO.getIdChuyenBay()
                     && cb.getTuyenBay().getIdTuyenBay() == cbDTO.getTuyenBay().getIdTuyenBay()
                     && !isDifferenceGreaterThanTwoHour(cb.getThoiGianBatDauDuTinh() , cbDTO.getThoiGianBatDauThucTe())
-                    && scheduled.name().equals(status.name())){
+                    && !completed.name().equals(status.name())
+                    && !cancled.name().equals(status.name())){
                 System.out.println("id chuyen bay : " +  cb.getIdChuyenBay());
                 System.out.println("khoang thoi gian >  2 gio : " + !isDifferenceGreaterThanTwoHour(cb.getThoiGianBatDauDuTinh() , cbDTO.getThoiGianBatDauThucTe()));
-                response.setMessage("Tuyến bay và thời gian này gần với chuyến bay : " + cb.getIdChuyenBay());
+                response.setMessage("Chuyến bay này gần với thời gian của một chuyến bay khác có cùng tuyến bay : " + cb.getThoiGianBatDauDuTinh() + ".Phải cách nhau hơn 2 tiếng");
+                response.setData(null);
+                response.setStatusCode(409);
+                return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+            }
+        }
+
+        for(ChuyenBayDTO cb : listCB){
+            ChuyenBayEnum status = cb.getTrangThai() ;
+            if (cb.getIdChuyenBay() != cbDTO.getIdChuyenBay()
+                    && cb.getMayBay().getIdMayBay() == cbDTO.getMayBay().getIdMayBay()
+                    && !isDifferenceGreaterThanTwoHour(cb.getThoiGianKetThucThucTe() , cbDTO.getThoiGianBatDauThucTe())
+                    && completed.name().equals(status.name())){
+                System.out.println("id chuyen bay : " +  cb.getIdChuyenBay());
+                System.out.println("khoang thoi gian >  2 gio : " + !isDifferenceGreaterThanTwoHour(cb.getThoiGianKetThucThucTe() , cbDTO.getThoiGianBatDauThucTe()));
+                response.setMessage("Máy bay này vừa kết thúc chuyến bay luc : " +  cb.getThoiGianKetThucThucTe()+ ".Hãy đợi 2 tiếng để có thể tạo chuyến bay với máy bay này");
                 response.setData(null);
                 response.setStatusCode(409);
                 return new ResponseEntity<>(response, HttpStatus.CONFLICT);
@@ -202,10 +240,6 @@ public class ChuyenBayController {
 
         Optional<ChuyenBayDTO> cbOld = cbservice.getChuyenBayById(idChuyenBay);
 
-
-        ChuyenBayEnum cancled = ChuyenBayEnum.CANCELED;
-        ChuyenBayEnum completed = ChuyenBayEnum.COMPLETED;
-        ChuyenBayEnum in_flight = ChuyenBayEnum.IN_FLIGHT;
         ChuyenBayEnum status = cbOld.get().getTrangThai();
         LocalDateTime timeCurrent = LocalDateTime.now();
         if(status.name().equals(cancled.name()) || status.name().equals(completed.name()) || status.name().equals(in_flight.name())){
