@@ -6,6 +6,7 @@ import com.project.flightManagement.Service.TuyenBayService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -180,6 +181,11 @@ public class TuyenBayController {
             response.setData(null);
             response.setStatusCode(404);
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        } catch (DataIntegrityViolationException e) {
+            response.setMessage("Cannot delete route as it is associated with other data.");
+            response.setData(null);
+            response.setStatusCode(409); // 409 Conflict status code
+            return new ResponseEntity<>(response, HttpStatus.CONFLICT);
         } catch (Exception e) {
             response.setMessage("Error occurred while deleting the route: " + e.getMessage());
             response.setData(null);
