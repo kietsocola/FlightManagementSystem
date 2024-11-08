@@ -60,8 +60,8 @@ public class PTTTController {
 
     @PostMapping("/addPTTT")
     public ResponseEntity<ResponseData> addPTTT(@Valid @RequestBody PTTTDTO ptttDTO, BindingResult bindingResult) {
+        Map<String, String> fieldErrors =  new HashMap<>();
         if (bindingResult.hasErrors()) {
-            Map<String, String> fieldErrors =  new HashMap<>();
             bindingResult.getFieldErrors().forEach(error -> fieldErrors.put(error.getField(), error.getDefaultMessage()));
             response.setStatusCode(400);
             response.setData(fieldErrors);
@@ -70,10 +70,11 @@ public class PTTTController {
         }
 
         if (ptttDTO != null && (ptttDTO.getTenPTTT() != null)) {
-            Optional<PTTTDTO> existingByTenDN = ptttService.getPTTTByTen(ptttDTO.getTenPTTT());
-            if (existingByTenDN.isPresent()) {
+            Optional<PTTTDTO> existingByTenPTTT = ptttService.getPTTTByTen(ptttDTO.getTenPTTT());
+            if (existingByTenPTTT.isPresent()) {
+                fieldErrors.put("tenPTTT", "Đã tồn tại phương thức thanh toán với tên " + ptttDTO.getTenPTTT());
                 response.setMessage("Đã tồn tại phương thức thanh toán với tên " + ptttDTO.getTenPTTT());
-                response.setData(null);
+                response.setData(fieldErrors);
                 response.setStatusCode(409);
 
                 return new ResponseEntity<>(response, HttpStatus.CONFLICT);
@@ -103,8 +104,8 @@ public class PTTTController {
     public ResponseEntity<ResponseData> updatePTTT(@PathVariable("idPTTT") Integer idPTTT, @Valid @RequestBody PTTTDTO ptttDTO, BindingResult bindingResult) {
         ResponseData responseData = new ResponseData();
 
+        Map<String, String> fieldErrors = new HashMap<>();
         if (bindingResult.hasErrors()) {
-            Map<String, String> fieldErrors = new HashMap<>();
             bindingResult.getFieldErrors().forEach(error -> fieldErrors.put(error.getField(), error.getDefaultMessage()));
             responseData.setStatusCode(400);
             responseData.setData(fieldErrors);
@@ -121,6 +122,16 @@ public class PTTTController {
         }
 
         ptttDTO.setIdPTTT(idPTTT);
+
+        Optional<PTTTDTO> existingByTenPTTT = ptttService.getPTTTByTen(ptttDTO.getTenPTTT());
+        if (existingByTenPTTT.isPresent() && existingByTenPTTT.get().getIdPTTT() != ptttDTO.getIdPTTT()) {
+            fieldErrors.put("tenPTTT", "Đã tồn tại phương thức thanh toán với tên " + ptttDTO.getTenPTTT());
+            response.setMessage("Đã tồn tại phương thức thanh toán với tên " + ptttDTO.getTenPTTT());
+            response.setData(fieldErrors);
+            response.setStatusCode(409);
+
+            return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+        }
 
         Optional<PTTTDTO> updatePTTT = ptttService.updatePTTT(ptttDTO);
         if (updatePTTT.isPresent()) {

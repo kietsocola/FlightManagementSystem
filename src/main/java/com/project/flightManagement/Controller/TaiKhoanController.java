@@ -214,8 +214,8 @@ public class TaiKhoanController {
     @PostMapping("/addNewTaiKhoan")
     public ResponseEntity<ResponseData> addNewTaiKhoan(@Valid @RequestBody TaiKhoanDTO taiKhoanDTO, BindingResult bindingResult) {
         ResponseData response = new ResponseData();
+        Map<String, String> fieldErrors = new HashMap<>();
         if(bindingResult.hasErrors()){
-            Map<String, String> fieldErrors = new HashMap<>();
             bindingResult.getFieldErrors().forEach(error ->
                     fieldErrors.put(error.getField(), error.getDefaultMessage()));
             response.setStatusCode(400);
@@ -223,25 +223,29 @@ public class TaiKhoanController {
             response.setMessage("There are some fields invalid");
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
+
         if (taiKhoanDTO != null && taiKhoanDTO.getTenDangNhap() != null && (taiKhoanDTO.getKhachHang() != null || taiKhoanDTO.getNhanVien() != null)) {
             if(taiKhoanService.checkExistTenDangNhap(taiKhoanDTO)){
                 response.setStatusCode(202);
+                fieldErrors.put("tenDangNhap", "Tên đăng nhập đã tồn tại!");
                 response.setMessage("Ten dang nhap exist!!");
-                response.setData(null);
+                response.setData(fieldErrors);
                 return new ResponseEntity<>(response, HttpStatus.CONFLICT);
             }
             if (taiKhoanDTO.getKhachHang() != null) {
                 if(taiKhoanService.checkExistKhachHang(taiKhoanDTO)) {
                     response.setStatusCode(202);
                     response.setMessage("Khach hang exist!!");
-                    response.setData(null);
+                    fieldErrors.put("khachHang", "Khách hàng đã có tài khoản!");
+                    response.setData(fieldErrors);
                     return new ResponseEntity<>(response, HttpStatus.CONFLICT);
                 }
             } else {
                 if(taiKhoanService.checkExistNhanVien(taiKhoanDTO)) {
                     response.setStatusCode(202);
                     response.setMessage("Nhan vien exist!!");
-                    response.setData(null);
+                    fieldErrors.put("nhanVien", "Nhân viên đã có tài khoản!");
+                    response.setData(fieldErrors);
                     return new ResponseEntity<>(response, HttpStatus.CONFLICT);
                 }
             }
@@ -269,8 +273,8 @@ public class TaiKhoanController {
     @PutMapping("/updateTaiKhoan/{idTK}")
     public ResponseEntity<ResponseData> updateTaiKhoan(@PathVariable("idTK") int idTK, @Valid @RequestBody TaiKhoanDTO taiKhoanDTO, BindingResult bindingResult) {
         ResponseData response = new ResponseData();
+        Map<String, String> fieldErrors = new HashMap<>();
         if(bindingResult.hasErrors()){
-            Map<String, String> fieldErrors = new HashMap<>();
             bindingResult.getFieldErrors().forEach(error ->
                     fieldErrors.put(error.getField(), error.getDefaultMessage()));
             response.setStatusCode(400);
@@ -284,17 +288,18 @@ public class TaiKhoanController {
                 if(taiKhoanService.checkExistTenDangNhap(taiKhoanDTO)){
                     response.setStatusCode(202);
                     response.setMessage("Ten dang nhap exist!");
-                    response.setData(null);
+                    fieldErrors.put("tenDangNhap", "Tên đăng nhập đã tồn tại!");
+                    response.setData(fieldErrors);
                     return new ResponseEntity<>(response, HttpStatus.CONFLICT);
                 }
             }
-
             if (taiKhoanDTO.getKhachHang() != null) {
                 if (taiKhoanService.getTaiKhoanByIdTaiKhoan(idTK).getKhachHang().getIdKhachHang() != taiKhoanDTO.getKhachHang().getIdKhachHang()) {
                     if(taiKhoanService.checkExistKhachHang(taiKhoanDTO)) {
                         response.setStatusCode(202);
                         response.setMessage("Khach hang exist!!");
-                        response.setData(null);
+                        fieldErrors.put("khachHang", "Khách hàng đã có tài khoản!");
+                        response.setData(fieldErrors);
                         return new ResponseEntity<>(response, HttpStatus.CONFLICT);
                     }
                 }
@@ -302,7 +307,8 @@ public class TaiKhoanController {
                 if(taiKhoanService.getTaiKhoanByIdTaiKhoan(idTK).getNhanVien().getIdNhanVien() != taiKhoanDTO.getNhanVien().getIdNhanVien() && taiKhoanService.checkExistNhanVien(taiKhoanDTO)) {
                     response.setStatusCode(202);
                     response.setMessage("Nhan vien exist!!");
-                    response.setData(null);
+                    fieldErrors.put("nhanVien", "Nhân viên đã có tài khoản!");
+                    response.setData(fieldErrors);
                     return new ResponseEntity<>(response, HttpStatus.CONFLICT);
                 }
             }
