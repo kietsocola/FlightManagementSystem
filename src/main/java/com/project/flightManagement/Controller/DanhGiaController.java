@@ -1,17 +1,24 @@
 package com.project.flightManagement.Controller;
 
 import com.project.flightManagement.DTO.DanhGiaDTO.DanhGiaDTO;
+import com.project.flightManagement.DTO.KhachHangDTO.KhachHangDTO;
 import com.project.flightManagement.Enum.ActiveEnum;
+import com.project.flightManagement.Model.KhachHang;
 import com.project.flightManagement.Payload.ResponseData;
 import com.project.flightManagement.Service.DanhGiaService;
+import com.project.flightManagement.Service.KhachHangService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -20,6 +27,8 @@ import java.util.Optional;
 public class DanhGiaController {
     @Autowired
     private DanhGiaService danhGiaService;
+    @Autowired
+    private KhachHangService khachHangService;
     private ResponseData response = new ResponseData();
 
     @GetMapping("/getReview/{idDanhGia}")
@@ -68,6 +77,22 @@ public class DanhGiaController {
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
     }
+    @GetMapping("/getReviewByNameOfCustomer")
+    public ResponseEntity<ResponseData> getDanhGiaByTenKhachHang(@RequestParam String tenKhachHang) {
+        Iterable<DanhGiaDTO> listDG = danhGiaService.getDanhGiaByTenKhachHang(tenKhachHang);
+        if(listDG != null && listDG.iterator().hasNext()) {
+            response.setData(listDG);
+            response.setMessage("Get list reviews by name of customer success!!");
+            response.setStatusCode(200);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else {
+            response.setStatusCode(500);
+            response.setMessage("Cant found reviews by name of customer!!");
+            response.setData(null);
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @GetMapping("/getReviewByHangBay/{idHangBay}")
     public ResponseEntity<ResponseData> getDanhGiaByHangBay(@PathVariable int idHangBay) {
         Iterable<DanhGiaDTO> listDG = danhGiaService.getDanhGiaByHangBay(idHangBay);
@@ -84,31 +109,113 @@ public class DanhGiaController {
         }
     }
     @GetMapping("/getReviewByStartTimeAndEndTime")
-    public ResponseEntity<ResponseData> getDanhGiaByStartTimeAndEndTime(@RequestParam String startTime,@RequestParam String endTime) {
+    public ResponseEntity<ResponseData> getDanhGiaByStartTimeAndEndTime(@RequestParam(required = false) String startTime, @RequestParam(required = false) String endTime) {
         LocalDateTime start, end;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
-        try {
-            start = LocalDateTime.parse(startTime, formatter);
-            end = LocalDateTime.parse(endTime, formatter);
-        } catch (DateTimeParseException e) {
-            response.setStatusCode(501);
-            response.setMessage("Invalid date-time format!!");
-            response.setData(null);
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-        }
-        Iterable<DanhGiaDTO> listDG = danhGiaService.getDanhGiaByStartTimeAndEndTime(start, end);
-        if(listDG != null && listDG.iterator().hasNext()) {
-            response.setData(listDG);
-            response.setMessage("Get list reviews by starttime and endtime success!!");
-            response.setStatusCode(200);
-            return new ResponseEntity<>(response, HttpStatus.OK);
+        DateTimeFormatter dateOnlyFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        if (startTime != "" && endTime != "") {
+            try {
+                // Kiểm tra nếu `startTime` chỉ có định dạng ngày (yyyy-MM-dd)
+                if (startTime.length() == 10) {
+                    LocalDate date = LocalDate.parse(startTime, dateOnlyFormatter);
+                    start = date.atStartOfDay(); // yyyy-MM-dd 00:00:00
+                } else {
+                    start = LocalDateTime.parse(startTime, formatter);
+                }
+
+                // Kiểm tra nếu `endTime` chỉ có định dạng ngày (yyyy-MM-dd)
+                if (endTime.length() == 10) {
+                    LocalDate date = LocalDate.parse(endTime, dateOnlyFormatter);
+                    end = date.atTime(LocalTime.MAX); // yyyy-MM-dd 23:59:59.999999
+                } else {
+                    end = LocalDateTime.parse(endTime, formatter);
+                }
+
+            } catch (DateTimeParseException e) {
+                response.setStatusCode(501);
+                response.setMessage("Invalid date-time format!!");
+                response.setData(null);
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            }
+
+            Iterable<DanhGiaDTO> listDG = danhGiaService.getDanhGiaByStartTimeAndEndTime(start, end);
+            if (listDG != null && listDG.iterator().hasNext()) {
+                response.setData(listDG);
+                response.setMessage("Get list reviews by starttime and endtime success!!");
+                response.setStatusCode(200);
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                response.setStatusCode(500);
+                response.setMessage("Cannot find reviews by starttime and endtime");
+                response.setData(null);
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            }
+        } else if (startTime != "" && endTime == "") {
+            try {
+                // Kiểm tra nếu `startTime` chỉ có định dạng ngày (yyyy-MM-dd)
+                if (startTime.length() == 10) {
+                    LocalDate date = LocalDate.parse(startTime, dateOnlyFormatter);
+                    start = date.atStartOfDay(); // yyyy-MM-dd 00:00:00
+                } else {
+                    start = LocalDateTime.parse(startTime, formatter);
+                }
+
+                // Kiểm tra nếu `endTime` chỉ có định dạng ngày (yyyy-MM-dd)
+
+            } catch (DateTimeParseException e) {
+                response.setStatusCode(501);
+                response.setMessage("Invalid date-time format!!");
+                response.setData(null);
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            }
+
+            Iterable<DanhGiaDTO> listDG = danhGiaService.getDanhGiaByStartTime(start);
+            if (listDG != null && listDG.iterator().hasNext()) {
+                response.setData(listDG);
+                response.setMessage("Get list reviews by starttime success!!");
+                response.setStatusCode(200);
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                response.setStatusCode(500);
+                response.setMessage("Cannot find reviews by starttime");
+                response.setData(null);
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            }
         } else {
-            response.setStatusCode(500);
-            response.setMessage("Cant found reviews by starttime and endtime");
-            response.setData(null);
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            try {
+                // Kiểm tra nếu `startTime` chỉ có định dạng ngày (yyyy-MM-dd)
+
+                // Kiểm tra nếu `endTime` chỉ có định dạng ngày (yyyy-MM-dd)
+                if (endTime.length() == 10) {
+                    LocalDate date = LocalDate.parse(endTime, dateOnlyFormatter);
+                    end = date.atTime(LocalTime.MAX); // yyyy-MM-dd 23:59:59.999999
+                } else {
+                    end = LocalDateTime.parse(endTime, formatter);
+                }
+
+            } catch (DateTimeParseException e) {
+                response.setStatusCode(501);
+                response.setMessage("Invalid date-time format!!");
+                response.setData(null);
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            }
+
+            Iterable<DanhGiaDTO> listDG = danhGiaService.getDanhGiaByEndTime(end);
+            if (listDG != null && listDG.iterator().hasNext()) {
+                response.setData(listDG);
+                response.setMessage("Get list reviews by endtime success!!");
+                response.setStatusCode(200);
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                response.setStatusCode(500);
+                response.setMessage("Cannot find reviews by endtime");
+                response.setData(null);
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            }
         }
+
     }
+
     @PutMapping("/blockReview/{idDanhGia}")
     public ResponseEntity<ResponseData> blockDanhGia(@PathVariable int idDanhGia) {
         Optional<DanhGiaDTO> danhGiaDTO = danhGiaService.getDanhGiaByID(idDanhGia);

@@ -3,7 +3,6 @@ package com.project.flightManagement.DTO.DanhGiaDTO;
 import com.project.flightManagement.Enum.ActiveEnum;
 import com.project.flightManagement.Enum.DanhGiaEnum;
 import com.project.flightManagement.Model.HangBay;
-import com.project.flightManagement.Model.HanhKhach;
 import com.project.flightManagement.Model.KhachHang;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

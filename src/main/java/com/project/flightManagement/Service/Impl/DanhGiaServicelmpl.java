@@ -16,7 +16,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.StreamSupport;
 
@@ -65,9 +67,52 @@ public class DanhGiaServicelmpl implements DanhGiaService {
         }
     }
     @Override
+    public Iterable<DanhGiaDTO> getDanhGiaByTenKhachHang(String tenKhachHang) {
+        try {
+//            Iterable<DanhGia> listDG = dgRepo.findByTenKhachHang(tenKhachHang);
+//            return StreamSupport.stream(listDG.spliterator(), false).map(DanhGiaMapper::toDTO).toList();
+            List<KhachHang> listKH = khRepo.findByKeywordContainingIgnoreCase(tenKhachHang);
+            List<DanhGia> listDG = new ArrayList<>();
+            for(KhachHang kh : listKH) {
+                for(DanhGia dg : dgRepo.findAll()) {
+                    if(kh.getHoTen().equalsIgnoreCase(dg.getKhachHang().getHoTen())) {
+                        listDG.add(dg);
+                    }
+                }
+            }
+            return listDG.stream().map(DanhGiaMapper::toDTO).toList();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    @Override
     public Iterable<DanhGiaDTO> getDanhGiaByStartTimeAndEndTime(LocalDateTime startTime, LocalDateTime endTime) {
         try {
             Iterable<DanhGia> listDG = dgRepo.findByThoiGianTaoBetween(startTime, endTime);
+            return StreamSupport.stream(listDG.spliterator(), false)
+                    .map(DanhGiaMapper::toDTO)
+                    .toList();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
+    @Override
+    public Iterable<DanhGiaDTO> getDanhGiaByStartTime(LocalDateTime startTime) {
+        try {
+            Iterable<DanhGia> listDG = dgRepo.findByThoiGianTaoFromStartTime(startTime);
+            return StreamSupport.stream(listDG.spliterator(), false)
+                    .map(DanhGiaMapper::toDTO)
+                    .toList();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
+    @Override
+    public Iterable<DanhGiaDTO> getDanhGiaByEndTime(LocalDateTime endTime) {
+        try {
+            Iterable<DanhGia> listDG = dgRepo.findByThoiGianTaoFromEndTime(endTime);
             return StreamSupport.stream(listDG.spliterator(), false)
                     .map(DanhGiaMapper::toDTO)
                     .toList();
