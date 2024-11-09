@@ -22,6 +22,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
@@ -50,6 +51,8 @@ public class BookingController {
     private PdfService pdfService;
     @Autowired
     private HanhKhachService hanhKhachService;
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
     // Endpoint to get seats for a flight by flight ID
     @GetMapping("/getChoNgoiByChuyenBayAndHangVe")
@@ -71,7 +74,6 @@ public class BookingController {
     @PostMapping("/holdSeat")
     public ResponseEntity<ResponseData> holdSeat(@RequestBody HoldSeatRequest holdSeatRequest) {
         ResponseData response = new ResponseData();
-
         // 1. Kiểm tra đầu vào
         if (holdSeatRequest.getIdVe() == null || holdSeatRequest.getUserId() == null ||
                 holdSeatRequest.getSeatId() == null || holdSeatRequest.getFlightId() == null) {
@@ -104,7 +106,7 @@ public class BookingController {
         String message = "User " + holdSeatRequest.getUserId() + " has held seat " + holdSeatRequest.getSeatId() + " for flight " + holdSeatRequest.getFlightId();
 
         // Gửi thông điệp qua Socket.IO
-        socketIOService.emit("seat-held", message);
+        messagingTemplate.convertAndSend("/topic/seatHeld", ve.getChoNgoi().getIdChoNgoi());
 
         // Phản hồi cho client
         response.setMessage("Seat held successfully.");

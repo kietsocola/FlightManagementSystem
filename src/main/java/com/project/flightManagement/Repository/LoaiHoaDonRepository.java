@@ -9,8 +9,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface LoaiHoaDonRepository extends JpaRepository<LoaiHoaDon, Integer> {
-    @Query("SELECT loaihd FROM LoaiHoaDon loaihd WHERE " + "LOWER(loaihd.tenLoaiHoaDon) = LOWER(:tenLoaiHoaDon)")
-    Optional<LoaiHoaDon> getLoaiHoaDonByTen(@Param("tenLoaiHoaDon") String tenLoaiHoaDon);
+    @Query("SELECT loaihd FROM LoaiHoaDon loaihd WHERE LOWER(loaihd.tenLoaiHoaDon) = LOWER(:tenLoaiHD)")
+    Optional<LoaiHoaDon> getLoaiHoaDonByTen(@Param("tenLoaiHD") String tenLoaiHD);
+
 
     @Query("SELECT loaihd FROM LoaiHoaDon loaihd WHERE " + "LOWER(loaihd.tenLoaiHoaDon) LIKE LOWER(CONCAT('%', :keyWord, '%'))")
     List<LoaiHoaDon> findLoaiHoaDonByKeyWord(@Param("keyWord") String keyWord);
