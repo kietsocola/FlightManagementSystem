@@ -7,9 +7,11 @@ import com.project.flightManagement.Model.KhachHang;
 import com.project.flightManagement.Payload.ResponseData;
 import com.project.flightManagement.Service.DanhGiaService;
 import com.project.flightManagement.Service.KhachHangService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -17,9 +19,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/admin/danhgia")
@@ -222,7 +222,7 @@ public class DanhGiaController {
         if(danhGiaDTO.isPresent()) {
             if(danhGiaDTO.get().getTrangThaiActive() == ActiveEnum.ACTIVE) {
                 if(danhGiaService.blockDanhGia(idDanhGia)) {
-                    response.setData(danhGiaDTO);
+                    response.setData(true);
                     response.setMessage("Block review success!!");
                     response.setStatusCode(200);
                     return new ResponseEntity<>(response, HttpStatus.OK);
@@ -234,7 +234,7 @@ public class DanhGiaController {
                 }
             } else {
                 if(danhGiaService.unblockDanhGia(idDanhGia)) {
-                    response.setData(danhGiaDTO);
+                    response.setData(true);
                     response.setMessage("Unblock review success!!");
                     response.setStatusCode(200);
                     return new ResponseEntity<>(response, HttpStatus.OK);
@@ -250,6 +250,36 @@ public class DanhGiaController {
             response.setMessage("Cant found reviews");
             response.setData(null);
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
+    }
+    @PostMapping("/addNewReview")
+    public ResponseEntity<ResponseData> addNewDanhGia(@Valid @RequestBody DanhGiaDTO danhGiaDTO, BindingResult bindingResult) {
+        if(bindingResult.hasErrors()){
+            Map<String, String> fieldErrors = new HashMap<>();
+            bindingResult.getFieldErrors().forEach(error ->
+                    fieldErrors.put(error.getField(), error.getDefaultMessage()));
+            response.setStatusCode(400);
+            response.setData(fieldErrors);
+            response.setMessage("There are some fields invalid");
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+        if (danhGiaDTO != null) {
+            if(danhGiaService.addNewDanhGia(danhGiaDTO)) {
+                response.setData(danhGiaDTO);
+                response.setMessage("Add new review success!!");
+                response.setStatusCode(200);
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                response.setStatusCode(500);
+                response.setMessage("Add new review failed!!");
+                response.setData(null);
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            }
+        } else {
+            response.setStatusCode(501);
+            response.setMessage("Can not add review!!");
+            response.setData(null);
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
     }
 }

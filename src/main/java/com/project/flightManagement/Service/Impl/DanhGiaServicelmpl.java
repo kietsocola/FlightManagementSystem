@@ -156,4 +156,15 @@ public class DanhGiaServicelmpl implements DanhGiaService {
             return false;
         }
     }
+    @Override
+    public boolean addNewDanhGia(DanhGiaDTO danhGiaDTO) {
+        try {
+            DanhGia danhGia = DanhGiaMapper.toEntity(danhGiaDTO);
+            DanhGia savedDG = dgRepo.save(danhGia);
+            return true;
+        } catch (Exception e) {
+            System.out.println("Error to add review!!");
+            return false;
+        }
+    }
 }

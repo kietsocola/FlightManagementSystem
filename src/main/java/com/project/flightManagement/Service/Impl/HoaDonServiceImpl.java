@@ -196,5 +196,15 @@ public class HoaDonServiceImpl implements HoaDonService {
             return Collections.emptyList();
         }
     }
-
+    @Override
+    public boolean markDanhGia(int idHoaDon) {
+        try {
+            Optional<HoaDon> hd = hdRepo.findById(idHoaDon);
+            hd.get().setDanhGia(true);
+            hdRepo.save(hd.get());
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }

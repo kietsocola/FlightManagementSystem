@@ -5,6 +5,7 @@ import com.project.flightManagement.Enum.DanhGiaEnum;
 import com.project.flightManagement.Model.HangBay;
 import com.project.flightManagement.Model.KhachHang;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,10 +16,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class DanhGiaDTO {
     private int idDanhGia;
-    @NotBlank(message = "Không để trống hãng bay")
+    @NotNull(message = "Không để trống hãng bay")
     private HangBay hangBay;
     private KhachHang khachHang;
-    @NotBlank(message = "Không để trống đánh giá sao")
+    @NotNull(message = "Không để trống đánh giá sao")
     private DanhGiaEnum sao;
     private String noiDung;
     private LocalDateTime thoiGianTao;

@@ -20,5 +20,6 @@ public interface HoaDonService {
     public List<HoaDonDTO> getHoaDonByKH(int idKH);
     public List<HoaDonDTO> getHoaDonByPTTT(int idPTTT);
     public List<HoaDonDTO> getHoaDonByLoaiHD(int idLoaiHD);
+    public boolean markDanhGia(int idHoaDon);
 
 }

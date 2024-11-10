@@ -56,4 +56,6 @@ public class HoaDon {
     @Enumerated(EnumType.STRING)
     private HoaDonEnum status;
 
+    @Column(name = "danh_gia", nullable = false)
+    private boolean danhGia;
 }

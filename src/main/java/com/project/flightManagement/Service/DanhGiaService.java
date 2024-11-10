@@ -20,5 +20,6 @@ public interface DanhGiaService {
     Iterable<DanhGiaDTO> getDanhGiaByHangBay(int idHangBay);
     boolean blockDanhGia(int id);
     boolean unblockDanhGia(int id);
-
+    boolean addNewDanhGia(DanhGiaDTO danhGiaDTO);
+//    boolean checkVeUSEDByDanhGia(int idVe);
 }
