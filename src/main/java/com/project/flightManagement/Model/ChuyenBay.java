@@ -82,4 +82,7 @@ public class ChuyenBay {
     @OneToMany(mappedBy = "chuyenBay")
     @JsonIgnore
     private List<NhanVien> nhanvienList;
+
+    @Column(name = "nvhk")
+    private String nvhk ;  /// idcotruong/idcopho/idnhanvien1-idnhanvien2-idnhanvien3-.......
 }

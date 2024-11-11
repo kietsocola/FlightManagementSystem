@@ -72,4 +72,6 @@ public class ChuyenBayDTO {
 
     @NotNull(message = "Trạng thái hoạt động không được để trống")
     private ActiveEnum trangThaiActive;
+
+    private String nvhk;
 }

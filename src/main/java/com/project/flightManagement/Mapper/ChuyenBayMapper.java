@@ -26,7 +26,7 @@ public class ChuyenBayMapper {
         dto.setSoGhe(chuyenBay.getSoGhe());
         dto.setTrangThai(chuyenBay.getTrangThai());
         dto.setTrangThaiActive(chuyenBay.getTrangThaiActive());
-
+        dto.setNvhk(chuyenBay.getNvhk());
         return dto;
     }
 
@@ -47,7 +47,7 @@ public class ChuyenBayMapper {
         chuyenBay.setSoGhe(dto.getSoGhe());
         chuyenBay.setTrangThai(dto.getTrangThai());
         chuyenBay.setTrangThaiActive(dto.getTrangThaiActive());
-
+        chuyenBay.setNvhk(dto.getNvhk());
         return chuyenBay;
     }
 
