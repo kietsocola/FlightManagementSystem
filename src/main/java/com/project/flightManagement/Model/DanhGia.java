@@ -1,6 +1,7 @@
 package com.project.flightManagement.Model;
 
 import com.project.flightManagement.Enum.ActiveEnum;
+import com.project.flightManagement.Enum.DanhGiaEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,12 +23,16 @@ public class DanhGia {
     private int idDanhGia;
 
     @ManyToOne
-    @JoinColumn(name = "id_chuyen_bay", nullable = false)
-    private ChuyenBay chuyenBay; // Sử dụng entity ChuyenBay thay vì int
+    @JoinColumn(name = "id_hang_bay", nullable = false)
+    private HangBay hangBay; // Sử dụng entity HangBay thay vì int
 
     @ManyToOne
-    @JoinColumn(name = "id_hanh_khach", nullable = false)
-    private HanhKhach khachHang;
+    @JoinColumn(name = "id_khach_hang", nullable = false)
+    private KhachHang khachHang;
+
+    @Column(name = "sao", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private DanhGiaEnum sao;
 
     @Column(name = "noi_dung", nullable = false)
     private String noiDung;

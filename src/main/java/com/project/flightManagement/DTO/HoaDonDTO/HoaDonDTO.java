@@ -24,4 +24,5 @@ public class HoaDonDTO {
 //    private List<ChiTietHoaDonDTO> chiTietHoaDonList;
     private LocalDateTime thoiGianLap;
     private HoaDonEnum status;
+    private boolean danhGia;
 }

@@ -10,6 +10,7 @@ import com.project.flightManagement.Repository.VeRepository;
 import com.project.flightManagement.Service.HoldSeatService;
 import com.project.flightManagement.Service.SocketIOService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +28,8 @@ public class HoldSeatServiceImpl implements HoldSeatService {
     private HanhKhachRepository hanhKhachRepo;
     @Autowired
     private SocketIOService socketIOService;
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
     private Map<Integer, ScheduledFuture<?>> holdSeatTasks = new HashMap<>();
     private final ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
     public HoldSeatServiceImpl() {
@@ -42,7 +45,7 @@ public class HoldSeatServiceImpl implements HoldSeatService {
 
         // Tạo tác vụ để hủy ghế sau 5 phút
         ScheduledFuture<?> scheduledTask = taskScheduler.schedule(() -> cancelSeat(idVe),
-                new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5)));
+                new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(10)));
 
         // Lưu tác vụ vào bản đồ để quản lý
         holdSeatTasks.put(ve.getIdVe(), scheduledTask);
@@ -58,7 +61,7 @@ public class HoldSeatServiceImpl implements HoldSeatService {
             String message = "Seat "+ve.getChoNgoi().getIdChoNgoi()+" is now available";
 
             // Gửi thông điệp qua Socket.IO
-            socketIOService.emit("seat-held", message);
+            messagingTemplate.convertAndSend("/topic/seatCancelHold", ve.getChoNgoi().getIdChoNgoi());
         }
     }
 

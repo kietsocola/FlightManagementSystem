@@ -27,7 +27,6 @@ public class LoaiHoaDonController {
     public ResponseEntity<ResponseData> getAllLoaiHD() {
         Iterable<LoaiHoaDonDTO> listLoaiHDDTO = loaiHoaDonService.getAllLoaiHoaDon();
         if (listLoaiHDDTO.iterator().hasNext()) {
-            System.out.println(listLoaiHDDTO);
             response.setData(listLoaiHDDTO);
             response.setMessage("Lấy danh sách loại hóa đơn thành công!");
             response.setStatusCode(200);
@@ -62,8 +61,8 @@ public class LoaiHoaDonController {
 
     @PostMapping("/addLoaiHoaDon")
     public ResponseEntity<ResponseData> addLoaiHoaDon(@Valid @RequestBody LoaiHoaDonDTO loaiHoaDonDTO, BindingResult bindingResult) {
+        Map<String, String> fieldErrors =  new HashMap<>();
         if (bindingResult.hasErrors()) {
-            Map<String, String> fieldErrors =  new HashMap<>();
             bindingResult.getFieldErrors().forEach(error -> fieldErrors.put(error.getField(), error.getDefaultMessage()));
             response.setStatusCode(400);
             response.setData(fieldErrors);
@@ -74,7 +73,8 @@ public class LoaiHoaDonController {
         if (loaiHoaDonDTO != null && (loaiHoaDonDTO.getTenLoaiHD() != null)) {
             Optional<LoaiHoaDonDTO> existingByTen = loaiHoaDonService.getLoaiHDByTen(loaiHoaDonDTO.getTenLoaiHD());
             if (existingByTen.isPresent()) {
-                response.setData(null);
+                fieldErrors.put("tenLoaiHD", "Đã tồn tại loại hóa đơn với tên: " + loaiHoaDonDTO.getTenLoaiHD());
+                response.setData(fieldErrors);
                 response.setMessage("Đã tồn tại loại hóa đơn với tên: " + loaiHoaDonDTO.getTenLoaiHD());
                 response.setStatusCode(409);
 
@@ -108,8 +108,8 @@ public class LoaiHoaDonController {
     public ResponseEntity<ResponseData> updateLoaiHD(@PathVariable("idLoaiHD") Integer idLoaiHD, @Valid @RequestBody LoaiHoaDonDTO loaiHoaDonDTO, BindingResult bindingResult) {
         ResponseData responseData = new ResponseData();
 
+        Map<String, String> fieldErrors = new HashMap<>();
         if (bindingResult.hasErrors()) {
-            Map<String, String> fieldErrors = new HashMap<>();
             bindingResult.getFieldErrors().forEach(error -> fieldErrors.put(error.getField(), error.getDefaultMessage()));
             responseData.setStatusCode(400);
             responseData.setData(fieldErrors);
@@ -119,7 +119,19 @@ public class LoaiHoaDonController {
         if (loaiHoaDonDTO != null && (loaiHoaDonDTO.getTenLoaiHD() != null)) {
             Optional<LoaiHoaDonDTO> existingLoaiHD = loaiHoaDonService.getLoaiHoaDonById(idLoaiHD);
             if (existingLoaiHD.isPresent()) {
+
                 loaiHoaDonDTO.setIdLoaiHD(idLoaiHD);
+
+                Optional<LoaiHoaDonDTO> existingByTen = loaiHoaDonService.getLoaiHDByTen(loaiHoaDonDTO.getTenLoaiHD());
+                if (existingByTen.isPresent() && existingByTen.get().getIdLoaiHD() != loaiHoaDonDTO.getIdLoaiHD()) {
+                    fieldErrors.put("tenLoaiHD", "Đã tồn tại loại hóa đơn với tên: " + loaiHoaDonDTO.getTenLoaiHD());
+                    response.setData(fieldErrors);
+                    response.setMessage("Đã tồn tại loại hóa đơn với tên: " + loaiHoaDonDTO.getTenLoaiHD());
+                    response.setStatusCode(409);
+
+                    return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+                }
+
                 Optional<LoaiHoaDonDTO> updatedLoaiHD = loaiHoaDonService.updateLoaiHoaDon(loaiHoaDonDTO);
                 if (updatedLoaiHD.isPresent()) {
                     responseData.setMessage("Cập nhật thông tin loại hóa đơn thành công!");

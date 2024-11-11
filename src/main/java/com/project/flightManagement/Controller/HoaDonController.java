@@ -13,6 +13,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -318,5 +319,27 @@ public class HoaDonController {
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
+    }
+    @PutMapping("/markDanhGia/{idHoaDon}")
+    public ResponseEntity<ResponseData> markDanhGia(@PathVariable int idHoaDon) {
+        Optional<HoaDonDTO> hoaDonDTO = hoaDonService.getHoaDonById(idHoaDon);
+        if(hoaDonDTO.isPresent()) {
+            if (hoaDonService.markDanhGia(idHoaDon)) {
+                response.setMessage("Save Hoa Don successfully!");
+                response.setData(true);
+                response.setStatusCode(200);
+                return new ResponseEntity<>(response, HttpStatus.CREATED);
+            } else {
+                response.setMessage("Save Hoa Don unsuccessfully!");
+                response.setData(null);
+                response.setStatusCode(500);
+                return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } else {
+            response.setMessage("Can not found Hoa Don!");
+            response.setData(false);
+            response.setStatusCode(404);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }
