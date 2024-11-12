@@ -34,6 +34,7 @@ public class ThanhPhoServicelmpl implements ThanhPhoService {
             return null;
         }
     }
+
     @Override
     public Iterable<ThanhPhoDTO> getAllThanhPho(){
         try{

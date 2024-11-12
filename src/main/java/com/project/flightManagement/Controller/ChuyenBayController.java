@@ -202,6 +202,7 @@ public class ChuyenBayController {
         }
 
         Iterable<ChuyenBayDTO> listCB = cbservice.getAllChuyenBay();
+        ChuyenBayEnum delayed = ChuyenBayEnum.DELAYED;
         ChuyenBayEnum scheduled = ChuyenBayEnum.SCHEDULED;
         ChuyenBayEnum cancled = ChuyenBayEnum.CANCELED;
         ChuyenBayEnum completed = ChuyenBayEnum.COMPLETED;
@@ -212,8 +213,7 @@ public class ChuyenBayController {
             if (cb.getIdChuyenBay() != cbDTO.getIdChuyenBay()
                     && cb.getTuyenBay().getIdTuyenBay() == cbDTO.getTuyenBay().getIdTuyenBay()
                     && !isDifferenceGreaterThanTwoHour(cb.getThoiGianBatDauDuTinh() , cbDTO.getThoiGianBatDauThucTe())
-                    && !completed.name().equals(status.name())
-                    && !cancled.name().equals(status.name())){
+                    && (delayed.name().equals(status.name()) || scheduled.name().equals(status.name()))){
                 System.out.println("id chuyen bay : " +  cb.getIdChuyenBay());
                 System.out.println("khoang thoi gian >  2 gio : " + !isDifferenceGreaterThanTwoHour(cb.getThoiGianBatDauDuTinh() , cbDTO.getThoiGianBatDauThucTe()));
                 response.setMessage("Chuyến bay này gần với thời gian của một chuyến bay khác có cùng tuyến bay : " + cb.getThoiGianBatDauDuTinh() + ".Phải cách nhau hơn 2 tiếng");

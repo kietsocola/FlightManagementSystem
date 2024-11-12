@@ -35,6 +35,13 @@ public class ChucVuServiceImpl implements ChucVuService {
     }
 
     @Override
+    public Optional<ChucVuDTO> updateChucVu(ChucVuDTO chucVuDTO) {
+        ChucVu cv = ChucVuMapper.toEntity(chucVuDTO);
+        ChucVu saveCv = repo.save(cv);
+        return Optional.of(ChucVuMapper. toDTO(saveCv));
+    }
+
+    @Override
     public Iterable<ChucVuDTO> getAllChucVu() {
 
 
