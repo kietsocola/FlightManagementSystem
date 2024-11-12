@@ -1,11 +1,13 @@
 package com.project.flightManagement.Service;
 
 import com.project.flightManagement.DTO.DanhGiaDTO.DanhGiaDTO;
+import com.project.flightManagement.Model.DanhGia;
 import com.project.flightManagement.Model.HangBay;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -22,4 +24,7 @@ public interface DanhGiaService {
     boolean unblockDanhGia(int id);
     boolean addNewDanhGia(DanhGiaDTO danhGiaDTO);
 //    boolean checkVeUSEDByDanhGia(int idVe);
+
+    List<DanhGiaDTO> getDanhGiaByParentComment(int parentId);
+    DanhGiaDTO addComment(DanhGiaDTO danhGia);
 }

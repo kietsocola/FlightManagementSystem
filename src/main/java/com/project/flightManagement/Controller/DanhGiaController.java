@@ -282,4 +282,14 @@ public class DanhGiaController {
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
     }
+    @PostMapping("/addCMT")
+    public ResponseEntity<DanhGiaDTO> addDanhGia(@RequestBody DanhGiaDTO danhGiaDTO) {
+        DanhGiaDTO result = danhGiaService.addComment(danhGiaDTO);
+        return ResponseEntity.ok(result);
+    }
+    @GetMapping("/replies/{parentId}")
+    public ResponseEntity<List<DanhGiaDTO>> getReplies(@PathVariable int parentId) {
+        List<DanhGiaDTO> replies = danhGiaService.getDanhGiaByParentComment(parentId);
+        return ResponseEntity.ok(replies);
+    }
 }

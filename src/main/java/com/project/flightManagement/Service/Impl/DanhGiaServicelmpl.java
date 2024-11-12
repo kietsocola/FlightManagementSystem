@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Service
@@ -166,5 +167,24 @@ public class DanhGiaServicelmpl implements DanhGiaService {
             System.out.println("Error to add review!!");
             return false;
         }
+    }
+
+    @Override
+    public List<DanhGiaDTO> getDanhGiaByParentComment(int parentId) {
+        List<DanhGia> danhGiaList = dgRepo.findByParentCommentIdDanhGia(parentId);
+        return danhGiaList.stream()
+                .map(DanhGiaMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public DanhGiaDTO addComment(DanhGiaDTO danhGiaDTO) {
+        DanhGia danhGia = DanhGiaMapper.toEntity(danhGiaDTO);
+        danhGia.setHangBay(null);
+        danhGia.setKhachHang(null);
+        danhGia.setThoiGianTao(LocalDateTime.now());
+        danhGia = dgRepo.save(danhGia);
+        return DanhGiaMapper.toDTO(danhGia);
+
     }
 }

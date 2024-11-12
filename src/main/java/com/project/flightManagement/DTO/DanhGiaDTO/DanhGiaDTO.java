@@ -11,17 +11,29 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class DanhGiaDTO {
     private int idDanhGia;
+
     @NotNull(message = "Không để trống hãng bay")
     private HangBay hangBay;
+
+    @NotNull(message = "Không để trống khách hàng")
     private KhachHang khachHang;
+
     @NotNull(message = "Không để trống đánh giá sao")
     private DanhGiaEnum sao;
+
+    @NotBlank(message = "Nội dung đánh giá không được để trống")
     private String noiDung;
+
     private LocalDateTime thoiGianTao;
+
     private ActiveEnum trangThaiActive;
+
+    // Thêm trường cho phân cấp bình luận
+    private DanhGiaDTO parentComment;
 }
