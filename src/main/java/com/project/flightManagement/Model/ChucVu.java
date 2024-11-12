@@ -32,7 +32,7 @@ public class ChucVu {
     @Enumerated(EnumType.STRING)
     private ActiveEnum trangThaiActive;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "chucVu")
+    @OneToMany( mappedBy = "chucVu")
     @JsonIgnore
     private List<NhanVien> nhanvienList;
 }
