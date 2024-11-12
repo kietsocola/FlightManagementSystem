@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public interface DanhGiaRepository extends JpaRepository<DanhGia, Integer> {
     Iterable<DanhGia> findByKhachHangOrderByThoiGianTaoDesc(KhachHang khachHang);
@@ -24,4 +25,7 @@ public interface DanhGiaRepository extends JpaRepository<DanhGia, Integer> {
 
     @Query("SELECT d FROM DanhGia d WHERE d.thoiGianTao <= :endTime ORDER BY d.thoiGianTao DESC")
     Iterable<DanhGia> findByThoiGianTaoFromEndTime(@Param("endTime") LocalDateTime endTime);
+
+    List<DanhGia> findByParentCommentIsNull(); // Lấy danh sách bình luận gốc (không có cha)
+    List<DanhGia> findByParentCommentIdDanhGia(int parentId); // Lấy các phản hồi của một bình luận
 }
