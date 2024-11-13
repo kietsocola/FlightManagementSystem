@@ -17,10 +17,7 @@ import org.springframework.security.core.parameters.P;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
@@ -194,20 +191,26 @@ public class HoaDonController {
 
     @GetMapping("/getHoaDonByField")
     public ResponseEntity<ResponseData> getHoaDonByField(@RequestParam String field, @RequestParam int input) {
+        System.out.println(field+ " "  + input);
         Iterable<HoaDonDTO> listHoaDonDTO = null;
-        switch (field) {
-            case "nhanVien":
-                listHoaDonDTO = hoaDonService.getHoaDonByNV(input);
-                break;
-            case "khachHang":
-                listHoaDonDTO = hoaDonService.getHoaDonByKH(input);
-                break;
-            case "phuongThucThanhToan":
-                listHoaDonDTO = hoaDonService.getHoaDonByPTTT(input);
-                break;
-            case "loaiHoaDon":
-                listHoaDonDTO = hoaDonService.getHoaDonByLoaiHD(input);
-                break;
+
+        if (field.equals("") || input == 0) {
+            listHoaDonDTO = hoaDonService.getAllHoaDon();
+        } else {
+            switch (field) {
+                case "nhanVien":
+                    listHoaDonDTO = hoaDonService.getHoaDonByNV(input);
+                    break;
+                case "khachHang":
+                    listHoaDonDTO = hoaDonService.getHoaDonByKH(input);
+                    break;
+                case "phuongThucThanhToan":
+                    listHoaDonDTO = hoaDonService.getHoaDonByPTTT(input);
+                    break;
+                case "loaiHoaDon":
+                    listHoaDonDTO = hoaDonService.getHoaDonByLoaiHD(input);
+                    break;
+            }
         }
         if (listHoaDonDTO.iterator().hasNext()) {
             response.setMessage("get list hoa don success!!");

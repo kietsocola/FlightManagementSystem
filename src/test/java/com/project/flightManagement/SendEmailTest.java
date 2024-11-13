@@ -40,7 +40,12 @@ public class SendEmailTest {
     }
     @Test
     void createAutoVe() {
-        veService.createAutoVeByIdMayBay(1, 1, 1, 2, 3);
+        veService.createAutoVeByIdChuyenBay(18, 1, 2);
     }
+    @Test
+    void updateAutoVe() {
+        veService.updateAutoGiaVeByIdChuyenBay(18, 1, 996);
+    }
+
 
 }

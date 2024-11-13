@@ -1,6 +1,8 @@
 package com.project.flightManagement.Controller;
 
+
 import com.project.flightManagement.DTO.TuyenBayDTO.TuyenBayDTO;
+import com.project.flightManagement.Enum.ActiveEnum;
 import com.project.flightManagement.Payload.ResponseData;
 import com.project.flightManagement.Service.TuyenBayService;
 import jakarta.persistence.EntityNotFoundException;
@@ -167,51 +169,45 @@ public class TuyenBayController {
         }
     }
 
-
-    @DeleteMapping("/deleteRoute/{idTB}")
-    public ResponseEntity<ResponseData> deleteTuyenBay(@PathVariable int idTB) {
-        try {
-            tuyenBayService.deleteTuyenBay(idTB);
-            response.setMessage("Route deleted successfully!!");
-            response.setData(null);
-            response.setStatusCode(200);
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            response.setMessage(e.getMessage());
-            response.setData(null);
-            response.setStatusCode(404);
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-        } catch (DataIntegrityViolationException e) {
-            response.setMessage("Cannot delete route as it is associated with other data.");
-            response.setData(null);
-            response.setStatusCode(409); // 409 Conflict status code
-            return new ResponseEntity<>(response, HttpStatus.CONFLICT);
-        } catch (Exception e) {
-            response.setMessage("Error occurred while deleting the route: " + e.getMessage());
-            response.setData(null);
-            response.setStatusCode(500);
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-
-
-    @GetMapping("/findRoutes")
-    public ResponseEntity<ResponseData> findRoutesByStartAirport(@RequestParam String keyword) {
-        System.out.println("Searching for: " + keyword);
-        Iterable<TuyenBayDTO> listTuyenBayDTO = tuyenBayService.findBySanBayBatDau(keyword);
-        if (listTuyenBayDTO.iterator().hasNext()) {
-            response.setMessage("Get routes by start airport success!!");
-            response.setData(listTuyenBayDTO);
-            response.setStatusCode(200);
-            return new ResponseEntity<>(response, HttpStatus.OK);
+    @PutMapping("/blockRoute/{idTuyenBay}")
+    public ResponseEntity<ResponseData> blockTuyenBay(@PathVariable int idTuyenBay){
+        Optional<TuyenBayDTO> existingTB = tuyenBayService.getTuyenBayByIdTuyenBay(idTuyenBay);
+        if(existingTB.isPresent()){
+            if(existingTB.get().getStatus() == ActiveEnum.ACTIVE){
+                Optional<TuyenBayDTO> blockTB = tuyenBayService.blockTuyenBay(existingTB.get().getIdTuyenBay());
+                if(blockTB.isPresent()){
+                    response.setMessage("Block route successfully!!");
+                    response.setData(blockTB.get());
+                    response.setStatusCode(200); // OK
+                    return new ResponseEntity<>(response, HttpStatus.OK);
+                } else {
+                    // Xử lý lỗi khi cập nhật không thành công
+                    response.setMessage("Block route unsuccessfully!!");
+                    response.setData(null);
+                    response.setStatusCode(500); // Internal Server Error
+                    return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            } else {
+                Optional<TuyenBayDTO> blockHH = tuyenBayService.unblockTuyenBay(existingTB.get().getIdTuyenBay());
+                if(blockHH.isPresent()){
+                    response.setMessage("Block route successfully!!");
+                    response.setData(blockHH.get());
+                    response.setStatusCode(200); // OK
+                    return new ResponseEntity<>(response, HttpStatus.OK);
+                } else {
+                    // Xử lý lỗi khi cập nhật không thành công
+                    response.setMessage("Block route unsuccessfully!!");
+                    response.setData(null);
+                    response.setStatusCode(500); // Internal Server Error
+                    return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            }
         } else {
-            response.setMessage("No routes found for the start airport!!");
+            response.setMessage("Airport not found!!");
             response.setData(null);
-            response.setStatusCode(404);
+            response.setStatusCode(404); // Not Found
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
-
 
 }

@@ -1,6 +1,7 @@
 package com.project.flightManagement.Service.Impl;
 
 import com.project.flightManagement.DTO.TuyenBayDTO.TuyenBayDTO;
+import com.project.flightManagement.Enum.ActiveEnum;
 import com.project.flightManagement.Mapper.TuyenBayMapper;
 import com.project.flightManagement.Model.TuyenBay;
 import com.project.flightManagement.Model.SanBay;
@@ -9,7 +10,6 @@ import com.project.flightManagement.Repository.SanBayRepository;
 import com.project.flightManagement.Service.TuyenBayService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -103,12 +103,35 @@ public class TuyenBayServiceImpl implements TuyenBayService {
         }
     }
 
+    @Override
+    public Optional<TuyenBayDTO> blockTuyenBay(int id) {
+        Optional<TuyenBay> existingTB = tbRepo.findById(id);
+        if (existingTB.isPresent()) {
+            TuyenBay tuyenBay = existingTB.get();
+            tuyenBay.setStatus(ActiveEnum.IN_ACTIVE);
+            TuyenBay updatedTuyenBay = tbRepo.save(tuyenBay);
+            return Optional.of(TuyenBayMapper.toDTO(updatedTuyenBay));
+        } else {
+            System.err.println("Route does not exist!!!");
+            return Optional.empty();
+        }
+    }
 
     @Override
-    public String deleteTuyenBay(int id) {
-        tbRepo.deleteById(id);
-        return "Route remove: " + id;
+    public Optional<TuyenBayDTO> unblockTuyenBay(int id) {
+        Optional<TuyenBay> existingTB = tbRepo.findById(id);
+        if (existingTB.isPresent()) {
+            TuyenBay tuyenBay = existingTB.get();
+            tuyenBay.setStatus(ActiveEnum.ACTIVE);
+            TuyenBay updatedTuyenBay = tbRepo.save(tuyenBay);
+            return Optional.of(TuyenBayMapper.toDTO(updatedTuyenBay));
+        } else {
+            System.err.println("Route does not exist!!!");
+            return Optional.empty();
+        }
     }
+
+
 
 
 
@@ -137,18 +160,4 @@ public class TuyenBayServiceImpl implements TuyenBayService {
         }
     }
 
-
-    @Override
-    public List<TuyenBayDTO> findBySanBayBatDau(String keyword) {
-        List<TuyenBay> tuyenBayList = tbRepo.findByKeywordContainingIgnoreCase(keyword);
-        if (tuyenBayList.isEmpty()) {
-            System.out.println("No route found with the keyword: " + keyword);
-            return Collections.emptyList();
-        } else {
-            System.out.println("Id route found: " + tuyenBayList.get(0).getSanBayBatDau());
-            return tuyenBayList.stream()
-                    .map(TuyenBayMapper::toDTO)
-                    .collect(Collectors.toList());
-        }
-    }
 }

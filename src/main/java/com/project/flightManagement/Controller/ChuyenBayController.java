@@ -5,6 +5,8 @@ import com.project.flightManagement.Enum.ChuyenBayEnum;
 import com.project.flightManagement.Model.ChuyenBay;
 import com.project.flightManagement.Payload.ResponseData;
 import com.project.flightManagement.Service.ChuyenBayService;
+import com.project.flightManagement.Service.Impl.VeServiceImpl;
+import com.project.flightManagement.Service.VeService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -32,6 +34,8 @@ public class ChuyenBayController {
 
     @Autowired
     private ChuyenBayService cbservice;
+    @Autowired
+    private VeService veService;
     private ResponseData response =  new ResponseData();
     @GetMapping("/search")
     public ResponseEntity<ResponseData> searchFlights(
@@ -159,6 +163,8 @@ public class ChuyenBayController {
 
         Optional<ChuyenBayDTO> saveCB = cbservice.addChuyenBay(cbDTO);
         if (saveCB.isPresent()) {
+            int idChuyenBay = saveCB.get().getIdChuyenBay();
+            veService.createAutoVeByIdChuyenBay(idChuyenBay, cbDTO.getGiaVeThuong(), cbDTO.getGiaVeThuongGia());
             response.setMessage("Save Nhan vien successfully!!");
             response.setData(saveCB.get()); // Trả về dữ liệu của khách hàng đã lưu
             response.setStatusCode(201); // Created
@@ -202,7 +208,6 @@ public class ChuyenBayController {
         }
 
         Iterable<ChuyenBayDTO> listCB = cbservice.getAllChuyenBay();
-        ChuyenBayEnum delayed = ChuyenBayEnum.DELAYED;
         ChuyenBayEnum scheduled = ChuyenBayEnum.SCHEDULED;
         ChuyenBayEnum cancled = ChuyenBayEnum.CANCELED;
         ChuyenBayEnum completed = ChuyenBayEnum.COMPLETED;
@@ -213,7 +218,8 @@ public class ChuyenBayController {
             if (cb.getIdChuyenBay() != cbDTO.getIdChuyenBay()
                     && cb.getTuyenBay().getIdTuyenBay() == cbDTO.getTuyenBay().getIdTuyenBay()
                     && !isDifferenceGreaterThanTwoHour(cb.getThoiGianBatDauDuTinh() , cbDTO.getThoiGianBatDauThucTe())
-                    && (delayed.name().equals(status.name()) || scheduled.name().equals(status.name()))){
+                    && !completed.name().equals(status.name())
+                    && !cancled.name().equals(status.name())){
                 System.out.println("id chuyen bay : " +  cb.getIdChuyenBay());
                 System.out.println("khoang thoi gian >  2 gio : " + !isDifferenceGreaterThanTwoHour(cb.getThoiGianBatDauDuTinh() , cbDTO.getThoiGianBatDauThucTe()));
                 response.setMessage("Chuyến bay này gần với thời gian của một chuyến bay khác có cùng tuyến bay : " + cb.getThoiGianBatDauDuTinh() + ".Phải cách nhau hơn 2 tiếng");
@@ -267,6 +273,7 @@ public class ChuyenBayController {
         Optional<ChuyenBayDTO> saveCb = cbservice.updateChuyenBay(cbDTO);
         if (saveCb.isPresent()) {
             response.setMessage("Sửa chuyến bay thành công");
+            veService.updateAutoGiaVeByIdChuyenBay(saveCb.get().getIdChuyenBay(), cbDTO.getGiaVeThuong(), cbDTO.getGiaVeThuongGia());
             response.setData(saveCb.get()); // Trả về dữ liệu của khách hàng đã lưu
             response.setStatusCode(201); // Created
             return new ResponseEntity<>(response, HttpStatus.CREATED);
