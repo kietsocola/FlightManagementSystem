@@ -176,32 +176,6 @@ public class HangHoaController {
     }
 
 
-    @DeleteMapping("/deleteMerchandise/{idHH}")
-    public ResponseEntity<ResponseData> deleteHangHoa(@PathVariable int idHH) {
-        try {
-            HangHoaService.deleteHangHoa(idHH);
-            response.setMessage("Route deleted successfully!!");
-            response.setData(null);
-            response.setStatusCode(200);
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            response.setMessage(e.getMessage());
-            response.setData(null);
-            response.setStatusCode(404);
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-        } catch (DataIntegrityViolationException e) {
-            response.setMessage("Cannot delete merchanse as it is associated with other data.");
-            response.setData(null);
-            response.setStatusCode(409); // 409 Conflict status code
-            return new ResponseEntity<>(response, HttpStatus.CONFLICT);
-        } catch (Exception e) {
-            response.setMessage("Error occurred while deleting the merchanse: " + e.getMessage());
-            response.setData(null);
-            response.setStatusCode(500);
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
 
 
     @GetMapping("/findMerchandise")

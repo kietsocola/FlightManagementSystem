@@ -133,12 +133,6 @@ public class TuyenBayServiceImpl implements TuyenBayService {
 
 
 
-    @Override
-    public String deleteTuyenBay(int id) {
-        tbRepo.deleteById(id);
-        return "Route remove: " + id;
-    }
-
 
 
     @Override
@@ -166,18 +160,4 @@ public class TuyenBayServiceImpl implements TuyenBayService {
         }
     }
 
-
-    @Override
-    public List<TuyenBayDTO> findBySanBayBatDau(String keyword) {
-        List<TuyenBay> tuyenBayList = tbRepo.findByKeywordContainingIgnoreCase(keyword);
-        if (tuyenBayList.isEmpty()) {
-            System.out.println("No route found with the keyword: " + keyword);
-            return Collections.emptyList();
-        } else {
-            System.out.println("Id route found: " + tuyenBayList.get(0).getSanBayBatDau());
-            return tuyenBayList.stream()
-                    .map(TuyenBayMapper::toDTO)
-                    .collect(Collectors.toList());
-        }
-    }
 }

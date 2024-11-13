@@ -217,16 +217,4 @@ public class HangHoaServiceImpl implements HangHoaService {
     }
 
 
-    @Override
-    public String deleteHangHoa(int idHangHoa) {
-        try {
-            hangHoaRepo.deleteById(idHangHoa);
-            return "Product removed: ID = " + idHangHoa;
-        } catch (Exception e) {
-            System.err.println("Error occurred while deleting product: " + e.getMessage());
-            return "Failed to remove product: ID = " + idHangHoa;
-        }
-    }
-
-
 }

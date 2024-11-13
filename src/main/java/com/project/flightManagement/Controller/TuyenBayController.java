@@ -1,6 +1,6 @@
 package com.project.flightManagement.Controller;
 
-import com.project.flightManagement.DTO.HangHoaDTO.HangHoaDTO;
+
 import com.project.flightManagement.DTO.TuyenBayDTO.TuyenBayDTO;
 import com.project.flightManagement.Enum.ActiveEnum;
 import com.project.flightManagement.Payload.ResponseData;
@@ -166,52 +166,6 @@ public class TuyenBayController {
             response.setData(null);
             response.setStatusCode(500);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-
-    @DeleteMapping("/deleteRoute/{idTB}")
-    public ResponseEntity<ResponseData> deleteTuyenBay(@PathVariable int idTB) {
-        try {
-            tuyenBayService.deleteTuyenBay(idTB);
-            response.setMessage("Route deleted successfully!!");
-            response.setData(null);
-            response.setStatusCode(200);
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            response.setMessage(e.getMessage());
-            response.setData(null);
-            response.setStatusCode(404);
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-        } catch (DataIntegrityViolationException e) {
-            response.setMessage("Cannot delete route as it is associated with other data.");
-            response.setData(null);
-            response.setStatusCode(409); // 409 Conflict status code
-            return new ResponseEntity<>(response, HttpStatus.CONFLICT);
-        } catch (Exception e) {
-            response.setMessage("Error occurred while deleting the route: " + e.getMessage());
-            response.setData(null);
-            response.setStatusCode(500);
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-
-
-    @GetMapping("/findRoutes")
-    public ResponseEntity<ResponseData> findRoutesByStartAirport(@RequestParam String keyword) {
-        System.out.println("Searching for: " + keyword);
-        Iterable<TuyenBayDTO> listTuyenBayDTO = tuyenBayService.findBySanBayBatDau(keyword);
-        if (listTuyenBayDTO.iterator().hasNext()) {
-            response.setMessage("Get routes by start airport success!!");
-            response.setData(listTuyenBayDTO);
-            response.setStatusCode(200);
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } else {
-            response.setMessage("No routes found for the start airport!!");
-            response.setData(null);
-            response.setStatusCode(404);
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
 

@@ -17,10 +17,6 @@ public interface TuyenBayService {
 
     public Iterable<TuyenBayDTO> getAllTuyenBaySorted(String sortBy, String direction);
 
-    public List<TuyenBayDTO> findBySanBayBatDau(String keyword);
-
-    public String deleteTuyenBay(int id);
-
     public Optional<TuyenBayDTO> blockTuyenBay(int id);
 
     public Optional<TuyenBayDTO> unblockTuyenBay(int id);
