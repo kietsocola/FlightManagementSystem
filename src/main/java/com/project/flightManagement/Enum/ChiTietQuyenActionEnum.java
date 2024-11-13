@@ -4,6 +4,4 @@ public enum ChiTietQuyenActionEnum {
     VIEW,
     EDIT,
     CREATE,
-    DELETE
-
 }

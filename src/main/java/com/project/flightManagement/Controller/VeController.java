@@ -93,10 +93,6 @@ public class VeController {
             responseData.setStatusCode(404);
             responseData.setMessage(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseData);
-        } catch (NoUpdateRequiredException e) {
-            responseData.setStatusCode(200); // Still a successful request
-            responseData.setMessage(e.getMessage());
-            return ResponseEntity.ok(responseData);
         } catch (Exception e) {
             responseData.setStatusCode(500);
             responseData.setMessage("Failed to update Ve due to an unexpected error.");

@@ -65,7 +65,7 @@ public class PaymentController {
                         ve.setTrangThai(VeEnum.BOOKED); // Cập nhật trạng thái vé
                         veRepo.save(ve);
                         // Cập nhật điểm thưởng hoặc các thao tác khác nếu cần
-                        int points = (int) (ve.getGiaVe() * 5 / 100);
+                        int points = 1;
                         totalPoints += points;
                     } else {
                     response.setMessage("Vé không tồn tại." + "ticketId: "+ticketId);

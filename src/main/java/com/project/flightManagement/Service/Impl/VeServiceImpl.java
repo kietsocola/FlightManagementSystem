@@ -133,20 +133,16 @@ public class VeServiceImpl implements VeService {
         existingVe.setTrangThai(veUpdateDTO.getTrangThai());
 
         HanhKhach hanhKhach = existingVe.getHanhKhach();
-        if (hanhKhach != null) {
-            if (veRepository.existsByHanhKhach_IdHanhKhach(hanhKhach.getIdHanhKhach())
-                    && !hanhKhach.getHoTen().equals(veUpdateDTO.getTenHanhKhach())
-                    && existingVe.getHangVe().getIdHangVe() != 1) {
+        if (hanhKhach != null
+                && veRepository.existsByHanhKhach_IdHanhKhach(hanhKhach.getIdHanhKhach())
+                && !hanhKhach.getHoTen().equals(veUpdateDTO.getTenHanhKhach())
+                ) {
 
-                // Tạo đối tượng hành khách mới và cập nhật
-                HanhKhach hanhKhachMoi = taoMoiHanhKhachVaDoiTen(hanhKhach, veUpdateDTO.getTenHanhKhach());
-                existingVe.setHanhKhach(hanhKhachMoi);
-                // sau nay muon toi uu thi phai thong qua createDTO vi no khong chua id
-                // can so sanh 2 object co bang nhau khong
-            } else {
-                throw new NoUpdateRequiredException("No update required for the customer's name.");
-            }
+            // Tạo đối tượng hành khách mới và cập nhật tên
+            HanhKhach hanhKhachMoi = taoMoiHanhKhachVaDoiTen(hanhKhach, veUpdateDTO.getTenHanhKhach());
+            existingVe.setHanhKhach(hanhKhachMoi);
         }
+
         // Lưu lại Ve sau khi cập nhật hoàn tất
         veRepository.save(existingVe);
         return true;
