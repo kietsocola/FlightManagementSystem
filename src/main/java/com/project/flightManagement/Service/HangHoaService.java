@@ -19,5 +19,9 @@ public interface HangHoaService {
     public List<HangHoaDTO> findByTenHangHoa(String keyword);
 
     public String deleteHangHoa(int id);
+
+    public Optional<HangHoaDTO> blockHangHoa(int id);
+
+    public Optional<HangHoaDTO> unblockHangHoa(int id);
 }
 

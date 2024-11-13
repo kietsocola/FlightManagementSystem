@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 
 import com.project.flightManagement.DTO.TuyenBayDTO.TuyenBayDTO;
-import com.project.flightManagement.Model.TuyenBay;
 
 public interface TuyenBayService {
 
@@ -21,5 +20,9 @@ public interface TuyenBayService {
     public List<TuyenBayDTO> findBySanBayBatDau(String keyword);
 
     public String deleteTuyenBay(int id);
+
+    public Optional<TuyenBayDTO> blockTuyenBay(int id);
+
+    public Optional<TuyenBayDTO> unblockTuyenBay(int id);
 
 }

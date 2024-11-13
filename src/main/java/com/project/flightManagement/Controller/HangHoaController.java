@@ -1,6 +1,7 @@
 package com.project.flightManagement.Controller;
 
 import com.project.flightManagement.DTO.HangHoaDTO.HangHoaDTO;
+import com.project.flightManagement.Enum.ActiveEnum;
 import com.project.flightManagement.Payload.ResponseData;
 import com.project.flightManagement.Repository.LoaiHangHoaRepository;
 import com.project.flightManagement.Service.HangHoaService;
@@ -220,5 +221,45 @@ public class HangHoaController {
         }
     }
 
+    @PutMapping("/blockMerchandise/{idHangHoa}")
+    public ResponseEntity<ResponseData> blockHangHoa(@PathVariable int idHangHoa){
+        Optional<HangHoaDTO> existingHH = HangHoaService.getHangHoaByIdHangHoa(idHangHoa);
+        if(existingHH.isPresent()){
+            if(existingHH.get().getTrangThaiActive() == ActiveEnum.ACTIVE){
+                Optional<HangHoaDTO> blockHH = HangHoaService.blockHangHoa(existingHH.get().getIdHangHoa());
+                if(blockHH.isPresent()){
+                    response.setMessage("Block merchandise successfully!!");
+                    response.setData(blockHH.get());
+                    response.setStatusCode(200); // OK
+                    return new ResponseEntity<>(response, HttpStatus.OK);
+                } else {
+                    // Xử lý lỗi khi cập nhật không thành công
+                    response.setMessage("Block merchandise unsuccessfully!!");
+                    response.setData(null);
+                    response.setStatusCode(500); // Internal Server Error
+                    return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            } else {
+                Optional<HangHoaDTO> blockHH = HangHoaService.unblockHangHoa(existingHH.get().getIdHangHoa());
+                if(blockHH.isPresent()){
+                    response.setMessage("Block merchandise successfully!!");
+                    response.setData(blockHH.get());
+                    response.setStatusCode(200); // OK
+                    return new ResponseEntity<>(response, HttpStatus.OK);
+                } else {
+                    // Xử lý lỗi khi cập nhật không thành công
+                    response.setMessage("Block merchandise unsuccessfully!!");
+                    response.setData(null);
+                    response.setStatusCode(500); // Internal Server Error
+                    return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            }
+        } else {
+            response.setMessage("Airport not found!!");
+            response.setData(null);
+            response.setStatusCode(404); // Not Found
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
+    }
 
 }

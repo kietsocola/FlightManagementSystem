@@ -1,11 +1,9 @@
 package com.project.flightManagement.Service.Impl;
 
 import com.project.flightManagement.DTO.HangHoaDTO.HangHoaDTO;
-import com.project.flightManagement.DTO.KhachHangDTO.KhachHangDTO;
+import com.project.flightManagement.Enum.ActiveEnum;
 import com.project.flightManagement.Mapper.HangHoaMapper;
-import com.project.flightManagement.Mapper.KhachHangMapper;
 import com.project.flightManagement.Model.HangHoa;
-import com.project.flightManagement.Model.KhachHang;
 import com.project.flightManagement.Model.LoaiHangHoa;
 import com.project.flightManagement.Repository.HangHoaRepository;
 import com.project.flightManagement.Repository.LoaiHangHoaRepository;
@@ -138,11 +136,38 @@ public class HangHoaServiceImpl implements HangHoaService {
         // Nếu trọng tải lớn hơn giới hạn kg, tính giá phát sinh
         if (taiTrong > gioiHanKg) {
             double excessWeight = taiTrong - gioiHanKg;
-            // Tính giá phát sinh, giả sử bạn muốn tính giá cho mỗi kg vượt mức gấp 3 lần giá thêm mới
+            // Tính giá phát sinh
             hangHoa.setGiaPhatSinh(excessWeight * loaiHangHoa.getGiaThemMoiKg() );
         }
     }
 
+    @Override
+    public Optional<HangHoaDTO> blockHangHoa(int id){
+        Optional<HangHoa> existingHH = hangHoaRepo.findById(id);
+        if(existingHH.isPresent()){
+            HangHoa hangHoa = existingHH.get();
+            hangHoa.setTrangThaiActive(ActiveEnum.IN_ACTIVE);
+            HangHoa updatedHangHoa = hangHoaRepo.save(hangHoa);
+            return Optional.of(HangHoaMapper.toDTO(updatedHangHoa));
+        } else {
+            System.err.println("Merchandise does not existing!!!");
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<HangHoaDTO> unblockHangHoa(int id){
+        Optional<HangHoa> existingHH = hangHoaRepo.findById(id);
+        if(existingHH.isPresent()){
+            HangHoa hangHoa = existingHH.get();
+            hangHoa.setTrangThaiActive(ActiveEnum.ACTIVE);
+            HangHoa updatedHangHoa = hangHoaRepo.save(hangHoa);
+            return Optional.of(HangHoaMapper.toDTO(updatedHangHoa));
+        } else {
+            System.err.println("Merchandise does not existing!!!");
+            return Optional.empty();
+        }
+    }
 
     @Override
     public Iterable<HangHoaDTO> getAllHangHoaSorted(String sortBy, String direction) {
@@ -202,4 +227,6 @@ public class HangHoaServiceImpl implements HangHoaService {
             return "Failed to remove product: ID = " + idHangHoa;
         }
     }
+
+
 }

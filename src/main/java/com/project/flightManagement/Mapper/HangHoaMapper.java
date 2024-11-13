@@ -35,7 +35,7 @@ public class HangHoaMapper {
         LoaiHangHoa loaiHangHoa=new LoaiHangHoa();
         loaiHangHoa.setIdLoaiHangHoa(dto.getIdLoaiHangHoa());
         hangHoa.setLoaiHangHoa(loaiHangHoa);
-
+        hangHoa.setMaHangHoa(dto.getMaHangHoa());
         hangHoa.setTenHangHoa(dto.getTenHangHoa());
         hangHoa.setTaiTrong(dto.getTaiTrong());
         hangHoa.setGiaPhatSinh(dto.getGiaPhatSinh());

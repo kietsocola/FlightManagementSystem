@@ -1,6 +1,8 @@
 package com.project.flightManagement.Controller;
 
+import com.project.flightManagement.DTO.HangHoaDTO.HangHoaDTO;
 import com.project.flightManagement.DTO.TuyenBayDTO.TuyenBayDTO;
+import com.project.flightManagement.Enum.ActiveEnum;
 import com.project.flightManagement.Payload.ResponseData;
 import com.project.flightManagement.Service.TuyenBayService;
 import jakarta.persistence.EntityNotFoundException;
@@ -213,5 +215,45 @@ public class TuyenBayController {
         }
     }
 
+    @PutMapping("/blockRoute/{idTuyenBay}")
+    public ResponseEntity<ResponseData> blockTuyenBay(@PathVariable int idTuyenBay){
+        Optional<TuyenBayDTO> existingTB = tuyenBayService.getTuyenBayByIdTuyenBay(idTuyenBay);
+        if(existingTB.isPresent()){
+            if(existingTB.get().getStatus() == ActiveEnum.ACTIVE){
+                Optional<TuyenBayDTO> blockTB = tuyenBayService.blockTuyenBay(existingTB.get().getIdTuyenBay());
+                if(blockTB.isPresent()){
+                    response.setMessage("Block route successfully!!");
+                    response.setData(blockTB.get());
+                    response.setStatusCode(200); // OK
+                    return new ResponseEntity<>(response, HttpStatus.OK);
+                } else {
+                    // Xử lý lỗi khi cập nhật không thành công
+                    response.setMessage("Block route unsuccessfully!!");
+                    response.setData(null);
+                    response.setStatusCode(500); // Internal Server Error
+                    return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            } else {
+                Optional<TuyenBayDTO> blockHH = tuyenBayService.unblockTuyenBay(existingTB.get().getIdTuyenBay());
+                if(blockHH.isPresent()){
+                    response.setMessage("Block route successfully!!");
+                    response.setData(blockHH.get());
+                    response.setStatusCode(200); // OK
+                    return new ResponseEntity<>(response, HttpStatus.OK);
+                } else {
+                    // Xử lý lỗi khi cập nhật không thành công
+                    response.setMessage("Block route unsuccessfully!!");
+                    response.setData(null);
+                    response.setStatusCode(500); // Internal Server Error
+                    return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            }
+        } else {
+            response.setMessage("Airport not found!!");
+            response.setData(null);
+            response.setStatusCode(404); // Not Found
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
+    }
 
 }
