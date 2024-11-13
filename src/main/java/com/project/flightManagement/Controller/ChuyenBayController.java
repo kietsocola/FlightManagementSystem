@@ -266,13 +266,13 @@ public class ChuyenBayController {
 
         Optional<ChuyenBayDTO> saveCb = cbservice.updateChuyenBay(cbDTO);
         if (saveCb.isPresent()) {
-            response.setMessage("Save Chuyen Bay successfully!!");
+            response.setMessage("Sửa chuyến bay thành công");
             response.setData(saveCb.get()); // Trả về dữ liệu của khách hàng đã lưu
             response.setStatusCode(201); // Created
             return new ResponseEntity<>(response, HttpStatus.CREATED);
         } else {
             // Xử lý lỗi khi lưu không thành công
-            response.setMessage("Save Chuyen Bay unsuccessfully!!");
+            response.setMessage("Sửa chuyến bay thaatts bại ");
             response.setData(null);
             response.setStatusCode(500); // Internal Server Error
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
