@@ -1,10 +1,7 @@
 package com.project.flightManagement.Service;
 
 import com.project.flightManagement.DTO.QuyenDTO.QuyenResponseDTO;
-import com.project.flightManagement.DTO.VeDTO.VeCreateDTO;
-import com.project.flightManagement.DTO.VeDTO.VeDTO;
-import com.project.flightManagement.DTO.VeDTO.VeUpdateDTO;
-import com.project.flightManagement.DTO.VeDTO.VeUpdateHanhKhachDTO;
+import com.project.flightManagement.DTO.VeDTO.*;
 import com.project.flightManagement.Enum.VeEnum;
 import com.project.flightManagement.Model.Ve;
 import org.springframework.data.domain.Page;
@@ -23,11 +20,16 @@ public interface VeService {
     boolean createVe(VeCreateDTO veCreateDTO);
     boolean updateHanhKhachVe(VeUpdateHanhKhachDTO veUpdateHanhKhachDTO);
 
-    void createAutoVeByIdMayBay(int idChuyenBay, int idMayBay, double giaVeHangPhoThong, double giaVeHangThuongGia, double giaVeHangNhat);
+    void createAutoVeByIdChuyenBay(int idChuyenBay, double giaVeHangPhoThong, double giaVeHangThuongGia);
+
+    void updateAutoGiaVeByIdChuyenBay(int idChuyenBay, double giaVeHangPhoThong, double giaVeHangThuongGia);
 
     Page<VeDTO> searchVeMaVaAndDateBay(String maVe, LocalDate startDate, LocalDate endDate, int page, int size);
 
     Page<VeDTO> searchVeMaVa(String maVe, int page, int size);
 
     List<VeEnum> getAllVeStatuses();
+    List<VeDTO> getAllVeByIdChuyenBayNotPaging(int idChuyenBay);
+
+    GiaVeDTO getAllGiaVe(int idChuyenBay);
 }

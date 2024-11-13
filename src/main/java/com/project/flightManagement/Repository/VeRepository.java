@@ -18,6 +18,8 @@ public interface VeRepository extends JpaRepository<Ve, Integer> {
 
     Page<Ve> findByChuyenBay_IdChuyenBay(int idChuyenBay, Pageable pageable);
 
+    List<Ve> findByChuyenBay_IdChuyenBay(int idChuyenBay);
+
     boolean existsByHanhKhach_IdHanhKhach(int idHanhKhach);
 
     List<Ve> findByChuyenBay_IdChuyenBayAndHangVe_IdHangVe(int idChuyenBay, int idHangVe);

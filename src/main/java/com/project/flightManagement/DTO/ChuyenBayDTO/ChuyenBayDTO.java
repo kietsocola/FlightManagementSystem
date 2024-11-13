@@ -74,4 +74,7 @@ public class ChuyenBayDTO {
     private ActiveEnum trangThaiActive;
 
     private String nvhk;
+
+    private double giaVeThuong;
+    private double giaVeThuongGia;
 }
