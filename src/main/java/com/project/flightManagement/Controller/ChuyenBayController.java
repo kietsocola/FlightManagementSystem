@@ -323,4 +323,28 @@ public class ChuyenBayController {
         // Kiểm tra nếu chênh lệch tuyệt đối lớn hơn 2 giờ
         return Math.abs(duration.toHours()) >= 2;
     }
+
+    @GetMapping("/getHoursFlightOfFlight/{idChuyenBay}")
+    public ResponseEntity<ResponseData> getSoGioBayCuaChuyenBay (@PathVariable int idChuyenBay) {
+        Optional<ChuyenBayDTO> cb = cbservice.getChuyenBayById(idChuyenBay);
+        if (cb.isPresent()) {
+            String hours = cbservice.getHoursOfFlight(cb.get().getIdChuyenBay());
+            if (hours != "00:00:00") {
+                response.setMessage("Get time of flight success!!");
+                response.setStatusCode(200);
+                response.setData(hours);
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                response.setData("00:00:00");
+                response.setStatusCode(404);
+                response.setMessage("Error to get time of flight!!");
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            }
+        } else {
+            response.setMessage("Cant found flght!!");
+            response.setData("00:00:00");
+            response.setStatusCode(404);
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
+    }
 }
