@@ -13,9 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -215,6 +214,79 @@ public class KhachHangServiceImpl implements KhachHangService {
         return khachHangList.stream()
                 .map(KhachHangMapper::toDTO)
                 .collect(Collectors.toList());
+    }
+    @Override
+    public Map<String, Double> calculateGrowthRate(String period) {
+        Map<String, Double> growthRates = new HashMap<>();
+
+        // Lấy thời gian hiện tại
+        LocalDate now = LocalDate.now();
+
+        try {
+            switch (period.toLowerCase()) {
+                case "monthly":
+                    for (int i = 1; i <= 12; i++) {
+                        LocalDate startOfMonth = now.withMonth(i).withDayOfMonth(1);
+                        LocalDate endOfMonth = startOfMonth.withDayOfMonth(startOfMonth.lengthOfMonth());
+
+                        long countCurrentMonth = khRepo.countByNgayTaoBetween(startOfMonth, endOfMonth);
+                        long countPreviousMonth = khRepo.countByNgayTaoBetween(
+                                startOfMonth.minusMonths(1).withDayOfMonth(1),
+                                startOfMonth.minusMonths(1).withDayOfMonth(startOfMonth.minusMonths(1).lengthOfMonth())
+                        );
+
+                        double growthRate = calculateRate(countPreviousMonth, countCurrentMonth);
+                        growthRates.put("Month " + i, growthRate);
+                    }
+                    break;
+
+                case "quarterly":
+                    for (int i = 1; i <= 4; i++) {
+                        LocalDate startOfQuarter = now.withMonth((i - 1) * 3 + 1).withDayOfMonth(1);
+                        LocalDate endOfQuarter = startOfQuarter.plusMonths(2).withDayOfMonth(startOfQuarter.plusMonths(2).lengthOfMonth());
+
+                        long countCurrentQuarter = khRepo.countByNgayTaoBetween(startOfQuarter, endOfQuarter);
+                        long countPreviousQuarter = khRepo.countByNgayTaoBetween(
+                                startOfQuarter.minusMonths(3).withDayOfMonth(1),
+                                startOfQuarter.minusMonths(1).withDayOfMonth(startOfQuarter.minusMonths(1).lengthOfMonth())
+                        );
+
+                        double growthRate = calculateRate(countPreviousQuarter, countCurrentQuarter);
+                        growthRates.put("Quarter " + i, growthRate);
+                    }
+                    break;
+
+                case "yearly":
+                    for (int i = now.getYear() - 5; i <= now.getYear(); i++) {
+                        LocalDate startOfYear = LocalDate.of(i, 1, 1);
+                        LocalDate endOfYear = startOfYear.withDayOfYear(startOfYear.lengthOfYear());
+
+                        long countCurrentYear = khRepo.countByNgayTaoBetween(startOfYear, endOfYear);
+                        long countPreviousYear = khRepo.countByNgayTaoBetween(
+                                startOfYear.minusYears(1),
+                                endOfYear.minusYears(1)
+                        );
+
+                        double growthRate = calculateRate(countPreviousYear, countCurrentYear);
+                        growthRates.put("Year " + i, growthRate);
+                    }
+                    break;
+
+                default:
+                    throw new IllegalArgumentException("Invalid period specified. Use 'monthly', 'quarterly', or 'yearly'.");
+            }
+        } catch (Exception e) {
+            System.err.println("Error occurred while calculating growth rate: " + e.getMessage());
+        }
+
+        return growthRates;
+    }
+
+    private double calculateRate(long previousCount, long currentCount) {
+        if (previousCount == 0) {
+            return currentCount > 0 ? 100.0 : 0.0;
+        }
+        return ((double) (currentCount - previousCount) / previousCount) * 100;
     }
 
 }
