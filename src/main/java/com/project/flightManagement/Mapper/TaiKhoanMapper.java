@@ -24,6 +24,8 @@ public class TaiKhoanMapper {
     private QuyenService quyenService;
     @Autowired
     private NhanVienService nhanVienService;
+    @Autowired
+    private QuyenMapper quyenMapper;
     public static TaiKhoan toTaiKhoan(TaiKhoanDTO taiKhoanDTO) {
         TaiKhoan taiKhoan = new TaiKhoan();
         taiKhoan.setIdTaiKhoan(taiKhoanDTO.getIdTaiKhoan());
@@ -117,10 +119,7 @@ public class TaiKhoanMapper {
         // Ánh xạ Quyen
         Quyen quyen = taiKhoan.getQuyen();
         if (quyen != null) {
-            Optional<QuyenBasicDTO> optionalQuyenBasicDTO = quyenService.getQuyenByIdQuyen(quyen.getIdQuyen());
-            if(optionalQuyenBasicDTO.isPresent()) {
-                taiKhoanDTO.setQuyen(optionalQuyenBasicDTO.get());
-            }
+            taiKhoanDTO.setQuyen(quyenMapper.toQuyenResponseDTO(quyen));
         }
         return taiKhoanDTO;
     }
