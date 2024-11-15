@@ -19,6 +19,13 @@ public interface ChuyenBayRepository extends JpaRepository<ChuyenBay, Integer> {
             @Param("thoiGianBatDau") LocalDateTime thoiGianBatDau,
             @Param("thoiGianKetThuc") LocalDateTime thoiGianKetThuc);
 
+    @Query("SELECT cb FROM ChuyenBay cb WHERE YEAR(cb.ngayBay) = :nam")
+    List<ChuyenBay> findChuyenBaysByYear(@Param("nam") int nam);
+
+    @Query("SELECT cb FROM ChuyenBay cb WHERE YEAR(cb.ngayBay) = :year AND MONTH(cb.ngayBay) = :month")
+    List<ChuyenBay> findChuyenBayByYearAndMonth(int year, int month);
+
+
     // Tìm chuyến bay một chiều
     @Query("SELECT c FROM ChuyenBay c " +
             "JOIN c.tuyenBay t " +

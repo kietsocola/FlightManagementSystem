@@ -13,6 +13,7 @@ import java.util.Optional;
 public interface VeService {
     Page<VeDTO> getAllVe(int page, int size);
     Page<VeDTO> getAllVeByIdChuyenBay(int idChuyenBay, int page, int size);
+    Iterable<VeDTO> getAllByIdChuyenBayByLam(int idChuyenBay);
     boolean updateVe(int idVe, VeUpdateDTO veUpdateDTO);
 
     VeDTO getVeById(int idVe);

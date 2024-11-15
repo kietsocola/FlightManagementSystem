@@ -1,6 +1,7 @@
 package com.project.flightManagement.Service.Impl;
 
 import com.project.flightManagement.DTO.ChoNgoiDTO.ChoNgoiDTO;
+import com.project.flightManagement.DTO.ChuyenBayDTO.ChuyenBayDTO;
 import com.project.flightManagement.DTO.HanhKhachDTO.HanhKhachCreateDTO;
 import com.project.flightManagement.DTO.HanhKhachDTO.HanhKhachUpdateDTO;
 import com.project.flightManagement.DTO.MayBayDTO.MayBayDTO;
@@ -9,14 +10,8 @@ import com.project.flightManagement.Enum.VeEnum;
 import com.project.flightManagement.Exception.IdMismatchException;
 import com.project.flightManagement.Exception.NoUpdateRequiredException;
 import com.project.flightManagement.Exception.ResourceNotFoundException;
-import com.project.flightManagement.Mapper.HanhKhachMapper;
-import com.project.flightManagement.Mapper.KhachHangMapper;
-import com.project.flightManagement.Mapper.LoaiVeMapper;
-import com.project.flightManagement.Mapper.VeMapper;
-import com.project.flightManagement.Model.HanhKhach;
-import com.project.flightManagement.Model.KhachHang;
-import com.project.flightManagement.Model.LoaiVe;
-import com.project.flightManagement.Model.Ve;
+import com.project.flightManagement.Mapper.*;
+import com.project.flightManagement.Model.*;
 import com.project.flightManagement.Repository.HanhKhachRepository;
 import com.project.flightManagement.Repository.KhachHangRepository;
 import com.project.flightManagement.Repository.VeRepository;
@@ -31,9 +26,11 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 public class VeServiceImpl implements VeService {
@@ -73,6 +70,20 @@ public class VeServiceImpl implements VeService {
         Pageable pageable = PageRequest.of(page, size);
         Page<Ve> vePage = veRepository.findByChuyenBay_IdChuyenBay(idChuyenBay, pageable);
         return vePage.map(veMapper::toDto);
+    }
+
+    @Override
+    public Iterable<VeDTO> getAllByIdChuyenBayByLam(int idChuyenBay) {
+        try{
+            List<Ve> listve =  veRepository.findByChuyenBay_IdChuyenBay(idChuyenBay);
+            Iterable<VeDTO> listcbDTO = StreamSupport.stream(listve.spliterator(),false)
+                    .map(veMapper::toDto)
+                    .toList();
+            return listcbDTO;
+        }catch (Exception e){
+            System.err.println("error occurred while fetching customers :" + e.getMessage());
+            return Collections.emptyList();
+        }
     }
 
 //    @Override
