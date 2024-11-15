@@ -3,6 +3,7 @@ package com.project.flightManagement.DTO.TaiKhoanDTO;
 import com.project.flightManagement.DTO.KhachHangDTO.KhachHangBasicDTO;
 import com.project.flightManagement.DTO.NhanVienDTO.NhanVienDTO;
 import com.project.flightManagement.DTO.QuyenDTO.QuyenBasicDTO;
+import com.project.flightManagement.DTO.QuyenDTO.QuyenResponseDTO;
 import com.project.flightManagement.Enum.ActiveEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,7 +17,7 @@ import java.time.LocalDateTime;
 public class TaiKhoanResponseDTO {
     private int idTaiKhoan;
     private String tenDangNhap;
-    private QuyenBasicDTO quyen;
+    private QuyenResponseDTO quyen;
     private KhachHangBasicDTO khachHang;
     private NhanVienDTO nhanVien;
     private LocalDate thoiGianTao;

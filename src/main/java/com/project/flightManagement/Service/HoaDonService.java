@@ -21,5 +21,11 @@ public interface HoaDonService {
     public List<HoaDonDTO> getHoaDonByPTTT(int idPTTT);
     public List<HoaDonDTO> getHoaDonByLoaiHD(int idLoaiHD);
     public boolean markDanhGia(int idHoaDon);
+    public Double getRevenueByMonth(int month, int year);
+    public Double getRevenueByQuarter(int quarter, int year);
+    public Double getRevenueByYear(int year);
+    public Double getRevenueBetweenMonths(int startMonth, int startYear, int endMonth, int endYear);
+    public Double getRevenueBetweenQuarters(int startQuarter, int startYear, int endQuarter, int endYear);
+    public Double getRevenueBetweenYears(int startYear, int endYear);
 
 }

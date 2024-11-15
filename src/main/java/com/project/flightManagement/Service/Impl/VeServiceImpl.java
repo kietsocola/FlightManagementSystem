@@ -25,6 +25,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -72,60 +73,50 @@ public class VeServiceImpl implements VeService {
         return vePage.map(veMapper::toDto);
     }
 
-    @Override
-    public Iterable<VeDTO> getAllByIdChuyenBayByLam(int idChuyenBay) {
-        try{
-            List<Ve> listve =  veRepository.findByChuyenBay_IdChuyenBay(idChuyenBay);
-            Iterable<VeDTO> listcbDTO = StreamSupport.stream(listve.spliterator(),false)
-                    .map(veMapper::toDto)
-                    .toList();
-            return listcbDTO;
-        }catch (Exception e){
-            System.err.println("error occurred while fetching customers :" + e.getMessage());
-            return Collections.emptyList();
-        }
-    }
-
-//    @Override
-//    public boolean updateVe(int idVe, VeUpdateDTO veUpdateDTO) {
-//        try {
-//            if (idVe != veUpdateDTO.getIdVe()) {
-//                throw new IllegalArgumentException("ID in the path and DTO do not match.");
-//            }
-//
-//            // Lấy đối tượng Ve hiện tại
-//            Ve existingVe = veRepository.findById(idVe)
-//                    .orElseThrow(() -> new RuntimeException("Ve not found with id: " + idVe));
-//
-//            // Cập nhật các thuộc tính của Ve từ DTO
-//            existingVe.setGiaVe(veUpdateDTO.getGiaVe());
-//            existingVe.setTrangThaiActive(veUpdateDTO.getTrangThaiActive());
-//            existingVe.setTrangThai(veUpdateDTO.getTrangThai());
-//
-//            HanhKhach hanhKhach = existingVe.getHanhKhach();
-//            if (hanhKhach != null) {
-//                System.out.println("Tên hành khách: " + hanhKhach.getHoTen());
-//                if (veRepository.existsByHanhKhach_IdHanhKhach(hanhKhach.getIdHanhKhach()) // IdHangVe = 1 => Hang pho thong
-//                        && !hanhKhach.getHoTen().equals(veUpdateDTO.getTenHanhKhach()) && existingVe.getHangVe().getIdHangVe() != 1 ) {
-//
-//                    System.out.println("Se doi ten hanh khach thanh: " + veUpdateDTO.getTenHanhKhach());
-//                    HanhKhach hanhKhachMoi =  taoMoiHanhKhachVaDoiTen(hanhKhach, veUpdateDTO.getTenHanhKhach());
-//                    existingVe.setHanhKhach(hanhKhachMoi);
-//                } else {
-//                    System.out.println("Khong can doi ten");
-//                }
-//            } else {
-//                System.out.println("Không lấy được hành khách");
-//            }
-//
-//            // Lưu lại Ve sau khi cập nhật hoàn tất
-//            veRepository.save(existingVe);
-//            return true;
-//        } catch (Exception e) {
-//            System.out.println("Error during updateVe: " + e);
-//            return false;
-//        }
-//    }
+    // @Override
+    // public boolean updateVe(int idVe, VeUpdateDTO veUpdateDTO) {
+    // try {
+    // if (idVe != veUpdateDTO.getIdVe()) {
+    // throw new IllegalArgumentException("ID in the path and DTO do not match.");
+    // }
+    //
+    // // Lấy đối tượng Ve hiện tại
+    // Ve existingVe = veRepository.findById(idVe)
+    // .orElseThrow(() -> new RuntimeException("Ve not found with id: " + idVe));
+    //
+    // // Cập nhật các thuộc tính của Ve từ DTO
+    // existingVe.setGiaVe(veUpdateDTO.getGiaVe());
+    // existingVe.setTrangThaiActive(veUpdateDTO.getTrangThaiActive());
+    // existingVe.setTrangThai(veUpdateDTO.getTrangThai());
+    //
+    // HanhKhach hanhKhach = existingVe.getHanhKhach();
+    // if (hanhKhach != null) {
+    // System.out.println("Tên hành khách: " + hanhKhach.getHoTen());
+    // if (veRepository.existsByHanhKhach_IdHanhKhach(hanhKhach.getIdHanhKhach()) //
+    // IdHangVe = 1 => Hang pho thong
+    // && !hanhKhach.getHoTen().equals(veUpdateDTO.getTenHanhKhach()) &&
+    // existingVe.getHangVe().getIdHangVe() != 1 ) {
+    //
+    // System.out.println("Se doi ten hanh khach thanh: " +
+    // veUpdateDTO.getTenHanhKhach());
+    // HanhKhach hanhKhachMoi = taoMoiHanhKhachVaDoiTen(hanhKhach,
+    // veUpdateDTO.getTenHanhKhach());
+    // existingVe.setHanhKhach(hanhKhachMoi);
+    // } else {
+    // System.out.println("Khong can doi ten");
+    // }
+    // } else {
+    // System.out.println("Không lấy được hành khách");
+    // }
+    //
+    // // Lưu lại Ve sau khi cập nhật hoàn tất
+    // veRepository.save(existingVe);
+    // return true;
+    // } catch (Exception e) {
+    // System.out.println("Error during updateVe: " + e);
+    // return false;
+    // }
+    // }
 
 
     @Override
@@ -146,8 +137,7 @@ public class VeServiceImpl implements VeService {
         HanhKhach hanhKhach = existingVe.getHanhKhach();
         if (hanhKhach != null
                 && veRepository.existsByHanhKhach_IdHanhKhach(hanhKhach.getIdHanhKhach())
-                && !hanhKhach.getHoTen().equals(veUpdateDTO.getTenHanhKhach())
-                ) {
+                && !hanhKhach.getHoTen().equals(veUpdateDTO.getTenHanhKhach())) {
 
             // Tạo đối tượng hành khách mới và cập nhật tên
             HanhKhach hanhKhachMoi = taoMoiHanhKhachVaDoiTen(hanhKhach, veUpdateDTO.getTenHanhKhach());
@@ -225,11 +215,11 @@ public class VeServiceImpl implements VeService {
     @Override
     public void updateAutoGiaVeByIdChuyenBay(int idChuyenBay, double giaVeHangPhoThong, double giaVeHangThuongGia) {
         System.out.println("hello updateAutoVeByIdMayBay");
-        Page<VeDTO> veDTOPage =  veService.getAllVeByIdChuyenBay(idChuyenBay, 0, 500);
-        for(VeDTO veDTO : veDTOPage) {
+        Page<VeDTO> veDTOPage = veService.getAllVeByIdChuyenBay(idChuyenBay, 0, 500);
+        for (VeDTO veDTO : veDTOPage) {
             Optional<Ve> veOptional = veRepository.findById(veDTO.getIdVe());
             Ve ve = veOptional.get();
-            if(veDTO.getHangVe().getIdHangVe() == 1) {
+            if (veDTO.getHangVe().getIdHangVe() == 1) {
                 ve.setGiaVe(giaVeHangPhoThong);
             } else {
                 ve.setGiaVe(giaVeHangThuongGia);
@@ -240,15 +230,17 @@ public class VeServiceImpl implements VeService {
 
     @Override
     public Page<VeDTO> searchVeMaVaAndDateBay(String maVe, LocalDate startDate, LocalDate endDate, int page, int size) {
-        Page<Ve> vePage = veRepository.findByMaVeContainingIgnoreCaseAndNgayBayBetween(maVe, startDate, endDate ,PageRequest.of(page, size));
+        Page<Ve> vePage = veRepository.findByMaVeContainingIgnoreCaseAndNgayBayBetween(maVe, startDate, endDate,
+                PageRequest.of(page, size));
         return vePage.map(veMapper::toDto);
     }
 
     @Override
     public Page<VeDTO> searchVeMaVa(String maVe, int page, int size) {
-        Page<Ve> vePage = veRepository.findByMaVeContainingIgnoreCase(maVe,PageRequest.of(page, size));
+        Page<Ve> vePage = veRepository.findByMaVeContainingIgnoreCase(maVe, PageRequest.of(page, size));
         return vePage.map(veMapper::toDto);
     }
+
     public List<VeEnum> getAllVeStatuses() {
         return Arrays.asList(VeEnum.values());
     }
@@ -284,5 +276,19 @@ public class VeServiceImpl implements VeService {
         }
 
         return giaVeDTO;
+    }
+
+    @Override
+    public Iterable<VeDTO> getAllByIdChuyenBayByLam(int idChuyenBay) {
+        try{
+            List<Ve> listve =  veRepository.findByChuyenBay_IdChuyenBay(idChuyenBay);
+            Iterable<VeDTO> listcbDTO = StreamSupport.stream(listve.spliterator(),false)
+                    .map(veMapper::toDto)
+                    .toList();
+            return listcbDTO;
+        }catch (Exception e){
+            System.err.println("error occurred while fetching customers :" + e.getMessage());
+            return Collections.emptyList();
+        }
     }
 }

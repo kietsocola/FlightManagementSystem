@@ -16,6 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.temporal.TemporalAdjusters;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -36,7 +38,7 @@ public class HoaDonServiceImpl implements HoaDonService {
                     .toList();
             return listHDDTO;
         } catch (Exception e) {
-            System.err.println("Error occurred while fetching Payment Methods: " + e.getMessage());
+            System.err.println("Error occurred while fetching Bills: " + e.getMessage());
             return Collections.emptyList();
         }
     }
@@ -206,5 +208,52 @@ public class HoaDonServiceImpl implements HoaDonService {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    @Override
+    public Double getRevenueByMonth(int month, int year) {
+        return hdRepo.findRevenueByMonth(month, year);
+    }
+
+    @Override
+    public Double getRevenueByQuarter(int quarter, int year) {
+        return hdRepo.findRevenueByQuarter(quarter, year);
+    }
+
+    @Override
+    public Double getRevenueByYear(int year) {
+        return hdRepo.findRevenueByYear(year);
+    }
+
+    @Override
+    public Double getRevenueBetweenMonths(int startMonth, int startYear, int endMonth, int endYear) {
+        LocalDateTime startDate = LocalDateTime.of(startYear, startMonth, 1, 0, 0);
+        LocalDateTime endDate = LocalDateTime.of(endYear, endMonth, 1, 0, 0).with(TemporalAdjusters.lastDayOfMonth());
+        return hdRepo.findRevenueBetweenDates(startDate, endDate);
+    }
+
+    @Override
+    public Double getRevenueBetweenQuarters(int startQuarter, int startYear, int endQuarter, int endYear) {
+        LocalDateTime startDate = getStartOfQuarter(startQuarter, startYear);
+        LocalDateTime endDate = getEndOfQuarter(endQuarter, endYear);
+        return hdRepo.findRevenueBetweenDates(startDate, endDate);
+    }
+
+    @Override
+    public Double getRevenueBetweenYears(int startYear, int endYear) {
+        LocalDateTime startDate = LocalDateTime.of(startYear, 1, 1, 0, 0);
+        LocalDateTime endDate = LocalDateTime.of(endYear, 12, 31, 23, 59);
+        return hdRepo.findRevenueBetweenDates(startDate, endDate);
+    }
+
+    // Helper methods
+    private LocalDateTime getStartOfQuarter(int quarter, int year) {
+        int startMonth = (quarter - 1) * 3 + 1;
+        return LocalDateTime.of(year, startMonth, 1, 0, 0);
+    }
+
+    private LocalDateTime getEndOfQuarter(int quarter, int year) {
+        int endMonth = quarter * 3;
+        return LocalDateTime.of(year, endMonth, 1, 0, 0).with(TemporalAdjusters.lastDayOfMonth());
     }
 }

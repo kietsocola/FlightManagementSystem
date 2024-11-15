@@ -4,15 +4,19 @@ import com.project.flightManagement.DTO.HangBayDTO.HangBayDTO;
 import com.project.flightManagement.DTO.MayBayDTO.MayBayDTO;
 import com.project.flightManagement.Enum.ActiveEnum;
 import com.project.flightManagement.Mapper.MayBayMapper;
+import com.project.flightManagement.Model.ChuyenBay;
 import com.project.flightManagement.Model.HangBay;
 import com.project.flightManagement.Model.MayBay;
 import com.project.flightManagement.Model.SanBay;
+import com.project.flightManagement.Repository.ChuyenBayRepository;
 import com.project.flightManagement.Repository.MayBayRepository;
 import com.project.flightManagement.Service.MayBayService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +27,8 @@ import java.util.stream.StreamSupport;
 public class MayBayServiceImpl implements MayBayService {
     @Autowired
     private MayBayRepository mbRepo;
+    @Autowired
+    private ChuyenBayRepository cbRepo;
 
     @Override
     public Optional<MayBayDTO> getMayBayById(int id) {
@@ -153,5 +159,36 @@ public class MayBayServiceImpl implements MayBayService {
     public List<MayBayDTO> findMayBayBySanBay(SanBay sanBay) {
         List<MayBay> listMb = mbRepo.findMayBayBySanBay(sanBay);
         return listMb.stream().map(MayBayMapper::toDTO).collect(Collectors.toList());
+    }
+    @Override
+    public String getHoursOfPlane(int id) {
+        Optional<MayBay> mb = mbRepo.findById(id);
+        if (mb.isPresent()) {
+            List<ChuyenBay> listCB = cbRepo.findByMayBay(mb.get().getIdMayBay());
+            if (!listCB.isEmpty()) {
+                long totalSeconds = 0; // Biến để lưu tổng số giây
+
+                for (ChuyenBay cb : listCB) {
+                    LocalDateTime start = cb.getThoiGianBatDauThucTe();
+                    LocalDateTime end = cb.getThoiGianKetThucThucTe();
+                    Duration duration = Duration.between(start, end);
+                    totalSeconds += duration.getSeconds(); // Cộng dồn tổng số giây
+                }
+
+                // Tính toán giờ, phút, giây từ tổng số giây
+                long hours = totalSeconds / 3600;
+                long minutes = (totalSeconds % 3600) / 60;
+                long seconds = totalSeconds % 60;
+
+                // Trả về kết quả dưới dạng chuỗi "giờ:phút:giây"
+                return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+            } else {
+                System.out.println("The plane had not flight time yet!!");
+                return "00:00:00"; // Trả về 0 giờ nếu không có chuyến bay
+            }
+        } else {
+            System.out.println("Can't find plane!!");
+            return "00:00:00"; // Trả về 0 giờ nếu không tìm thấy máy bay
+        }
     }
 }

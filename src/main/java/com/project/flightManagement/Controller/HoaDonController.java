@@ -1,6 +1,7 @@
 package com.project.flightManagement.Controller;
 
 import com.project.flightManagement.DTO.ChiTietHoaDonDTO.ChiTietHoaDonDTO;
+import com.project.flightManagement.DTO.HangHoaDTO.HangHoaDTO;
 import com.project.flightManagement.DTO.HoaDonDTO.HoaDonCreateDTO;
 import com.project.flightManagement.DTO.HoaDonDTO.HoaDonDTO;
 
@@ -8,6 +9,7 @@ import com.project.flightManagement.Enum.HoaDonEnum;
 import com.project.flightManagement.Mapper.HoaDonMapper;
 import com.project.flightManagement.Payload.ResponseData;
 import com.project.flightManagement.Service.ChiTietHoaDonService;
+import com.project.flightManagement.Service.HangHoaService;
 import com.project.flightManagement.Service.HoaDonService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,8 @@ public class HoaDonController {
     private HoaDonService hoaDonService;
     @Autowired
     private ChiTietHoaDonService chiTietHoaDonService;
+    @Autowired
+    HangHoaService hangHoaService;
     private ResponseData response = new ResponseData();
 
     @GetMapping("/getAllHoaDon")
@@ -295,17 +299,18 @@ public class HoaDonController {
             // Thêm chi tiết hóa đơn
             if (hoaDonCreateDTO.getChiTietHoaDonDTOList() != null) {
                 for (ChiTietHoaDonDTO chiTietHoaDonDTO : hoaDonCreateDTO.getChiTietHoaDonDTOList()) {
-                    System.out.println("dto tien: " + chiTietHoaDonDTO.getSoTien());
+                    System.out.println(chiTietHoaDonDTO);
                     chiTietHoaDonDTO.setHoaDon(HoaDonMapper.toEntity(savedHoaDon.get())); // Gán ID hóa đơn cho chi tiết
                     Optional<ChiTietHoaDonDTO> savedCTHD =  chiTietHoaDonService.addChiTietHoaDon(chiTietHoaDonDTO); // Gọi service để thêm chi tiết hóa đơn
-                    System.out.println("entiy tien: " + savedCTHD.get().getSoTien());
+
                     if (savedCTHD.get().getVe() != null) {
                         soLuongVe++;
                     }
                     tongTien+=savedCTHD.get().getSoTien();
                 }
+
             }
-            System.out.println(tongTien);
+            System.out.println("tong tien: "+tongTien);
             savedHoaDon = hoaDonService.getHoaDonById(savedHoaDon.get().getIdHoaDon());
             savedHoaDon.get().setTongTien(tongTien);
             savedHoaDon.get().setSoLuongVe(soLuongVe);
@@ -344,5 +349,94 @@ public class HoaDonController {
             response.setStatusCode(404);
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping("/thongke/thang")
+    public ResponseEntity<ResponseData> getRevenueByMonth(@RequestParam int month, @RequestParam int year) {
+        Double revenue = hoaDonService.getRevenueByMonth(month, year);
+        if (revenue == null) {
+            revenue = 0.0;
+        }
+        response.setData(revenue);
+        response.setStatusCode(200);
+        response.setMessage("Lấy doanh thu theo tháng "+ month +"/"+ year + " thành công");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    // Thống kê doanh thu theo quý
+    @GetMapping("/thongke/quy")
+    public ResponseEntity<ResponseData> getRevenueByQuarter(@RequestParam int quarter, @RequestParam int year) {
+        Double revenue = hoaDonService.getRevenueByQuarter(quarter, year);
+        if (revenue == null) {
+            revenue = 0.0;
+        }
+        response.setData(revenue);
+        response.setStatusCode(200);
+        response.setMessage("Lấy doanh thu theo quý "+ quarter +"/"+ year + " thành công");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    // Thống kê doanh thu theo năm
+    @GetMapping("/thongke/nam")
+    public ResponseEntity<ResponseData> getRevenueByYear(@RequestParam int year) {
+        Double revenue = hoaDonService.getRevenueByYear(year);
+        if (revenue == null) {
+            revenue = 0.0;
+        }
+        response.setData(revenue);
+        response.setStatusCode(200);
+        response.setMessage("Lấy doanh thu theo năm "+ year + " thành công");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/thongke/giua-thang")
+    public ResponseEntity<ResponseData> getRevenueBetweenMonths(
+            @RequestParam int startMonth,
+            @RequestParam int startYear,
+            @RequestParam int endMonth,
+            @RequestParam int endYear) {
+
+        Double revenue = hoaDonService.getRevenueBetweenMonths(startMonth, startYear, endMonth, endYear);
+        if (revenue == null) {
+            revenue = 0.0;
+        }
+        response.setData(revenue);
+        response.setStatusCode(200);
+        response.setMessage("Lấy doanh thu từ tháng "+startMonth+"/"+startYear+" đến tháng"+endMonth+"/"+endYear+ " thành công");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    // Thống kê doanh thu giữa 2 quý
+    @GetMapping("/thongke/giua-quy")
+    public ResponseEntity<ResponseData> getRevenueBetweenQuarters(
+            @RequestParam int startQuarter,
+            @RequestParam int startYear,
+            @RequestParam int endQuarter,
+            @RequestParam int endYear) {
+
+        Double revenue = hoaDonService.getRevenueBetweenQuarters(startQuarter, startYear, endQuarter, endYear);
+        if (revenue == null) {
+            revenue = 0.0;
+        }
+        response.setData(revenue);
+        response.setStatusCode(200);
+        response.setMessage("Lấy doanh thu từ quý "+startQuarter+"-"+startYear+" đến quý "+endQuarter+"-"+endYear+ " thành công");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    // Thống kê doanh thu giữa 2 năm
+    @GetMapping("/thongke/giua-nam")
+    public ResponseEntity<ResponseData> getRevenueBetweenYears(
+            @RequestParam int startYear,
+            @RequestParam int endYear) {
+
+        Double revenue = hoaDonService.getRevenueBetweenYears(startYear, endYear);
+        if (revenue == null) {
+            revenue = 0.0;
+        }
+        response.setData(revenue);
+        response.setStatusCode(200);
+        response.setMessage("Lấy doanh thu từ "+startYear+" đến "+endYear+ " thành công");
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
