@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,4 +29,6 @@ public interface KhachHangRepository extends JpaRepository<KhachHang, Integer> {
             "LEFT JOIN k.taiKhoan t " +  // Giả sử rằng bạn đã định nghĩa mối quan hệ giữa KhachHang và TaiKhoan
             "WHERE t IS NULL")
     List<KhachHang> findKhachHangChuaCoTaiKhoan();
+
+    long countByNgayTaoBetween(LocalDate startDate, LocalDate endDate);
 }

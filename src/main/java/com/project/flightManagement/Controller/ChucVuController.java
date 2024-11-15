@@ -97,13 +97,13 @@ public class ChucVuController {
 
         Optional<ChucVuDTO> saveCv = cvservice.addChucVu(cvDTO);
         if (saveCv.isPresent()) {
-            response.setMessage("Save Chuc Vu successfully!!");
+            response.setMessage("THêm chức vụ thành công");
             response.setData(saveCv.get()); // Trả về dữ liệu của khách hàng đã lưu
             response.setStatusCode(201); // Created
             return new ResponseEntity<>(response, HttpStatus.CREATED);
         } else {
             // Xử lý lỗi khi lưu không thành công
-            response.setMessage("Save chuc vu unsuccessfully!!");
+            response.setMessage("THêm chức vụ thât bại");
             response.setData(null);
             response.setStatusCode(500); // Internal Server Error
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);

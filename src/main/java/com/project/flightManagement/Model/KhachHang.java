@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -56,5 +57,12 @@ public class KhachHang {
     @Column(name = "point", columnDefinition = "int default 0")
     private int point;
 
+    // Thêm ngày tạo
+    @Column(name = "ngay_tao", nullable = false, updatable = false)
+    private LocalDate ngayTao;
+    @PrePersist
+    protected void onCreate() {
+        this.ngayTao = LocalDate.now();
+    }
 }
 

@@ -379,4 +379,27 @@ public class MayBayController {
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
+    @GetMapping("/getHoursOfPlane/{idMayBay}")
+    public ResponseEntity<ResponseData> getSoGioByMayBay(@PathVariable int idMayBay) {
+        Optional<MayBayDTO> mayBayDTO = mayBayService.getMayBayById(idMayBay);
+        if (mayBayDTO.isPresent()) {
+            String hours = mayBayService.getHoursOfPlane(mayBayDTO.get().getIdMayBay());
+            if (hours != "00:00:00") {
+                response.setMessage("Get time of plane success!!");
+                response.setData(hours);
+                response.setStatusCode(200);
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                response.setMessage("Error to get hours of plane!!");
+                response.setData("00:00:00");
+                response.setStatusCode(500);
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            }
+        } else {
+            response.setStatusCode(404);
+            response.setData("00:00:00");
+            response.setMessage("Cant found plane!!");
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
+    }
 }

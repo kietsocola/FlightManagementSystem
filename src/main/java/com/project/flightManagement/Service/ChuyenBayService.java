@@ -3,6 +3,7 @@ package com.project.flightManagement.Service;
 import com.project.flightManagement.DTO.ChuyenBayDTO.ChuyenBayDTO;
 import com.project.flightManagement.Enum.ChuyenBayEnum;
 import com.project.flightManagement.Model.ChuyenBay;
+import com.project.flightManagement.Model.MayBay;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -26,4 +27,6 @@ public interface ChuyenBayService {
 
 
     public List<ChuyenBayDTO> getFilterChuyenBay(ChuyenBayEnum trangThai, LocalDateTime thoiGianBatDau , LocalDateTime thoiGianKetThuc);
+    public List<ChuyenBayDTO> getChuyenBayByMayBay(MayBay mb);
+    public String getHoursOfFlight(int idChuyenBay);
 }

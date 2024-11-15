@@ -331,4 +331,14 @@ public class KhachHangController {
         }
     }
 
+    @GetMapping("/growthRate")
+    public ResponseEntity<ResponseData> getGrowthRate(@RequestParam String period) {
+        Map<String, Double> growthRate = khachHangService.calculateGrowthRate(period);
+        ResponseData response = new ResponseData();
+        response.setMessage("Growth rate calculated successfully");
+        response.setData(growthRate);
+        response.setStatusCode(200);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
 }

@@ -178,13 +178,13 @@ public class NhanVienController {
 
         Optional<NhanVienDTO> saveNv = nvservice.addNhanVien(nvDTO);
         if (saveNv.isPresent()) {
-            response.setMessage("Save Nhan vien successfully!!");
+            response.setMessage("Them nhan vien thanh cong");
             response.setData(saveNv.get()); // Trả về dữ liệu của khách hàng đã lưu
             response.setStatusCode(201); // Created
             return new ResponseEntity<>(response, HttpStatus.CREATED);
         } else {
             // Xử lý lỗi khi lưu không thành công
-            response.setMessage("Save nhan vien unsuccessfully!!");
+            response.setMessage("Them nhan vien that bai");
             response.setData(null);
             response.setStatusCode(500); // Internal Server Error
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -230,13 +230,13 @@ public class NhanVienController {
 
          Optional<NhanVienDTO> saveNv = nvservice.addNhanVien(nvDTO);
          if (saveNv.isPresent()) {
-             response.setMessage("Save Nhan vien successfully!!");
+             response.setMessage("Sua nhan vien thanh cong");
              response.setData(saveNv.get()); // Trả về dữ liệu của khách hàng đã lưu
              response.setStatusCode(201); // Created
              return new ResponseEntity<>(response, HttpStatus.CREATED);
          } else {
              // Xử lý lỗi khi lưu không thành công
-             response.setMessage("Save nhan vien unsuccessfully!!");
+             response.setMessage("Sua nhan vien that bai");
              response.setData(null);
              response.setStatusCode(500); // Internal Server Error
              return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -252,7 +252,7 @@ public class NhanVienController {
                 if(existingEmail.iterator().hasNext()){
                     NhanVienDTO error = new NhanVienDTO();
                     error.setEmail("Email đã tồn tại");
-                    response.setMessage("Nhan Vien with this email already exists!!");
+                    response.setMessage("Nhan vien voi email nay da ton tai");
                     response.setData(error);
                     response.setStatusCode(409); // Conflict
                     return new ResponseEntity<>(response, HttpStatus.CONFLICT);
@@ -263,7 +263,7 @@ public class NhanVienController {
                 if(existingCccd.iterator().hasNext()){
                     NhanVienDTO error = new NhanVienDTO();
                     error.setCccd("CCCD đã tồn tại");
-                    response.setMessage("Nhan Vien with this cccd already exists!!");
+                    response.setMessage("Nhan vien voi can cuoc cong dan nay da ton tai");
                     response.setData(error);
                     response.setStatusCode(409); // Conflict
                     return new ResponseEntity<>(response, HttpStatus.CONFLICT);
@@ -274,7 +274,7 @@ public class NhanVienController {
                 if(existingSDT.iterator().hasNext()){
                     NhanVienDTO error = new NhanVienDTO();
                     error.setSoDienThoai("Số điện thoại đã tồn tại");
-                    response.setMessage("Nhan Vien with this sdt already exists!!");
+                    response.setMessage("Nhan vien voi so dien thoai nay da ton tai");
                     response.setData(error);
                     response.setStatusCode(409); // Conflict
                     return new ResponseEntity<>(response, HttpStatus.CONFLICT);

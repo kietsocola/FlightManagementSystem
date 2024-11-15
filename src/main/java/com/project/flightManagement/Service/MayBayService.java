@@ -23,4 +23,5 @@ public interface MayBayService {
     public Optional<MayBayDTO> blockMayBay(int id);
     public Optional<MayBayDTO> unblockMayBay(int id);
     public List<MayBayDTO> findMayBayBySanBay(SanBay sanBay);
+    String getHoursOfPlane(int id);
 }

@@ -5,6 +5,8 @@ import com.project.flightManagement.Enum.ChuyenBayEnum;
 import com.project.flightManagement.Model.ChuyenBay;
 import com.project.flightManagement.Payload.ResponseData;
 import com.project.flightManagement.Service.ChuyenBayService;
+import com.project.flightManagement.Service.Impl.VeServiceImpl;
+import com.project.flightManagement.Service.VeService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -32,6 +34,8 @@ public class ChuyenBayController {
 
     @Autowired
     private ChuyenBayService cbservice;
+    @Autowired
+    private VeService veService;
     private ResponseData response =  new ResponseData();
     @GetMapping("/search")
     public ResponseEntity<ResponseData> searchFlights(
@@ -159,6 +163,8 @@ public class ChuyenBayController {
 
         Optional<ChuyenBayDTO> saveCB = cbservice.addChuyenBay(cbDTO);
         if (saveCB.isPresent()) {
+            int idChuyenBay = saveCB.get().getIdChuyenBay();
+            veService.createAutoVeByIdChuyenBay(idChuyenBay, cbDTO.getGiaVeThuong(), cbDTO.getGiaVeThuongGia());
             response.setMessage("Save Nhan vien successfully!!");
             response.setData(saveCB.get()); // Trả về dữ liệu của khách hàng đã lưu
             response.setStatusCode(201); // Created
@@ -266,13 +272,14 @@ public class ChuyenBayController {
 
         Optional<ChuyenBayDTO> saveCb = cbservice.updateChuyenBay(cbDTO);
         if (saveCb.isPresent()) {
-            response.setMessage("Save Chuyen Bay successfully!!");
+            response.setMessage("Sửa chuyến bay thành công");
+            veService.updateAutoGiaVeByIdChuyenBay(saveCb.get().getIdChuyenBay(), cbDTO.getGiaVeThuong(), cbDTO.getGiaVeThuongGia());
             response.setData(saveCb.get()); // Trả về dữ liệu của khách hàng đã lưu
             response.setStatusCode(201); // Created
             return new ResponseEntity<>(response, HttpStatus.CREATED);
         } else {
             // Xử lý lỗi khi lưu không thành công
-            response.setMessage("Save Chuyen Bay unsuccessfully!!");
+            response.setMessage("Sửa chuyến bay thaatts bại ");
             response.setData(null);
             response.setStatusCode(500); // Internal Server Error
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -315,5 +322,29 @@ public class ChuyenBayController {
         Duration duration = Duration.between(a, b);
         // Kiểm tra nếu chênh lệch tuyệt đối lớn hơn 2 giờ
         return Math.abs(duration.toHours()) >= 2;
+    }
+
+    @GetMapping("/getHoursFlightOfFlight/{idChuyenBay}")
+    public ResponseEntity<ResponseData> getSoGioBayCuaChuyenBay (@PathVariable int idChuyenBay) {
+        Optional<ChuyenBayDTO> cb = cbservice.getChuyenBayById(idChuyenBay);
+        if (cb.isPresent()) {
+            String hours = cbservice.getHoursOfFlight(cb.get().getIdChuyenBay());
+            if (hours != "00:00:00") {
+                response.setMessage("Get time of flight success!!");
+                response.setStatusCode(200);
+                response.setData(hours);
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                response.setData("00:00:00");
+                response.setStatusCode(404);
+                response.setMessage("Error to get time of flight!!");
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            }
+        } else {
+            response.setMessage("Cant found flght!!");
+            response.setData("00:00:00");
+            response.setStatusCode(404);
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
     }
 }

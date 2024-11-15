@@ -250,4 +250,21 @@ public class VeController {
             return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
         }
     }
+    @GetMapping("/giave/chuyenbay/{idChuyenBay}")
+    public ResponseEntity<?> getAllGiaVeByIdChuyenBay(@PathVariable int idChuyenBay) {
+        ResponseData responseData = new ResponseData();
+        try {
+            responseData.setMessage("get all gia of ve");
+            responseData.setStatusCode(200);
+            responseData.setData(veService.getAllGiaVe(idChuyenBay));
+            return new ResponseEntity<>(responseData, HttpStatus.OK);
+        }
+        catch (Exception e) {
+            responseData.setMessage("fail get all gia of ve");
+            responseData.setStatusCode(400);
+            responseData.setData("");
+            return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
+        }
+    }
+
 }

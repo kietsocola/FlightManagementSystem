@@ -5,12 +5,15 @@ import com.project.flightManagement.Enum.ChuyenBayEnum;
 import com.project.flightManagement.Mapper.ChuyenBayMapper;
 import com.project.flightManagement.Mapper.NhanVienMapper;
 import com.project.flightManagement.Model.ChuyenBay;
+import com.project.flightManagement.Model.MayBay;
 import com.project.flightManagement.Repository.ChuyenBayRepository;
 import com.project.flightManagement.Service.ChuyenBayService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Date;
@@ -95,5 +98,27 @@ public class ChuyenBayServiceImpl implements ChuyenBayService {
     public List<ChuyenBayDTO> getFilterChuyenBay(ChuyenBayEnum trangThai, LocalDateTime thoiGianBatDau , LocalDateTime thoiGianKetThuc) {
             List<ChuyenBay> cb = repo.filterChuyenBay(trangThai,thoiGianBatDau ,thoiGianKetThuc);
             return cb.stream().map(ChuyenBayMapper::toDTO).collect(Collectors.toList());
+    }
+    @Override
+    public List<ChuyenBayDTO> getChuyenBayByMayBay(MayBay mb) {
+        List<ChuyenBay> listCB = repo.findByMayBay(mb.getIdMayBay());
+        return listCB.stream().map(ChuyenBayMapper::toDTO).collect(Collectors.toList());
+    }
+    @Override
+    public String getHoursOfFlight(int idChuyenBay) {
+        Optional<ChuyenBay> cb = repo.findById(idChuyenBay);
+        if(cb.isPresent()) {
+            LocalDateTime start = cb.get().getThoiGianBatDauThucTe();
+            LocalDateTime end = cb.get().getThoiGianKetThucThucTe();
+            Duration duration = Duration.between(start, end);
+            long hours = duration.toHours();
+            long minutes = duration.toMinutes() % 60;
+            long seconds = duration.getSeconds() % 60;
+
+            return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+        } else {
+            System.out.println("Cant found flight!!");
+            return "00:00:00";
+        }
     }
 }
