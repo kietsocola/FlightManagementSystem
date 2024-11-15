@@ -2,8 +2,7 @@ package com.project.flightManagement.Service.Impl;
 
 import com.project.flightManagement.DTO.ChoNgoiDTO.ChoNgoiDTO;
 import com.project.flightManagement.DTO.HanhKhachDTO.HanhKhachCreateDTO;
-import com.project.flightManagement.DTO.HanhKhachDTO.HanhKhachUpdateDTO;
-import com.project.flightManagement.DTO.MayBayDTO.MayBayDTO;
+
 import com.project.flightManagement.DTO.VeDTO.VeCreateDTO;
 import com.project.flightManagement.DTO.VeDTO.VeDTO;
 import com.project.flightManagement.DTO.VeDTO.VeUpdateDTO;
@@ -33,6 +32,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -222,4 +222,6 @@ public class VeServiceImpl implements VeService {
     public List<VeEnum> getAllVeStatuses() {
         return Arrays.asList(VeEnum.values());
     }
+
+
 }
