@@ -8,6 +8,7 @@ import com.project.flightManagement.Mapper.ChiTietHoaDonMapper;
 import com.project.flightManagement.Mapper.HangHoaMapper;
 import com.project.flightManagement.Mapper.HoaDonMapper;
 import com.project.flightManagement.Model.ChiTietHoaDon;
+import com.project.flightManagement.Model.HangHoa;
 import com.project.flightManagement.Model.HoaDon;
 import com.project.flightManagement.Repository.ChiTietHoaDonRepository;
 import com.project.flightManagement.Service.ChiTietHoaDonService;
@@ -66,18 +67,19 @@ public class ChiTietHoaDonServiceImpl implements ChiTietHoaDonService {
         Optional<ChiTietHoaDon> existingCTHD = chiTietHoaDonReposity.findById(chiTietHoaDonDTO.getIdChiTietHoaDon());
         if (!existingCTHD.isPresent()) {
             if (chiTietHoaDonDTO.getHangHoa() != null && chiTietHoaDonDTO.getVe() != null) {
-                Optional<HangHoaDTO> hangHoa = hangHoaService.getHangHoaByIdHangHoa(chiTietHoaDonDTO.getHangHoa().getIdHangHoa());
-                chiTietHoaDonDTO.setHangHoa(HangHoaMapper.toEntity(hangHoa.get()));
+                Optional<HangHoaDTO> hangHoaDTO = hangHoaService.getHangHoaByIdHangHoa(chiTietHoaDonDTO.getHangHoa().getIdHangHoa());
+                chiTietHoaDonDTO.setHangHoa(HangHoaMapper.toEntity(hangHoaDTO.get()));
 
-               
                 VeDTO veDTO = veService.getVeById(chiTietHoaDonDTO.getVe().getIdVe());
                 double giaVe = veDTO.getGiaVe();
                 chiTietHoaDonDTO.setSoTien(chiTietHoaDonDTO.getHangHoa().getGiaPhatSinh()+giaVe);
 
             } else {
                 if (chiTietHoaDonDTO.getVe() == null && chiTietHoaDonDTO.getHangHoa() != null) {
-                    System.out.println("hang hoa " + chiTietHoaDonDTO.getHangHoa());
-                    chiTietHoaDonDTO.setSoTien(chiTietHoaDonDTO.getHangHoa().getGiaPhatSinh());
+                    Optional<HangHoaDTO> hangHoaDTO = hangHoaService.getHangHoaByIdHangHoa(chiTietHoaDonDTO.getHangHoa().getIdHangHoa());
+                    HangHoa hangHoa = HangHoaMapper.toEntity(hangHoaDTO.get());
+                    chiTietHoaDonDTO.setHangHoa(HangHoaMapper.toEntity(hangHoaDTO.get()));
+                    chiTietHoaDonDTO.setSoTien(hangHoa.getGiaPhatSinh());
                     System.out.println("sotien: "+ chiTietHoaDonDTO.getSoTien());
                 } else {
                     if (chiTietHoaDonDTO.getHangHoa() == null && chiTietHoaDonDTO.getVe() != null){
