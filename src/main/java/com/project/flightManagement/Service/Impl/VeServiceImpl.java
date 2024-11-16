@@ -291,4 +291,17 @@ public class VeServiceImpl implements VeService {
             return Collections.emptyList();
         }
     }
+
+    @Override
+    public List<VeDTO> getAllVe(){
+        try {
+            Iterable<Ve> listVe = veRepository.findAll();
+            return StreamSupport.stream(listVe.spliterator(), false)
+                    .map(veMapper::toDto)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            System.err.println("Error occurred while fetching tickets: " + e);
+            return Collections.emptyList();
+        }
+    }
 }

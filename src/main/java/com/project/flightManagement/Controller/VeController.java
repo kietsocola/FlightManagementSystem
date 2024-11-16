@@ -2,6 +2,7 @@ package com.project.flightManagement.Controller;
 
 import com.project.flightManagement.DTO.LoaiVeDTO.LoaiVeDTO;
 import com.project.flightManagement.DTO.QuyenDTO.QuyenResponseDTO;
+import com.project.flightManagement.DTO.TuyenBayDTO.TuyenBayDTO;
 import com.project.flightManagement.DTO.VeDTO.VeCreateDTO;
 import com.project.flightManagement.DTO.VeDTO.VeDTO;
 import com.project.flightManagement.DTO.VeDTO.VeUpdateDTO;
@@ -267,4 +268,21 @@ public class VeController {
         }
     }
 
+
+    @GetMapping("/getAll")
+    public ResponseEntity<ResponseData> getAllVe() {
+        ResponseData response = new ResponseData();
+        Iterable<VeDTO> listVeDTO = veService.getAllVe();
+        if (listVeDTO.iterator().hasNext()) {
+            response.setMessage("Get list of tickets success!!");
+            response.setData(listVeDTO);
+            response.setStatusCode(200);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else {
+            response.setMessage("No tickets found!!");
+            response.setData(null);
+            response.setStatusCode(204);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+    }
 }
