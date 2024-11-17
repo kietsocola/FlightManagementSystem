@@ -85,6 +85,7 @@ public class PaymentController {
                 response.setData(redirectUrl);
                 response.setMessage("Thanh toán thất bại: " + responseCode);
                 response.setStatusCode(400); // Bad Request
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).location(URI.create(redirectUrl)).build();
             }
 
         } catch (Exception e) {
