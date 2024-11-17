@@ -65,5 +65,10 @@ public class HanhKhachServiceImpl implements HanhKhachService {
 
         return formattedResults;
     }
+
+    @Override
+    public Optional<HanhKhach> findByCccd(String cccd) {
+        return hanhKhachRepository.findByCccd(cccd);
+    }
 }
 

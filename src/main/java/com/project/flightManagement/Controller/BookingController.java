@@ -7,6 +7,8 @@ import com.project.flightManagement.DTO.ChoNgoiDTO.ChoNgoi_VeDTO;
 import com.project.flightManagement.DTO.HanhKhachDTO.HanhKhachCreateDTO;
 import com.project.flightManagement.DTO.HanhKhachDTO.HanhKhachDTO;
 import com.project.flightManagement.DTO.HoldSeatDTO.HoldSeatRequest;
+import com.project.flightManagement.Enum.ActiveEnum;
+import com.project.flightManagement.Enum.GioiTinhEnum;
 import com.project.flightManagement.Enum.VeEnum;
 import com.project.flightManagement.Mapper.HanhKhachMapper;
 import com.project.flightManagement.Model.HanhKhach;
@@ -171,12 +173,29 @@ public class BookingController {
                 // Thêm thông tin vé vào orderInfo
                 orderInfo.append(ve.getIdVe()).append(" ");
                 // Tạo hành khách, sau đó lưu hanh khach, sau đó set idHanhKhach của vé là hành khách trả ve sau khi lưu
-                HanhKhach hanhkhachEntity = HanhKhachMapper.toEntity(hanhKhach);
-                HanhKhach hkAfterSave = hanhKhachService.saveNewHanhKhachWhenBooking(hanhkhachEntity);
-                ve.setHanhKhach(hkAfterSave);
-                veRepo.save(ve);
+//                HanhKhach hanhkhachEntity = HanhKhachMapper.toEntity(hanhKhach);
+                Optional<HanhKhach> hk = hanhKhachService.findByCccd(hanhKhach.getCccd());
+                HanhKhach hkAfterSave;
+                if(hk.isPresent()){
+//                    hkAfterSave = hanhKhachService.saveNewHanhKhachWhenBooking(hk.get());
+                    ve.setHanhKhach(hk.get());
+                    veRepo.save(ve);
+                } else {
+                    HanhKhach hk2 = new HanhKhach();
+                    hk2.setHoTen(hanhKhach.getHoTen());
+                    hk2.setNgaySinh(hanhKhach.getNgaySinh());
+                    hk2.setSoDienThoai(hanhKhach.getSoDienThoai());
+                    hk2.setEmail(hanhKhach.getEmail());
+                    hk2.setCccd(hanhKhach.getCccd());
+                    hk2.setHoChieu(hanhKhach.getHoChieu());
+                    hk2.setGioiTinhEnum(GioiTinhEnum.valueOf(hanhKhach.getGioiTinhEnum().toString())); // Chuyển chuỗi thành Enum nếu cần
+                    hk2.setTrangThaiActive(ActiveEnum.valueOf(hanhKhach.getTrangThaiActive().toString())); // Chuyển chuỗi thành Enum nếu cần
+                    hkAfterSave = hanhKhachService.saveNewHanhKhachWhenBooking(hk2);
+                    ve.setHanhKhach(hkAfterSave);
+                    veRepo.save(ve);
+                }
                 // Lưu thông tin hành khách trong session (tùy chọn)
-                request.getSession().setAttribute("hanhKhach_" + hanhKhach.getIdVe(), hanhKhach);
+//                request.getSession().setAttribute("hanhKhach_" + hanhKhach.getIdVe(), hanhKhach);
             }
 
             // Xóa dấu phẩy cuối cùng trong orderInfo
