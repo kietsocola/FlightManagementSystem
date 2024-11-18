@@ -14,7 +14,6 @@ public interface ChoNgoiService {
     public Iterable<ChoNgoiDTO> getAllChoNgoi();
     public Iterable<ChoNgoiDTO> getChoNgoiByMayBay(MayBayDTO mayBayDTO);
     public Optional<ChoNgoiDTO> addNewChoNgoi(ChoNgoiDTO choNgoiDTO);
-    public void deleteChoNgoiByMayBay(MayBayDTO mayBayDTO);
     public Optional<ChoNgoiDTO> getChoNgoiById(int id);
     public List<ChoNgoi_VeDTO> getAllChoNgoiByIdChuyenBayandHangVe(int idCB, int hangVe);
     public Optional<ChoNgoiDTO> blockChoNgoi(int id);
