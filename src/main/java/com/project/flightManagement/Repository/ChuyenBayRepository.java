@@ -40,7 +40,8 @@ public interface ChuyenBayRepository extends JpaRepository<ChuyenBay, Integer> {
             "WHERE cityDi.tenThanhPho = :departureCity " +
             "AND cityDen.tenThanhPho = :arrivalCity " +
             "AND c.ngayBay = :departureDate " +
-            "AND c.soGhe >= :numberOfTickets")
+            "AND c.soGhe >= :numberOfTickets " +  // Thêm khoảng trắng trước "AND"
+            "AND c.trangThai = 'SCHEDULED'")    // Thêm dấu nháy đơn
     List<ChuyenBay> findFlightsOneWay(@Param("departureCity") String departureCity,
                                       @Param("arrivalCity") String arrivalCity,
                                       @Param("departureDate") Date departureDate,
