@@ -15,10 +15,7 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -119,6 +116,79 @@ public class ChuyenBayServiceImpl implements ChuyenBayService {
         } else {
             System.out.println("Cant found flight!!");
             return "00:00:00";
+        }
+    }
+
+    @Override
+    public Iterable<ChuyenBayDTO> getChuyenBayByYear(int nam) {
+        try{
+            Iterable<ChuyenBay> listcb =  repo.findChuyenBaysByYear(nam);
+            Iterable<ChuyenBayDTO> listcbDTO = StreamSupport.stream(listcb.spliterator(),false)
+                    .map(ChuyenBayMapper::toDTO)
+                    .toList();
+            return listcbDTO;
+        }catch (Exception e){
+            System.err.println("error occurred while fetching customers :" + e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    @Override
+    public Iterable<ChuyenBayDTO> getChuyenBayByYearAndMonth(int year, int month) {
+        try{
+            Iterable<ChuyenBay> listcb =  repo.findChuyenBayByYearAndMonth(year , month);
+            Iterable<ChuyenBayDTO> listcbDTO = StreamSupport.stream(listcb.spliterator(),false)
+                    .map(ChuyenBayMapper::toDTO)
+                    .toList();
+            return listcbDTO;
+        }catch (Exception e){
+            System.err.println("error occurred while fetching customers :" + e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    // Hàm trong service để lọc chuyến bay theo quý và năm
+    public Iterable<ChuyenBayDTO> filterChuyenBayByQuyAndNam(int nam, int quy) {
+
+        try{
+            // Lấy danh sách tất cả các chuyến bay trong năm
+            Iterable<ChuyenBay> chuyenBayList = repo.findAll();
+
+            // Tạo danh sách để chứa các chuyến bay theo quý
+            List<ChuyenBay> result = new ArrayList<>();
+
+            // Duyệt qua các chuyến bay và phân loại theo quý
+            for (ChuyenBay chuyenBay : chuyenBayList) {
+                int thang = chuyenBay.getNgayBay().toLocalDate().getMonthValue();  // Lấy tháng từ ngày bay
+
+                // Xác định quý của chuyến bay
+                int quyChuyenBay = getQuyFromThang(thang);
+
+                // Kiểm tra nếu quý và năm của chuyến bay trùng khớp với quý và năm yêu cầu
+                if (chuyenBay.getNgayBay().toLocalDate().getYear() == nam && quyChuyenBay == quy) {
+                    result.add(chuyenBay);  // Thêm vào danh sách kết quả
+                }
+            }
+            Iterable<ChuyenBayDTO> listcbDTO = StreamSupport.stream(result.spliterator(),false)
+                    .map(ChuyenBayMapper::toDTO)
+                    .toList();
+            return listcbDTO;
+        }catch (Exception e){
+            System.err.println("error occurred while fetching customers :" + e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    // Hàm xác định quý từ tháng
+    private int getQuyFromThang(int thang) {
+        if (thang >= 1 && thang <= 3) {
+            return 1; // Quý 1
+        } else if (thang >= 4 && thang <= 6) {
+            return 2; // Quý 2
+        } else if (thang >= 7 && thang <= 9) {
+            return 3; // Quý 3
+        } else {
+            return 4; // Quý 4
         }
     }
 }

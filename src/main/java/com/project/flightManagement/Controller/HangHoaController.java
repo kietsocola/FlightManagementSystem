@@ -5,6 +5,7 @@ import com.project.flightManagement.Enum.ActiveEnum;
 import com.project.flightManagement.Payload.ResponseData;
 import com.project.flightManagement.Repository.LoaiHangHoaRepository;
 import com.project.flightManagement.Service.HangHoaService;
+import com.project.flightManagement.Service.Impl.HangHoaServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,8 @@ public class HangHoaController {
     private ResponseData response = new ResponseData();
     @Autowired
     private LoaiHangHoaRepository loaiHangHoaRepo;
+    @Autowired
+    private HangHoaServiceImpl hangHoaServiceImpl;
 
 
     @GetMapping("/getAllMerchandises")

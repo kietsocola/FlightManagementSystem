@@ -81,8 +81,11 @@ public class PaymentController {
                         "&ticketIds=" + String.join(",", ticketIds);
                 return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(redirectUrl)).build();
             } else {
+                String redirectUrl = "http://localhost:5173/?statusCode=400";
+                response.setData(redirectUrl);
                 response.setMessage("Thanh toán thất bại: " + responseCode);
                 response.setStatusCode(400); // Bad Request
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).location(URI.create(redirectUrl)).build();
             }
 
         } catch (Exception e) {

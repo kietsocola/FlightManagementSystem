@@ -27,6 +27,9 @@ public interface ChuyenBayService {
 
 
     public List<ChuyenBayDTO> getFilterChuyenBay(ChuyenBayEnum trangThai, LocalDateTime thoiGianBatDau , LocalDateTime thoiGianKetThuc);
+    public Iterable<ChuyenBayDTO> getChuyenBayByYear(int nam) ;
+    public Iterable<ChuyenBayDTO> getChuyenBayByYearAndMonth(int year , int month) ;
+    public Iterable<ChuyenBayDTO> filterChuyenBayByQuyAndNam(int year , int month) ;
     public List<ChuyenBayDTO> getChuyenBayByMayBay(MayBay mb);
     public String getHoursOfFlight(int idChuyenBay);
 }

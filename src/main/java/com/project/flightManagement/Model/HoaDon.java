@@ -8,7 +8,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -24,7 +23,7 @@ public class HoaDon {
     private int idHoaDon; // Mã định danh duy nhất cho hóa đơn
 
     @ManyToOne
-    @JoinColumn(name = "id_khach_hang", nullable = false)
+    @JoinColumn(name = "id_khach_hang", nullable = true)
     private KhachHang khachHang;
 
     @ManyToOne
@@ -58,4 +57,9 @@ public class HoaDon {
 
     @Column(name = "danh_gia", nullable = false)
     private boolean danhGia;
+
+    @PrePersist
+    protected void onCreate() {
+        this.thoiGianLap = LocalDateTime.now();
+    }
 }

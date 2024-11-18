@@ -24,6 +24,8 @@ public class TaiKhoanMapper {
     private QuyenService quyenService;
     @Autowired
     private NhanVienService nhanVienService;
+    @Autowired
+    private QuyenMapper quyenMapper;
     public static TaiKhoan toTaiKhoan(TaiKhoanDTO taiKhoanDTO) {
         TaiKhoan taiKhoan = new TaiKhoan();
         taiKhoan.setIdTaiKhoan(taiKhoanDTO.getIdTaiKhoan());
@@ -109,19 +111,28 @@ public class TaiKhoanMapper {
         // Ánh xạ NhanVien
         NhanVien nhanVien = taiKhoan.getNhanVien();
         if (nhanVien != null) {
-            NhanVienDTO nhanVienDTO = new NhanVienDTO();
-            nhanVienDTO.setIdNhanVien(taiKhoan.getNhanVien().getIdNhanVien());
+            NhanVienDTO nhanVienDTO = mapperNhanVienDTOFromNhanVien(nhanVien);
             taiKhoanDTO.setNhanVien(nhanVienDTO);
         }
 
         // Ánh xạ Quyen
         Quyen quyen = taiKhoan.getQuyen();
         if (quyen != null) {
-            Optional<QuyenBasicDTO> optionalQuyenBasicDTO = quyenService.getQuyenByIdQuyen(quyen.getIdQuyen());
-            if(optionalQuyenBasicDTO.isPresent()) {
-                taiKhoanDTO.setQuyen(optionalQuyenBasicDTO.get());
-            }
+            taiKhoanDTO.setQuyen(quyenMapper.toQuyenResponseDTO(quyen));
         }
         return taiKhoanDTO;
+    }
+    private NhanVienDTO mapperNhanVienDTOFromNhanVien(NhanVien nhanVien) {
+        NhanVienDTO nhanVienDTO = new NhanVienDTO();
+        nhanVienDTO.setIdNhanVien(nhanVien.getIdNhanVien());
+        nhanVienDTO.setEmail(nhanVien.getEmail());
+        nhanVienDTO.setCccd(nhanVien.getCccd());
+        nhanVienDTO.setChucVu(nhanVien.getChucVu());
+        nhanVienDTO.setSoDienThoai(nhanVien.getSoDienThoai());
+        nhanVienDTO.setNgaySinh(nhanVien.getNgaySinh());
+        nhanVienDTO.setHoTen(nhanVien.getHoTen());
+        nhanVienDTO.setGioiTinhEnum(nhanVien.getGioiTinhEnum());
+        nhanVienDTO.setTrangThaiActive(nhanVien.getTrangThaiActive());
+        return nhanVienDTO;
     }
 }

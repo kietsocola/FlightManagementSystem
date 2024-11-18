@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
@@ -32,4 +33,18 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
     @Query("SELECT hd from HoaDon hd WHERE " +
             "hd.loaiHoaDon.idLoaiHoaDon = :idLoaiHD")
     List<HoaDon> findHoaDonByLoaiHD(int idLoaiHD);
+
+    @Query("SELECT SUM(hd.tongTien) FROM HoaDon hd WHERE MONTH(hd.thoiGianLap) = :month AND YEAR(hd.thoiGianLap) = :year")
+    Double findRevenueByMonth(@Param("month") int month, @Param("year") int year);
+
+    @Query("SELECT SUM(hd.tongTien) FROM HoaDon hd WHERE QUARTER(hd.thoiGianLap) = :quarter AND YEAR(hd.thoiGianLap) = :year")
+    Double findRevenueByQuarter(@Param("quarter") int quarter, @Param("year") int year);
+
+    @Query("SELECT SUM(hd.tongTien) FROM HoaDon hd WHERE YEAR(hd.thoiGianLap) = :year")
+    Double findRevenueByYear(@Param("year") int year);
+
+    @Query("SELECT SUM(hd.tongTien) FROM HoaDon hd WHERE hd.thoiGianLap BETWEEN :startDate AND :endDate")
+    Double findRevenueBetweenDates(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+
+
 }

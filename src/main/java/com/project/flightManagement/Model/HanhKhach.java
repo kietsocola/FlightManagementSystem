@@ -8,6 +8,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 @Entity
@@ -53,5 +56,16 @@ public class HanhKhach {
     @Column(name = "active_status")
     @Enumerated(EnumType.STRING)
     private ActiveEnum trangThaiActive;
-}
 
+    public int getAge() {
+        try {
+            LocalDate birthDate = LocalDate.parse(this.ngaySinh);  // Giả sử định dạng ngày là "yyyy-MM-dd"
+            return Period.between(birthDate, LocalDate.now()).getYears();  // Tính tuổi
+        } catch (DateTimeParseException e) {
+            // Xử lý lỗi nếu ngày sinh không hợp lệ
+            return -1;  // Hoặc một giá trị mặc định nào đó
+        }
+    }
+
+
+}
