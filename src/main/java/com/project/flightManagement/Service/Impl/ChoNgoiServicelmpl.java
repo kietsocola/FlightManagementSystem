@@ -66,26 +66,7 @@ public class ChoNgoiServicelmpl implements ChoNgoiService {
             return Optional.empty();
         }
     }
-    @Override
-    public void deleteChoNgoiByMayBay(MayBayDTO mayBayDTO) {
-        try {
-            // Chuyển đổi MayBayDTO thành MayBay entity
-            MayBay mayBay = MayBayMapper.toEntity(mayBayDTO);
 
-            // Lấy danh sách ghế liên quan tới máy bay
-            List<ChoNgoi> choNgoiList = cnRepo.findChoNgoiByMayBay(mayBay);
-
-            // Xóa từng ghế trong danh sách
-            if (!choNgoiList.isEmpty()) {
-                cnRepo.deleteAll(choNgoiList);
-                System.out.println("Deleted seats successfully for plane ID: " + mayBay.getIdMayBay());
-            } else {
-                System.out.println("No seats found for plane ID: " + mayBay.getIdMayBay());
-            }
-        } catch (Exception e) {
-            System.out.println("Delete seats failed: " + e.getMessage());
-        }
-    }
     @Override
     public Optional<ChoNgoiDTO> getChoNgoiById(int id) {
         try {
