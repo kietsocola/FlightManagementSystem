@@ -598,22 +598,23 @@ public class ChuyenBayController {
             trangThai.put("CANCELED" , count);
             tong+=count;
 
-            listChuyenBay = cbservice.getFilterChuyenBay(ChuyenBayEnum.SCHEDULED, LocalDateTime.parse(nam+"-01-01T00:00:00"),LocalDateTime.parse(nam+"-12-31T23:59:59"));
-            count = (int) StreamSupport.stream(listChuyenBay.spliterator(), false).count();
-            trangThai.put("SCHEDULED" , count);
-            tong+=count;
-
-
-            listChuyenBay = cbservice.getFilterChuyenBay(ChuyenBayEnum.DELAYED, LocalDateTime.parse(nam+"-01-01T00:00:00"),LocalDateTime.parse(nam+"-12-31T23:59:59"));
-            count = (int) StreamSupport.stream(listChuyenBay.spliterator(), false).count();
-            trangThai.put("DELAYED", count);
-            tong+=count;
-
-
             listChuyenBay = cbservice.getFilterChuyenBay(ChuyenBayEnum.COMPLETED , LocalDateTime.parse(nam+"-01-01T00:00:00"),LocalDateTime.parse(nam+"-12-31T23:59:59"));
-            count = (int) StreamSupport.stream(listChuyenBay.spliterator(), false).count();
-            trangThai.put("COMPLETED" , count);
+
+            count = 0 ;
+            for(ChuyenBayDTO cb : listChuyenBay)
+                if(cb.getDelay() == 0)
+                    ++count ;
+            trangThai.put("SCHEDULED " , count);
             tong+=count;
+
+
+            count = 0 ;
+            for(ChuyenBayDTO cb : listChuyenBay)
+                if(cb.getDelay() > 0)
+                    ++count ;
+            trangThai.put("DELAYED ", count);
+            tong+=count;
+
 
             trangThai.put("TONG" , tong);
 
