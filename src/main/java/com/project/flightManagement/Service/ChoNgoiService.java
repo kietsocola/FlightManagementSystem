@@ -19,6 +19,7 @@ public interface ChoNgoiService {
     public Optional<ChoNgoiDTO> blockChoNgoi(int id);
     public Optional<ChoNgoiDTO> unblockChoNgoi(int id);
 
+
     Optional<ChoNgoi> getChoNgoiEntityById(int idChoNgoi);
 
 }
