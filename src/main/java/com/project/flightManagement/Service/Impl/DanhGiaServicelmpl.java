@@ -179,11 +179,16 @@ public class DanhGiaServicelmpl implements DanhGiaService {
 
     @Override
     public DanhGiaDTO addComment(DanhGiaDTO danhGiaDTO) {
-        DanhGia danhGia = DanhGiaMapper.toEntity(danhGiaDTO);
-        danhGia.setHangBay(null);
-        danhGia.setKhachHang(null);
-        danhGia.setThoiGianTao(LocalDateTime.now());
-        danhGia = dgRepo.save(danhGia);
-        return DanhGiaMapper.toDTO(danhGia);
+        try {
+            DanhGia danhGia = DanhGiaMapper.toEntity(danhGiaDTO);
+            KhachHang kh = khRepo.findById(danhGiaDTO.getIdKhachHang()).get();
+            danhGia.setKhachHang(kh);
+            danhGia.setThoiGianTao(LocalDateTime.now());
+            danhGia = dgRepo.save(danhGia);
+            return DanhGiaMapper.toDTO(danhGia);
+        } catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
     }
 }

@@ -253,14 +253,6 @@ public class MayBayController {
                 }
 
                 Optional<MayBayDTO> updatedMB = mayBayService.updateMayBay(mbDTO);
-                Iterable<ChoNgoiDTO> choNgoiByMB = choNgoiService.getChoNgoiByMayBay(updatedMB.get());
-                if(choNgoiByMB.iterator().hasNext()) {
-                    for (ChoNgoiDTO cn : choNgoiByMB) {
-                        choNgoiService.deleteChoNgoiByMayBay(updatedMB.get());
-                    }
-                } else {
-                    System.out.println("Cant find any seat by plane when update plane!");
-                }
                 try {
                     for(int iE  = 1 ; iE <= updatedMB.get().getSoHangGheThuong() ; iE++){
                         for (int jE = 0 ; jE < updatedMB.get().getSoCotGheThuong().length() ; jE++){

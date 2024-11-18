@@ -9,7 +9,7 @@ public class DanhGiaMapper {
     public static DanhGia toEntity(DanhGiaDTO danhGiaDTO) {
         DanhGia danhGia = new DanhGia();
         danhGia.setIdDanhGia(danhGiaDTO.getIdDanhGia());
-        danhGia.setKhachHang(danhGiaDTO.getKhachHang());
+//        danhGia.setKhachHang(danhGiaDTO.getKhachHang());
         danhGia.setSao(danhGiaDTO.getSao());
         danhGia.setHangBay(danhGiaDTO.getHangBay());
         danhGia.setNoiDung(danhGiaDTO.getNoiDung());
@@ -35,7 +35,8 @@ public class DanhGiaMapper {
         danhGiaDTO.setHangBay(danhGia.getHangBay());
         danhGiaDTO.setSao(danhGia.getSao());
         danhGiaDTO.setNoiDung(danhGia.getNoiDung());
-        danhGiaDTO.setKhachHang(danhGia.getKhachHang());
+        danhGiaDTO.setIdKhachHang(danhGia.getKhachHang().getIdKhachHang());
+        danhGiaDTO.setTenKhachHang(danhGia.getKhachHang().getHoTen());
         danhGiaDTO.setThoiGianTao(danhGia.getThoiGianTao());
         danhGiaDTO.setTrangThaiActive(danhGia.getTrangThaiActive());
 

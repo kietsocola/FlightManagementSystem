@@ -7,6 +7,8 @@ import com.project.flightManagement.DTO.ChoNgoiDTO.ChoNgoi_VeDTO;
 import com.project.flightManagement.DTO.HanhKhachDTO.HanhKhachCreateDTO;
 import com.project.flightManagement.DTO.HanhKhachDTO.HanhKhachDTO;
 import com.project.flightManagement.DTO.HoldSeatDTO.HoldSeatRequest;
+import com.project.flightManagement.Enum.ActiveEnum;
+import com.project.flightManagement.Enum.GioiTinhEnum;
 import com.project.flightManagement.Enum.VeEnum;
 import com.project.flightManagement.Mapper.HanhKhachMapper;
 import com.project.flightManagement.Model.HanhKhach;
@@ -71,50 +73,65 @@ public class BookingController {
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
-    @PostMapping("/holdSeat")
-    public ResponseEntity<ResponseData> holdSeat(@RequestBody HoldSeatRequest holdSeatRequest) {
+    @PostMapping("/holdSeats")
+    public ResponseEntity<ResponseData> holdSeats(@RequestBody List<HoldSeatRequest> holdSeatRequests) {
         ResponseData response = new ResponseData();
-        // 1. Kiểm tra đầu vào
-        if (holdSeatRequest.getIdVe() == null || holdSeatRequest.getUserId() == null ||
-                holdSeatRequest.getSeatId() == null || holdSeatRequest.getFlightId() == null) {
-            response.setMessage("Invalid request: missing required fields");
-            response.setStatusCode(400); // Bad Request
+        List<HoldSeatRequest> processedRequests = new ArrayList<>();
+        List<String> errors = new ArrayList<>();
+
+        for (HoldSeatRequest holdSeatRequest : holdSeatRequests) {
+            // 1. Kiểm tra đầu vào
+            if (holdSeatRequest.getIdVe() == null || holdSeatRequest.getUserId() == null ||
+                    holdSeatRequest.getSeatId() == null || holdSeatRequest.getFlightId() == null) {
+                errors.add("Invalid request for seatId " + holdSeatRequest.getSeatId() + ": missing required fields");
+                continue;
+            }
+
+            // 2. Kiểm tra xem vé có tồn tại không
+            Optional<Ve> optionalVe = veRepo.findById(holdSeatRequest.getIdVe());
+            if (!optionalVe.isPresent()) {
+                errors.add("Vé không tồn tại: idVe " + holdSeatRequest.getIdVe());
+                continue;
+            }
+
+            Ve ve = optionalVe.get();
+
+            // 3. Kiểm tra trạng thái của ghế (phải là AVAILABLE)
+            if (ve.getTrangThai() != VeEnum.EMPTY) {
+                errors.add("Ghế đã được giữ hoặc đã đặt: seatId " + holdSeatRequest.getSeatId());
+                continue;
+            }
+
+            // 4. Giữ ghế và cập nhật trạng thái
+            try {
+                holdSeatService.holdSeat(holdSeatRequest.getIdVe());
+
+                // Tạo một thông điệp để gửi tới các client qua Socket.IO
+                String message = "User " + holdSeatRequest.getUserId() + " has held seat " + holdSeatRequest.getSeatId() + " for flight " + holdSeatRequest.getFlightId();
+                messagingTemplate.convertAndSend("/topic/seatHeld", ve.getChoNgoi().getIdChoNgoi());
+
+                // Thêm vào danh sách đã xử lý thành công
+                processedRequests.add(holdSeatRequest);
+            } catch (Exception e) {
+                errors.add("Error holding seatId " + holdSeatRequest.getSeatId() + ": " + e.getMessage());
+            }
+        }
+
+        // Tạo phản hồi
+        if (!errors.isEmpty()) {
+            response.setMessage("Some seats could not be held.");
+            response.setStatusCode(400); // Partial Failure
+            response.setData(Map.of("processed", processedRequests, "errors", errors));
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
 
-        // 2. Kiểm tra xem vé có tồn tại không
-        Optional<Ve> optionalVe = veRepo.findById(holdSeatRequest.getIdVe());
-        if (!optionalVe.isPresent()) {
-            response.setMessage("Vé không tồn tại");
-            response.setStatusCode(404); // Not Found
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-        }
-
-        Ve ve = optionalVe.get();
-
-        // 3. Kiểm tra trạng thái của ghế (phải là AVAILABLE)
-        if (ve.getTrangThai() != VeEnum.EMPTY) {
-            response.setMessage("Ghế đã được giữ hoặc đã đặt");
-            response.setStatusCode(400); // Bad Request
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-        }
-
-        // 4. Giữ ghế và cập nhật trạng thái
-        holdSeatService.holdSeat(holdSeatRequest.getIdVe());
-
-        // Tạo một thông điệp để gửi tới các client qua Socket.IO
-        String message = "User " + holdSeatRequest.getUserId() + " has held seat " + holdSeatRequest.getSeatId() + " for flight " + holdSeatRequest.getFlightId();
-
-        // Gửi thông điệp qua Socket.IO
-        messagingTemplate.convertAndSend("/topic/seatHeld", ve.getChoNgoi().getIdChoNgoi());
-
-        // Phản hồi cho client
-        response.setMessage("Seat held successfully.");
-        response.setData(holdSeatRequest);
+        response.setMessage("All seats held successfully.");
+        response.setData(processedRequests);
         response.setStatusCode(200);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
 
     @PostMapping("/confirmBooking")
     public ResponseEntity<ResponseData> confirmBooking(@RequestBody List<HanhKhachDTO> hanhKhachList, HttpServletRequest request) {
@@ -156,12 +173,29 @@ public class BookingController {
                 // Thêm thông tin vé vào orderInfo
                 orderInfo.append(ve.getIdVe()).append(" ");
                 // Tạo hành khách, sau đó lưu hanh khach, sau đó set idHanhKhach của vé là hành khách trả ve sau khi lưu
-                HanhKhach hanhkhachEntity = HanhKhachMapper.toEntity(hanhKhach);
-                HanhKhach hkAfterSave = hanhKhachService.saveNewHanhKhachWhenBooking(hanhkhachEntity);
-                ve.setHanhKhach(hkAfterSave);
-                veRepo.save(ve);
+//                HanhKhach hanhkhachEntity = HanhKhachMapper.toEntity(hanhKhach);
+                Optional<HanhKhach> hk = hanhKhachService.findByCccd(hanhKhach.getCccd());
+                HanhKhach hkAfterSave;
+                if(hk.isPresent()){
+//                    hkAfterSave = hanhKhachService.saveNewHanhKhachWhenBooking(hk.get());
+                    ve.setHanhKhach(hk.get());
+                    veRepo.save(ve);
+                } else {
+                    HanhKhach hk2 = new HanhKhach();
+                    hk2.setHoTen(hanhKhach.getHoTen());
+                    hk2.setNgaySinh(hanhKhach.getNgaySinh());
+                    hk2.setSoDienThoai(hanhKhach.getSoDienThoai());
+                    hk2.setEmail(hanhKhach.getEmail());
+                    hk2.setCccd(hanhKhach.getCccd());
+                    hk2.setHoChieu(hanhKhach.getHoChieu());
+                    hk2.setGioiTinhEnum(GioiTinhEnum.valueOf(hanhKhach.getGioiTinhEnum().toString())); // Chuyển chuỗi thành Enum nếu cần
+                    hk2.setTrangThaiActive(ActiveEnum.valueOf(hanhKhach.getTrangThaiActive().toString())); // Chuyển chuỗi thành Enum nếu cần
+                    hkAfterSave = hanhKhachService.saveNewHanhKhachWhenBooking(hk2);
+                    ve.setHanhKhach(hkAfterSave);
+                    veRepo.save(ve);
+                }
                 // Lưu thông tin hành khách trong session (tùy chọn)
-                request.getSession().setAttribute("hanhKhach_" + hanhKhach.getIdVe(), hanhKhach);
+//                request.getSession().setAttribute("hanhKhach_" + hanhKhach.getIdVe(), hanhKhach);
             }
 
             // Xóa dấu phẩy cuối cùng trong orderInfo

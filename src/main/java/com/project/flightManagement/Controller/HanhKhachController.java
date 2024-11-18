@@ -1,6 +1,9 @@
 package com.project.flightManagement.Controller;
 
 import com.project.flightManagement.DTO.HanhKhachDTO.HanhKhachCreateDTO;
+import com.project.flightManagement.DTO.HanhKhachDTO.HanhKhachDTO;
+import com.project.flightManagement.Mapper.HanhKhachMapper;
+import com.project.flightManagement.Model.HanhKhach;
 import com.project.flightManagement.Payload.ResponseData;
 import com.project.flightManagement.Service.HanhKhachService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,10 +32,11 @@ public class HanhKhachController {
     public ResponseEntity<?> createHanhKhach(@RequestBody HanhKhachCreateDTO hanhKhachCreateDTO) {
         ResponseData responseData = new ResponseData();
         try {
-            hanhKhachService.createHanhKhach(hanhKhachCreateDTO);
+            HanhKhach hanhKhach = hanhKhachService.createHanhKhach(hanhKhachCreateDTO);
+            HanhKhachDTO hanhKhachDTO = HanhKhachMapper.toDTO(hanhKhach);
             responseData.setStatusCode(200);
             responseData.setMessage("Tạo mới khách hàng thành công");
-            responseData.setData("");
+            responseData.setData(hanhKhachDTO);
             return new ResponseEntity<>(responseData, HttpStatus.OK);
         } catch (Exception e) {
             responseData.setStatusCode(500);

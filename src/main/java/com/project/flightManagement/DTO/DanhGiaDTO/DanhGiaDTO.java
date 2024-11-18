@@ -22,7 +22,9 @@ public class DanhGiaDTO {
     private HangBay hangBay;
 
     @NotNull(message = "Không để trống khách hàng")
-    private KhachHang khachHang;
+    private int idKhachHang;
+
+        private String tenKhachHang;
 
     @NotNull(message = "Không để trống đánh giá sao")
     private DanhGiaEnum sao;

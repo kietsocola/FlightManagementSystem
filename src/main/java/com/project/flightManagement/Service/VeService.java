@@ -33,4 +33,6 @@ public interface VeService {
     List<VeDTO> getAllVeByIdChuyenBayNotPaging(int idChuyenBay);
 
     GiaVeDTO getAllGiaVe(int idChuyenBay);
+
+    public Iterable<VeDTO> getAllVe();
 }

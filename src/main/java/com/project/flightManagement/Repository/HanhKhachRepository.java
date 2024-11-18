@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface HanhKhachRepository extends JpaRepository<HanhKhach, Integer> {
@@ -46,4 +47,5 @@ public interface HanhKhachRepository extends JpaRepository<HanhKhach, Integer> {
                                              @Param("endDate") LocalDateTime endDate,
                                              @Param("groupByType") String groupByType);
 
+    Optional<HanhKhach> findByCccd(String cccd);
 }
