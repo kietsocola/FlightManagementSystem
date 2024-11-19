@@ -176,6 +176,13 @@ public class KhachHangServiceImpl implements KhachHangService {
         }
         return false;
     }
+    @Override
+    public boolean existsKhachHangByPhone(String phone) {
+        if(khRepo.existsKhachHangBySoDienThoai(phone)) {
+            return true;
+        }
+        return false;
+    }
 
     @Override
     public KhachHangBasicDTO getKhachHangByIdKhachHang_BASIC(int idKhachHang) {

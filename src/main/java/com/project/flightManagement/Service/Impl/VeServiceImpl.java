@@ -190,22 +190,17 @@ public class VeServiceImpl implements VeService {
     @Override
     @Transactional
     public void createAutoVeByIdChuyenBay(int idChuyenBay, double giaVeHangPhoThong, double giaVeHangThuongGia) {
-        System.out.println("hello createAutoVeByIdMayBay");
         int idMayBay = chuyenBayService.getChuyenBayEntityById(idChuyenBay).getMayBay().getIdMayBay();
-        System.out.println("id May bay la: " + idMayBay);
         Iterable<ChoNgoiDTO> listCN = choNgoiService.getChoNgoiByMayBay(mayBayService.getMayBayById(idMayBay).get());
         for (ChoNgoiDTO c : listCN) {
             VeCreateDTO veCreateDTO = new VeCreateDTO();
             veCreateDTO.setIdChuyenBay(idChuyenBay);
             veCreateDTO.setIdChoNgoi(c.getIdChoNgoi());
-            System.out.println("id Cho ngoi: " + c.getIdChoNgoi());
             veCreateDTO.setIdHangVe(c.getHangVe().getIdHangVe());
             veCreateDTO.setIdLoaiVe(1);
             if(c.getHangVe().getIdHangVe() == 1) { // hang pho thong
-                System.out.println("idHang ve th: " + c.getHangVe().getIdHangVe());
                 veCreateDTO.setGiaVe(giaVeHangPhoThong);
             } else if (c.getHangVe().getIdHangVe() == 2) { // hang thuong gia
-                System.out.println("idHang ve tg: " + c.getHangVe().getIdHangVe());
                 veCreateDTO.setGiaVe(giaVeHangThuongGia);
             }
             veService.createVe(veCreateDTO);

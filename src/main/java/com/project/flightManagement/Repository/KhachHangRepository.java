@@ -15,7 +15,7 @@ public interface KhachHangRepository extends JpaRepository<KhachHang, Integer> {
     KhachHang findBySoDienThoai(String sodienthoai);
     boolean existsKhachHangByEmail(String email);
     boolean existsKhachHangByCccd(String cccd);
-
+    boolean existsKhachHangBySoDienThoai(String phone);
     KhachHang findByCccd(String cccd);
 
     @Query("SELECT k FROM KhachHang k WHERE " +
