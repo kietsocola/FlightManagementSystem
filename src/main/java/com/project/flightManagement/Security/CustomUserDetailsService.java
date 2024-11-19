@@ -49,7 +49,10 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     private Collection<? extends GrantedAuthority> mapRoleToAuthorities(Quyen quyen) {
         return quyen.getChiTietQuyenList().stream()
-                .map(chiTietQuyen -> new SimpleGrantedAuthority(chiTietQuyen.getChucNang().getTenChucNang()+ "_" + chiTietQuyen.getHanhDong()))
+                .map(chiTietQuyen -> {
+                    String authority = chiTietQuyen.getChucNang().getTenChucNang() + "_" + chiTietQuyen.getHanhDong();
+                    return new SimpleGrantedAuthority(authority);
+                })
                 .collect(Collectors.toList());
     }
 

@@ -9,6 +9,8 @@ import com.project.flightManagement.Service.KhachHangService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.sql.Date;
+
 @Component
 public class KhachHangMapper {
     @Autowired
@@ -47,7 +49,7 @@ public class KhachHangMapper {
         }
 
         KhachHang khachHang = new KhachHang();
-
+        khachHang.setNgaySinh(khachHangCreateDTO.getNgaySinh());
         khachHang.setGioiTinhEnum( khachHangCreateDTO.getGioiTinh() );
         khachHang.setHoTen( khachHangCreateDTO.getHoTen() );
         khachHang.setEmail( khachHangCreateDTO.getEmail() );
@@ -84,7 +86,7 @@ public class KhachHangMapper {
         khachHangCreateDTO.setEmail( signupDTO.getEmail() );
         khachHangCreateDTO.setGioiTinh( signupDTO.getGioiTinh() );
         khachHangCreateDTO.setHoTen( signupDTO.getHoTen() );
-        khachHangCreateDTO.setNgaySinh( signupDTO.getNgaySinh() );
+        khachHangCreateDTO.setNgaySinh(signupDTO.getNgaySinh());
         khachHangCreateDTO.setSoDienThoai( signupDTO.getSoDienThoai() );
 
         return khachHangCreateDTO;

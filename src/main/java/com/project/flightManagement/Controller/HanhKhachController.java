@@ -1,7 +1,8 @@
 package com.project.flightManagement.Controller;
 
 import com.project.flightManagement.DTO.HanhKhachDTO.HanhKhachCreateDTO;
-import com.project.flightManagement.Model.ChiTietHoaDon;
+import com.project.flightManagement.DTO.HanhKhachDTO.HanhKhachDTO;
+import com.project.flightManagement.Mapper.HanhKhachMapper;
 import com.project.flightManagement.Model.HanhKhach;
 import com.project.flightManagement.Payload.ResponseData;
 import com.project.flightManagement.Service.HanhKhachService;
@@ -18,7 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 import java.time.format.DateTimeParseException;
 
 @Controller
@@ -31,10 +31,11 @@ public class HanhKhachController {
     public ResponseEntity<?> createHanhKhach(@RequestBody HanhKhachCreateDTO hanhKhachCreateDTO) {
         ResponseData responseData = new ResponseData();
         try {
-            hanhKhachService.createHanhKhach(hanhKhachCreateDTO);
+            HanhKhach hanhKhach = hanhKhachService.createHanhKhach(hanhKhachCreateDTO);
+            HanhKhachDTO hanhKhachDTO = HanhKhachMapper.toDTO(hanhKhach);
             responseData.setStatusCode(200);
             responseData.setMessage("Tạo mới khách hàng thành công");
-            responseData.setData("");
+            responseData.setData(hanhKhachDTO);
             return new ResponseEntity<>(responseData, HttpStatus.OK);
         } catch (Exception e) {
             responseData.setStatusCode(500);
@@ -45,11 +46,10 @@ public class HanhKhachController {
         }
     }
 
-
     @GetMapping("/age-group/statistics")
     public ResponseEntity<?> getPassengerStatistics(@RequestParam String startDate,
-                                                    @RequestParam String endDate,
-                                                    @RequestParam String groupByType) {
+            @RequestParam String endDate,
+            @RequestParam String groupByType) {
         ResponseData responseData = new ResponseData();
         try {
             // Loại bỏ ký tự thừa
@@ -64,7 +64,8 @@ public class HanhKhachController {
             LocalDateTime endDateTime = endLocalDate.atStartOfDay();
 
             // Lấy dữ liệu thống kê
-            List<Map<String, Object>> statistics = hanhKhachService.getPassengerStatistics(startDateTime, endDateTime, groupByType.toUpperCase());
+            List<Map<String, Object>> statistics = hanhKhachService.getPassengerStatistics(startDateTime, endDateTime,
+                    groupByType.toUpperCase());
 
             // Phản hồi thành công
             responseData.setStatusCode(200);
@@ -81,6 +82,5 @@ public class HanhKhachController {
             return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
 
 }

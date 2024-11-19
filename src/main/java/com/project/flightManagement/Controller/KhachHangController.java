@@ -341,4 +341,10 @@ public class KhachHangController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @GetMapping("/totalKhachHang")
+    public ResponseEntity<Long> getTotalCustomerCount() {
+        long totalCustomers = khachHangService.tinhTongSoKhachHang();
+        return ResponseEntity.ok(totalCustomers);
+    }
+
 }

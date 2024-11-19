@@ -13,14 +13,17 @@ import java.util.Optional;
 public interface HanhKhachService {
     boolean existHanhKhachByIdHanhKhach(int idHanhKhach);
 
-//    boolean createHanhKhach(HanhKhach hanhKhach);
+    // boolean createHanhKhach(HanhKhach hanhKhach);
     HanhKhach createHanhKhach(HanhKhachCreateDTO hanhKhachCreateDTO);
+
     Optional<HanhKhach> getHanhKhachById(int idHanhKhach);
 
     HanhKhach updateHanhKhach(HanhKhachUpdateDTO hanhKhachUpdateDTO);
 
     HanhKhach saveNewHanhKhachWhenBooking(HanhKhach hk);
 
-    public List<Map<String, Object>> getPassengerStatistics(LocalDateTime startDate, LocalDateTime endDate, String groupByType);
+    public List<Map<String, Object>> getPassengerStatistics(LocalDateTime startDate, LocalDateTime endDate,
+            String groupByType);
 
+    Optional<HanhKhach> findByCccd(String cccd);
 }

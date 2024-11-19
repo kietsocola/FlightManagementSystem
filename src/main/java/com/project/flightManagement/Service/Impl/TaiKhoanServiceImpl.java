@@ -140,7 +140,7 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
             taiKhoan.setMatKhau(passwordEncoder.encode(signupDTO.getPassword()));
             taiKhoan.setKhachHang(khachHangNew);
             Quyen quyen = new Quyen();
-            quyen.setIdQuyen(1);
+            quyen.setIdQuyen(2);
             taiKhoan.setQuyen(quyen);
             taiKhoan.setTrangThaiActive(ActiveEnum.ACTIVE);
             taiKhoan.setThoiGianTao(LocalDate.now());

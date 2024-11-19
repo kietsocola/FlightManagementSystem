@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface HanhKhachRepository extends JpaRepository<HanhKhach, Integer> {
@@ -44,11 +45,8 @@ public interface HanhKhachRepository extends JpaRepository<HanhKhach, Integer> {
             "GROUP BY ageGroup, timeGroup " +
             "ORDER BY timeGroup, ageGroup")
     List<Object[]> findPassengerCountByGroup(@Param("startDate") LocalDateTime startDate,
-                                             @Param("endDate") LocalDateTime endDate,
-                                             @Param("groupByType") String groupByType);
+            @Param("endDate") LocalDateTime endDate,
+            @Param("groupByType") String groupByType);
 
-
-
-
-
+    Optional<HanhKhach> findByCccd(String cccd);
 }

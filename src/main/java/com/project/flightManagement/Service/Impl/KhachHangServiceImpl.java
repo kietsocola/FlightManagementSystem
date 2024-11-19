@@ -176,6 +176,13 @@ public class KhachHangServiceImpl implements KhachHangService {
         }
         return false;
     }
+    @Override
+    public boolean existsKhachHangByPhone(String phone) {
+        if(khRepo.existsKhachHangBySoDienThoai(phone)) {
+            return true;
+        }
+        return false;
+    }
 
     @Override
     public KhachHangBasicDTO getKhachHangByIdKhachHang_BASIC(int idKhachHang) {
@@ -217,7 +224,7 @@ public class KhachHangServiceImpl implements KhachHangService {
     }
     @Override
     public Map<String, Double> calculateGrowthRate(String period) {
-        Map<String, Double> growthRates = new HashMap<>();
+        Map<String, Double> growthRates = new LinkedHashMap<>();
 
         // Lấy thời gian hiện tại
         LocalDate now = LocalDate.now();
@@ -280,6 +287,11 @@ public class KhachHangServiceImpl implements KhachHangService {
         }
 
         return growthRates;
+    }
+
+    @Override
+    public long tinhTongSoKhachHang() {
+        return khRepo.count();
     }
 
     private double calculateRate(long previousCount, long currentCount) {
