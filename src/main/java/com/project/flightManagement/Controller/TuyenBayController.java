@@ -3,7 +3,11 @@ package com.project.flightManagement.Controller;
 
 import com.project.flightManagement.DTO.TuyenBayDTO.TuyenBayDTO;
 import com.project.flightManagement.Enum.ActiveEnum;
+import com.project.flightManagement.Model.SanBay;
+import com.project.flightManagement.Model.TuyenBay;
 import com.project.flightManagement.Payload.ResponseData;
+import com.project.flightManagement.Repository.SanBayRepository;
+import com.project.flightManagement.Repository.TuyenBayRepository;
 import com.project.flightManagement.Service.TuyenBayService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -25,6 +29,10 @@ public class TuyenBayController {
     @Autowired
     private TuyenBayService tuyenBayService;
     private ResponseData response = new ResponseData();
+    @Autowired
+    private SanBayRepository sanBayRepository;
+    @Autowired
+    private TuyenBayRepository tbRepo;
 
     @GetMapping("/getAllRoutes")
     public ResponseEntity<ResponseData> getAllTuyenBay() {
@@ -90,19 +98,51 @@ public class TuyenBayController {
             );
             response.setData(errors);
             response.setStatusCode(400);
+            response.setMessage("Validation failed for input data.");
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+
+        // Check if departure and arrival airports are the same
+        if (tuyenBayDTO.getIdSanBayBatDau()== tuyenBayDTO.getIdSanBayKetThuc()) {
+            response.setMessage("Departure and arrival airports cannot be the same.");
+            response.setData(null);
+            response.setStatusCode(400);
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+
+        // Check if departure and arrival airports exist
+        Optional<SanBay> existingSanBayBatDau = sanBayRepository.findById(tuyenBayDTO.getIdSanBayBatDau());
+        Optional<SanBay> existingSanBayKetThuc = sanBayRepository.findById(tuyenBayDTO.getIdSanBayKetThuc());
+
+        if (existingSanBayBatDau.isEmpty()) {
+            response.setMessage("Departure airport does not exist.");
+            response.setData(null);
+            response.setStatusCode(400);
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+
+        if (existingSanBayKetThuc.isEmpty()) {
+            response.setMessage("Arrival airport does not exist.");
+            response.setData(null);
+            response.setStatusCode(400);
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+
+        // Check if route already exists
+        SanBay sanBayBatDau = existingSanBayBatDau.get();
+        SanBay sanBayKetThuc = existingSanBayKetThuc.get();
+        Optional<TuyenBay> existingTuyenBay = tbRepo.findBySanBayBatDauAndSanBayKetThuc(sanBayBatDau, sanBayKetThuc);
+
+        if (existingTuyenBay.isPresent()) {
+            response.setMessage("Route already exists.");
+            response.setData(null);
+            response.setStatusCode(400);
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
 
         // Add new route
         try {
             Optional<TuyenBayDTO> savedRoute = tuyenBayService.addNewTuyenBay(tuyenBayDTO);
-
-            if(tuyenBayDTO.getIdSanBayBatDau()== tuyenBayDTO.getIdSanBayKetThuc()){
-                response.setMessage("No duplicate arrival and departure.");
-                response.setData(null);
-                response.setStatusCode(500);
-                return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-            }
 
             if (savedRoute.isPresent()) {
                 response.setMessage("Route saved successfully!");
@@ -123,42 +163,75 @@ public class TuyenBayController {
         }
     }
 
+
     @PutMapping("/updateRoute/{idTuyenBay}")
-    public ResponseEntity<ResponseData> updateTuyenBay(@PathVariable("idTuyenBay") Integer idTuyenBay, @Valid @RequestBody TuyenBayDTO tuyenBayDTO, BindingResult bindingResult) {
+    public ResponseEntity<ResponseData> updateTuyenBay(
+            @PathVariable("idTuyenBay") Integer idTuyenBay,
+            @Valid @RequestBody TuyenBayDTO tuyenBayDTO,
+            BindingResult bindingResult) {
         ResponseData response = new ResponseData();
 
-        // Handle validation errors
+        // Xử lý lỗi validation
         if (bindingResult.hasErrors()) {
             Map<String, String> errors = new HashMap<>();
             bindingResult.getFieldErrors().forEach(error ->
-                    errors.put(error.getField(), error.getDefaultMessage()) // Lấy thông báo lỗi cụ thể từ validation
+                    errors.put(error.getField(), error.getDefaultMessage())
             );
             response.setData(errors);
-            response.setMessage("Validation failed for the provided data."); // Thông báo chung cho lỗi
+            response.setMessage("Validation failed for the provided data.");
             response.setStatusCode(400);
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
 
-        // Update existing route
         try {
-            Optional<TuyenBayDTO> updatedRoute = tuyenBayService.updateTuyenBay(idTuyenBay, tuyenBayDTO);
-
-            if(tuyenBayDTO.getIdSanBayBatDau()== tuyenBayDTO.getIdSanBayKetThuc()){
-                response.setMessage("No duplicate arrival and departure.");
+            // Kiểm tra sân bay đi và đến
+            if (tuyenBayDTO.getIdSanBayBatDau()== tuyenBayDTO.getIdSanBayKetThuc()) {
+                response.setMessage("Departure and arrival airports cannot be the same.");
                 response.setData(null);
-                response.setStatusCode(500);
-                return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+                response.setStatusCode(400);
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
             }
 
+            Optional<SanBay> sanBayBatDau = sanBayRepository.findById(tuyenBayDTO.getIdSanBayBatDau());
+            Optional<SanBay> sanBayKetThuc = sanBayRepository.findById(tuyenBayDTO.getIdSanBayKetThuc());
+
+            if (sanBayBatDau.isEmpty()) {
+                response.setMessage("Departure airport with ID " + tuyenBayDTO.getIdSanBayBatDau() + " does not exist.");
+                response.setData(null);
+                response.setStatusCode(400);
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            }
+
+            if (sanBayKetThuc.isEmpty()) {
+                response.setMessage("Arrival airport with ID " + tuyenBayDTO.getIdSanBayKetThuc() + " does not exist.");
+                response.setData(null);
+                response.setStatusCode(400);
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            }
+
+            // Kiểm tra trùng lặp tuyến bay
+            SanBay sanBayStart = sanBayBatDau.get();
+            SanBay sanBayEnd = sanBayKetThuc.get();
+            Optional<TuyenBay> existingRoute = tbRepo.findBySanBayBatDauAndSanBayKetThuc(sanBayStart, sanBayEnd);
+
+            if (existingRoute.isPresent()) {
+                response.setMessage("Route already exists.");
+                response.setData(null);
+                response.setStatusCode(400);
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            }
+
+            // Thực hiện cập nhật tuyến bay
+            Optional<TuyenBayDTO> updatedRoute = tuyenBayService.updateTuyenBay(idTuyenBay, tuyenBayDTO);
             if (updatedRoute.isPresent()) {
                 response.setMessage("Route updated successfully!");
                 response.setData(updatedRoute.get());
-                response.setStatusCode(200); // OK
+                response.setStatusCode(200);
                 return new ResponseEntity<>(response, HttpStatus.OK);
             } else {
-                response.setMessage("Route with ID " + idTuyenBay + " not found!"); // Cung cấp ID cụ thể
+                response.setMessage("Route with ID " + idTuyenBay + " not found.");
                 response.setData(null);
-                response.setStatusCode(404); // Not Found
+                response.setStatusCode(404);
                 return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
             }
         } catch (Exception e) {
@@ -168,6 +241,7 @@ public class TuyenBayController {
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 
     @PutMapping("/blockRoute/{idTuyenBay}")
     public ResponseEntity<ResponseData> blockTuyenBay(@PathVariable int idTuyenBay){

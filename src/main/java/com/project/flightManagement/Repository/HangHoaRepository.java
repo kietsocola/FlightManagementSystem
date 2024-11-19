@@ -13,5 +13,7 @@ public interface HangHoaRepository extends JpaRepository<HangHoa, Integer> {
     @Query("SELECT hh FROM HangHoa hh WHERE " +
             "LOWER(hh.tenHangHoa) LIKE LOWER(CONCAT('%', :keyword, '%')) " )
     List<HangHoa> findByTenHangHoaContainingIgnoreCase(@Param("keyword") String keyword);
+
+
 }
 

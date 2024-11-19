@@ -7,6 +7,8 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import net.minidev.json.annotate.JsonIgnore;
+
 import java.util.Date;
 
 @Entity
@@ -37,6 +39,7 @@ public class Ve {
 
     @ManyToOne
     @JoinColumn(name = "id_hanh_khach", nullable = true)
+    @JsonIgnore
     private HanhKhach hanhKhach;
 
     @ManyToOne

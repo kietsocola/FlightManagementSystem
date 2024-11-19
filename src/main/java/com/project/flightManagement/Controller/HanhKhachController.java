@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 import java.time.format.DateTimeParseException;
 
 @Controller
@@ -47,11 +46,10 @@ public class HanhKhachController {
         }
     }
 
-
     @GetMapping("/age-group/statistics")
     public ResponseEntity<?> getPassengerStatistics(@RequestParam String startDate,
-                                                    @RequestParam String endDate,
-                                                    @RequestParam String groupByType) {
+            @RequestParam String endDate,
+            @RequestParam String groupByType) {
         ResponseData responseData = new ResponseData();
         try {
             // Loại bỏ ký tự thừa
@@ -66,7 +64,8 @@ public class HanhKhachController {
             LocalDateTime endDateTime = endLocalDate.atStartOfDay();
 
             // Lấy dữ liệu thống kê
-            List<Map<String, Object>> statistics = hanhKhachService.getPassengerStatistics(startDateTime, endDateTime, groupByType.toUpperCase());
+            List<Map<String, Object>> statistics = hanhKhachService.getPassengerStatistics(startDateTime, endDateTime,
+                    groupByType.toUpperCase());
 
             // Phản hồi thành công
             responseData.setStatusCode(200);
@@ -83,6 +82,5 @@ public class HanhKhachController {
             return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
 
 }

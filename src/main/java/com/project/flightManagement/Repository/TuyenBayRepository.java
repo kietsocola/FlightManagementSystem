@@ -1,6 +1,7 @@
 package com.project.flightManagement.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.project.flightManagement.Model.SanBay;
 import com.project.flightManagement.Model.TuyenBay;
@@ -12,6 +13,8 @@ public interface TuyenBayRepository extends JpaRepository<TuyenBay, Integer> {
     TuyenBay findBySanBayBatDau(SanBay idSanBay);
 
     TuyenBay findBySanBayKetThuc(SanBay idSanBay);
+
+    Optional<TuyenBay> findBySanBayBatDauAndSanBayKetThuc(SanBay sanBayBatDau, SanBay sanBayKetThuc);
 
     @Query("SELECT tb FROM TuyenBay tb WHERE " +
             "LOWER(tb.sanBayBatDau) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +

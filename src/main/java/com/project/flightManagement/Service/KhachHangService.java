@@ -26,8 +26,10 @@ public interface KhachHangService {
     KhachHang createKhachHang(KhachHangCreateDTO khachHangCreateDTO);
     boolean existsKhachHangByEmail(String email);
     boolean existsKhachHangByCccd(String cccd);
+    boolean existsKhachHangByPhone(String phone);
     KhachHangBasicDTO getKhachHangByIdKhachHang_BASIC(int idKhachHang);
     boolean updatePoint(int idKH, int point, boolean isUse);
     List<KhachHangDTO> getKhachHangChuaCoTaiKhoan();
     public Map<String, Double> calculateGrowthRate(String period);
+    public long tinhTongSoKhachHang();
 }
