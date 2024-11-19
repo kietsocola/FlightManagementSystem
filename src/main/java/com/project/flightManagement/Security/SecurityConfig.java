@@ -43,7 +43,6 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests((request) -> request
-                        .requestMatchers("**").permitAll()
                         .requestMatchers("/auth/**").permitAll()
                         //Tai khoan
                         .requestMatchers(HttpMethod.GET, "/taikhoan/**").hasAuthority("Quản lí tài khoản_VIEW")
@@ -143,12 +142,12 @@ public class SecurityConfig {
                         //Nhan vien
                         .requestMatchers(HttpMethod.GET, "/admin/nhanvien/**").hasAuthority("Quản lí nhân viên_VIEW")
                         .requestMatchers(HttpMethod.POST, "/admin/nhanvien/addnhanvien").hasAuthority("Quản lí nhân viên_CREATE")
-                        .requestMatchers(HttpMethod.PUT, "/admin/nhanvien/**").hasAuthority("Quản lí nhân viên_CREATE")
+                        .requestMatchers(HttpMethod.PUT, "/admin/nhanvien/**").hasAuthority("Quản lí nhân viên_EDIT")
                         //May Bay
                         .requestMatchers(HttpMethod.GET, "/admin/maybay/**").hasAuthority("Quản lí máy bay_VIEW")
                         .requestMatchers(HttpMethod.POST,"/admin/maybay/**").hasAuthority("Quản lí máy bay_CREATE")
                         .requestMatchers(HttpMethod.PUT, "/admin/maybay/**").hasAuthority("Quản lí máy bay_EDIT")
-                        .anyRequest().authenticated());
+                        .anyRequest().permitAll());
         http.sessionManagement(session ->session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
