@@ -1,15 +1,13 @@
 package com.project.flightManagement.Service.Impl;
 
 import com.project.flightManagement.DTO.ChiTietHoaDonDTO.ChiTietHoaDonDTO;
+import com.project.flightManagement.DTO.HanhKhach_HangHoaDTO;
 import com.project.flightManagement.DTO.HangHoaDTO.HangHoaDTO;
-import com.project.flightManagement.DTO.HoaDonDTO.HoaDonDTO;
 import com.project.flightManagement.DTO.VeDTO.VeDTO;
 import com.project.flightManagement.Mapper.ChiTietHoaDonMapper;
 import com.project.flightManagement.Mapper.HangHoaMapper;
-import com.project.flightManagement.Mapper.HoaDonMapper;
 import com.project.flightManagement.Model.ChiTietHoaDon;
 import com.project.flightManagement.Model.HangHoa;
-import com.project.flightManagement.Model.HoaDon;
 import com.project.flightManagement.Repository.ChiTietHoaDonRepository;
 import com.project.flightManagement.Service.ChiTietHoaDonService;
 
@@ -19,7 +17,6 @@ import com.project.flightManagement.Service.VeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Collections;
 import java.util.List;
@@ -159,4 +156,19 @@ public class ChiTietHoaDonServiceImpl implements ChiTietHoaDonService {
             return null;
         }
     }
+
+
+
+        public List<HanhKhach_HangHoaDTO> getHangHoa_HanhKhach() {
+            try {
+                return chiTietHoaDonReposity.findAllChiTietHoaDonWithHanhKhach();
+            } catch (Exception e) {
+                System.err.println("Error fetching data: " + e.getMessage());
+                return Collections.emptyList();
+            }
+        }
+
+
+
+
 }

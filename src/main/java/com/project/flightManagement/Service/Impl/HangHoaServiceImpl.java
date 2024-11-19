@@ -4,6 +4,7 @@ import com.project.flightManagement.DTO.HangHoaDTO.HangHoaDTO;
 import com.project.flightManagement.Enum.ActiveEnum;
 import com.project.flightManagement.Mapper.HangHoaMapper;
 import com.project.flightManagement.Model.HangHoa;
+import com.project.flightManagement.Model.HanhKhach;
 import com.project.flightManagement.Model.LoaiHangHoa;
 import com.project.flightManagement.Repository.HangHoaRepository;
 import com.project.flightManagement.Repository.LoaiHangHoaRepository;
@@ -215,6 +216,8 @@ public class HangHoaServiceImpl implements HangHoaService {
                 .map(HangHoaMapper::toDTO)
                 .collect(Collectors.toList());
     }
+
+
 
 
 }

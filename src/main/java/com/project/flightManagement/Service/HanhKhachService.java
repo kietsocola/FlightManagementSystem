@@ -2,9 +2,9 @@ package com.project.flightManagement.Service;
 
 import com.project.flightManagement.DTO.HanhKhachDTO.HanhKhachCreateDTO;
 import com.project.flightManagement.DTO.HanhKhachDTO.HanhKhachUpdateDTO;
+import com.project.flightManagement.Model.ChiTietHoaDon;
 import com.project.flightManagement.Model.HanhKhach;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -22,4 +22,5 @@ public interface HanhKhachService {
     HanhKhach saveNewHanhKhachWhenBooking(HanhKhach hk);
 
     public List<Map<String, Object>> getPassengerStatistics(LocalDateTime startDate, LocalDateTime endDate, String groupByType);
+
 }

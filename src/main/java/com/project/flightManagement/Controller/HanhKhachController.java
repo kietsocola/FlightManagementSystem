@@ -1,6 +1,8 @@
 package com.project.flightManagement.Controller;
 
 import com.project.flightManagement.DTO.HanhKhachDTO.HanhKhachCreateDTO;
+import com.project.flightManagement.Model.ChiTietHoaDon;
+import com.project.flightManagement.Model.HanhKhach;
 import com.project.flightManagement.Payload.ResponseData;
 import com.project.flightManagement.Service.HanhKhachService;
 import org.springframework.beans.factory.annotation.Autowired;

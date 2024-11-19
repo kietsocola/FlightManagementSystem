@@ -1,8 +1,8 @@
 package com.project.flightManagement.Service;
 
 import com.project.flightManagement.DTO.ChiTietHoaDonDTO.ChiTietHoaDonDTO;
+import com.project.flightManagement.DTO.HanhKhach_HangHoaDTO;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Optional;
 import java.util.List;
@@ -16,4 +16,6 @@ public interface ChiTietHoaDonService {
     public List<ChiTietHoaDonDTO> getListChiTietHoaDonByHoaDon(int idHoaDon);
     public List<ChiTietHoaDonDTO> getListChiTietHoaDonSorted(int idHoaDon, String sortBy, String order);
     public List<ChiTietHoaDonDTO> getListChiTietHoaDonByKeyWord(int idHoaDon, String keyWord);
+    public List<HanhKhach_HangHoaDTO> getHangHoa_HanhKhach();
+
 }

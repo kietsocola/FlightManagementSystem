@@ -73,6 +73,15 @@ public class TuyenBayServiceImpl implements TuyenBayService {
             SanBay sanBayBatDau = existingSanBayBatDau.get();
             SanBay sanBayKetThuc = existingSanBayKetThuc.get();
 
+            // Kiểm tra xem tuyến bay có tồn tại trong database hay không
+            Optional<TuyenBay> existingTuyenBay = tbRepo.findBySanBayBatDauAndSanBayKetThuc(sanBayBatDau, sanBayKetThuc);
+
+            if (existingTuyenBay.isPresent()) {
+                System.err.println("Tuyến bay đã tồn tại: Bắt đầu = " + sanBayBatDau.getTenSanBay() +
+                        ", Kết thúc = " + sanBayKetThuc.getTenSanBay());
+                return Optional.empty();
+            }
+
             // Chuyển đổi DTO sang thực thể TuyenBay
             TuyenBay tb = TuyenBayMapper.toEntity(tuyenBayDTO);
             tb.setSanBayBatDau(sanBayBatDau);

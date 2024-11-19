@@ -1,7 +1,7 @@
 package com.project.flightManagement.Controller;
 
 import com.project.flightManagement.DTO.ChiTietHoaDonDTO.ChiTietHoaDonDTO;
-import com.project.flightManagement.DTO.HoaDonDTO.HoaDonDTO;
+import com.project.flightManagement.DTO.HanhKhach_HangHoaDTO;
 import com.project.flightManagement.Payload.ResponseData;
 import com.project.flightManagement.Service.ChiTietHoaDonService;
 import jakarta.validation.Valid;
@@ -188,4 +188,25 @@ public class ChiTietHoaDonController {
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
+
+    @GetMapping("/hanhkhach/hanghoa")
+    public ResponseEntity<ResponseData> getAllHangHoa_HanhKhach() {
+        ResponseData responseData = new ResponseData();
+        try {
+            List<HanhKhach_HangHoaDTO> hangHoaList = chiTietHoaDonService.getHangHoa_HanhKhach();
+            responseData.setStatusCode(200);
+            responseData.setMessage("Lấy dữ liệu thành công");
+            responseData.setData(hangHoaList);
+
+            return new ResponseEntity<>(responseData, HttpStatus.OK);
+        } catch (Exception e) {
+            responseData.setStatusCode(500);
+            responseData.setMessage("Lỗi xử lý: " + e.getMessage());
+            responseData.setData(null);
+
+            return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
 }
