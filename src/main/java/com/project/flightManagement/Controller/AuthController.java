@@ -157,6 +157,10 @@ public class AuthController {
                 errorMap.put("cccd", "CCCD đã tồn tại");
                 isError = true;
             }
+            if (khachHangService.existsKhachHangByCccd(signupDTO.getCccd())) {
+                errorMap.put("phone", "Số điện thoại đã tồn tại");
+                isError = true;
+            }
 
             // Kiểm tra nếu mật khẩu không khớp
             if (!signupDTO.getPassword().equals(signupDTO.getRePassword())) {
@@ -166,7 +170,7 @@ public class AuthController {
 
             // Nếu có lỗi, trả về thông báo với danh sách lỗi
             if (isError) {
-                responseData.setStatusCode(200);
+                responseData.setStatusCode(400);
                 responseData.setMessage("Đăng ký không thành công");
                 responseData.setData(errorMap); // Gán Map chứa các lỗi vào response
                 return new ResponseEntity<>(responseData, HttpStatus.CONFLICT);

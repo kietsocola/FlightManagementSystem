@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.vote.AuthenticatedVoter;
@@ -42,10 +43,17 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests((request) -> request
-                        .requestMatchers("/**").permitAll()
-                        .requestMatchers("/taikhoan/me").hasAuthority("quản lí tài khoản_VIEW")
-                        .requestMatchers("/quyen").hasAuthority("quản lí quyền_VIEW")
-                        .anyRequest().permitAll());
+                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/taikhoan/me").hasAuthority("Quản lí tài khoản_VIEW")
+                        .requestMatchers(HttpMethod.GET, "/taikhoan").hasAuthority("Quản lí tài khoản_VIEW")
+                        .requestMatchers(HttpMethod.GET, "/taikhoan").hasAuthority("Quản lí tài khoản_VIEW")
+                        .requestMatchers(HttpMethod.GET, "/taikhoan/{idTaiKhoan}").hasAuthority("Quản lí tài khoản_VIEW")
+                        .requestMatchers(HttpMethod.PUT, "/taikhoan/update_password").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/taikhoan/findByKeyWord").hasAuthority("Quản lí tài khoản_VIEW")
+                        .requestMatchers(HttpMethod.GET, "/taikhoan/getAllTaiKhoanSorted").hasAuthority("Quản lí tài khoản_VIEW")
+                        .requestMatchers(HttpMethod.POST, "/taikhoan/addNewTaiKhoan").hasAuthority("Quản lí tài khoản_CREATE")
+                        .requestMatchers(HttpMethod.PUT, "/taikhoan/updateTaiKhoan/{idTK}").hasAuthority("Quản lí tài khoản_EDIT")
+                        .anyRequest().authenticated());
         http.sessionManagement(session ->session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
