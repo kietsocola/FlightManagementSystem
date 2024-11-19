@@ -1,7 +1,7 @@
 package com.project.flightManagement.Service.Impl;
 
 import com.project.flightManagement.DTO.ChiTietHoaDonDTO.ChiTietHoaDonDTO;
-import com.project.flightManagement.DTO.HanhKhach_HangHoaDTO;
+import com.project.flightManagement.DTO.HangHoaDTO.HanhKhach_HangHoaDTO;
 import com.project.flightManagement.DTO.HangHoaDTO.HangHoaDTO;
 import com.project.flightManagement.DTO.VeDTO.VeDTO;
 import com.project.flightManagement.Mapper.ChiTietHoaDonMapper;

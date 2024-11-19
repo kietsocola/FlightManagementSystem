@@ -1,7 +1,7 @@
 package com.project.flightManagement.Controller;
 
 import com.project.flightManagement.DTO.ChiTietHoaDonDTO.ChiTietHoaDonDTO;
-import com.project.flightManagement.DTO.HanhKhach_HangHoaDTO;
+import com.project.flightManagement.DTO.HangHoaDTO.HanhKhach_HangHoaDTO;
 import com.project.flightManagement.Payload.ResponseData;
 import com.project.flightManagement.Service.ChiTietHoaDonService;
 import jakarta.validation.Valid;

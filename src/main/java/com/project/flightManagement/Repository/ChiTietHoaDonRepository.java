@@ -1,6 +1,6 @@
 package com.project.flightManagement.Repository;
 
-import com.project.flightManagement.DTO.HanhKhach_HangHoaDTO;
+import com.project.flightManagement.DTO.HangHoaDTO.HanhKhach_HangHoaDTO;
 import com.project.flightManagement.Model.ChiTietHoaDon;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -23,7 +23,7 @@ public interface ChiTietHoaDonRepository extends JpaRepository<ChiTietHoaDon, In
             "CAST(cthd.soTien AS string) LIKE CONCAT('%', :keyWord, '%')")
     List<ChiTietHoaDon> getChiTietHoaDonByKeyWord(@Param("idHoaDon") int idHoaDon, @Param("keyWord") String keyWord);
 
-    @Query("SELECT new com.project.flightManagement.DTO.HanhKhach_HangHoaDTO(hh.tenHangHoa, hk.hoTen, cthd.soTien) " +
+    @Query("SELECT new com.project.flightManagement.DTO.HangHoaDTO.HanhKhach_HangHoaDTO(hh.idHangHoa, hh.tenHangHoa,hk.idHanhKhach, hk.hoTen, cthd.soTien) " +
             "FROM ChiTietHoaDon cthd " +
             "JOIN cthd.hangHoa hh " +
             "JOIN cthd.ve v " +

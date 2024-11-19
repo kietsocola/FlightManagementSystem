@@ -1,7 +1,7 @@
 package com.project.flightManagement.Service;
 
 import com.project.flightManagement.DTO.ChiTietHoaDonDTO.ChiTietHoaDonDTO;
-import com.project.flightManagement.DTO.HanhKhach_HangHoaDTO;
+import com.project.flightManagement.DTO.HangHoaDTO.HanhKhach_HangHoaDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;

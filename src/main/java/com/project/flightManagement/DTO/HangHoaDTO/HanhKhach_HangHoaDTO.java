@@ -1,4 +1,4 @@
-package com.project.flightManagement.DTO;
+package com.project.flightManagement.DTO.HangHoaDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,7 +8,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class HanhKhach_HangHoaDTO {
+    private int idHangHoa;
     private String tenHangHoa;
+    private Integer idHanhKhach;
     private String tenHanhKhach;
     private double soTien;
 }
