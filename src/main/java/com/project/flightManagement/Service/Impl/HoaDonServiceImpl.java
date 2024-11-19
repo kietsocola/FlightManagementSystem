@@ -18,9 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -255,5 +253,24 @@ public class HoaDonServiceImpl implements HoaDonService {
     private LocalDateTime getEndOfQuarter(int quarter, int year) {
         int endMonth = quarter * 3;
         return LocalDateTime.of(year, endMonth, 1, 0, 0).with(TemporalAdjusters.lastDayOfMonth());
+    }
+
+    // Lấy doanh thu cho tất cả các năm
+    @Override
+    public Map<Integer, Double> getRevenueForAllYears() {
+        List<Integer> years = getAllYears();
+        Map<Integer, Double> revenueByYear = new HashMap<>();
+
+        for (Integer year : years) {
+            Double revenue = getRevenueByYear(year);
+            revenueByYear.put(year, revenue != null ? revenue : 0.0);
+        }
+
+        return revenueByYear;
+    }
+
+    // Lấy tất cả các năm từ cơ sở dữ liệu
+    public List<Integer> getAllYears() {
+        return hdRepo.findDistinctYears();
     }
 }
