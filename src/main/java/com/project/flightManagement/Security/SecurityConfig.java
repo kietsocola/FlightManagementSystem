@@ -43,6 +43,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests((request) -> request
+                        .requestMatchers("/**").permitAll()
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/taikhoan/me").hasAuthority("Quản lí tài khoản_VIEW")
                         .requestMatchers(HttpMethod.GET, "/taikhoan").hasAuthority("Quản lí tài khoản_VIEW")
