@@ -30,4 +30,5 @@ public interface KhachHangService {
     boolean updatePoint(int idKH, int point, boolean isUse);
     List<KhachHangDTO> getKhachHangChuaCoTaiKhoan();
     public Map<String, Double> calculateGrowthRate(String period);
+    public long tinhTongSoKhachHang();
 }

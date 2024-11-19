@@ -217,7 +217,7 @@ public class KhachHangServiceImpl implements KhachHangService {
     }
     @Override
     public Map<String, Double> calculateGrowthRate(String period) {
-        Map<String, Double> growthRates = new HashMap<>();
+        Map<String, Double> growthRates = new LinkedHashMap<>();
 
         // Lấy thời gian hiện tại
         LocalDate now = LocalDate.now();
@@ -280,6 +280,11 @@ public class KhachHangServiceImpl implements KhachHangService {
         }
 
         return growthRates;
+    }
+
+    @Override
+    public long tinhTongSoKhachHang() {
+        return khRepo.count();
     }
 
     private double calculateRate(long previousCount, long currentCount) {
