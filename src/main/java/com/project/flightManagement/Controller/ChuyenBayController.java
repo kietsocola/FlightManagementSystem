@@ -146,9 +146,11 @@ public class ChuyenBayController {
                     && !isDifferenceGreaterThanTwoHour(cb.getThoiGianBatDauDuTinh() , cbDTO.getThoiGianBatDauThucTe())
                     && !completed.name().equals(status.name())
                     && !cancled.name().equals(status.name())){
+                String sanbaybatdau = sanBayService.getSanBayById(cb.getTuyenBay().getIdSanBayBatDau()).get().getTenSanBay();
+                String sanbayketthuc = sanBayService.getSanBayById(cb.getTuyenBay().getIdSanBayKetThuc()).get().getTenSanBay();
                 System.out.println("id chuyen bay : " +  cb.getIdChuyenBay());
                 System.out.println("khoang thoi gian >  2 gio : " + !isDifferenceGreaterThanTwoHour(cb.getThoiGianBatDauDuTinh() , cbDTO.getThoiGianBatDauThucTe()));
-                response.setMessage("Chuyến bay này gần với thời gian của một chuyến bay khác có cùng tuyến bay : " + cb.getThoiGianBatDauDuTinh() + ".Phải cách nhau hơn 2 tiếng");
+                response.setMessage("Chuyến bay này gần với thời gian của một chuyến bay từ " +sanbaybatdau+ "->" + sanbayketthuc  + " có cùng tuyến bay : " + cb.getThoiGianBatDauDuTinh() + ".Phải cách nhau hơn 2 tiếng");
                 response.setData(null);
                 response.setStatusCode(409);
                 return new ResponseEntity<>(response, HttpStatus.CONFLICT);
@@ -161,9 +163,11 @@ public class ChuyenBayController {
                     && cb.getMayBay().getIdMayBay() == cbDTO.getMayBay().getIdMayBay()
                     && !isDifferenceGreaterThanTwoHour(cb.getThoiGianKetThucThucTe(), cbDTO.getThoiGianBatDauThucTe())
                     && completed.name().equals(status.name())) {
+                String sanbaybatdau = sanBayService.getSanBayById(cb.getTuyenBay().getIdSanBayBatDau()).get().getTenSanBay();
+                String sanbayketthuc = sanBayService.getSanBayById(cb.getTuyenBay().getIdSanBayKetThuc()).get().getTenSanBay();
                 System.out.println("id chuyen bay : " + cb.getIdChuyenBay());
                 System.out.println("khoang thoi gian >  2 gio : " + !isDifferenceGreaterThanTwoHour(cb.getThoiGianKetThucThucTe(), cbDTO.getThoiGianBatDauThucTe()));
-                response.setMessage("Máy bay này vừa kết thúc chuyến bay luc : " + cb.getThoiGianKetThucThucTe() + ".Hãy đợi 2 tiếng để có thể tạo chuyến bay với máy bay này");
+                response.setMessage("Đã của một chuyến bay từ " +sanbaybatdau+ "->" + sanbayketthuc  + " với thời gian : " + cb.getThoiGianBatDauDuTinh() + ".Hai chuyến bay có cùng tuyến bay phải cách nhau hơn 2 tiếng");
                 response.setData(null);
                 response.setStatusCode(409);
                 return new ResponseEntity<>(response, HttpStatus.CONFLICT);
@@ -229,9 +233,11 @@ public class ChuyenBayController {
                     && !isDifferenceGreaterThanTwoHour(cb.getThoiGianBatDauDuTinh() , cbDTO.getThoiGianBatDauThucTe())
                     && !completed.name().equals(status.name())
                     && !cancled.name().equals(status.name())){
+                String sanbaybatdau = sanBayService.getSanBayById(cb.getTuyenBay().getIdSanBayBatDau()).get().getTenSanBay();
+                String sanbayketthuc = sanBayService.getSanBayById(cb.getTuyenBay().getIdSanBayKetThuc()).get().getTenSanBay();
                 System.out.println("id chuyen bay : " +  cb.getIdChuyenBay());
                 System.out.println("khoang thoi gian >  2 gio : " + !isDifferenceGreaterThanTwoHour(cb.getThoiGianBatDauDuTinh() , cbDTO.getThoiGianBatDauThucTe()));
-                response.setMessage("Chuyến bay này gần với thời gian của một chuyến bay khác có cùng tuyến bay : " + cb.getThoiGianBatDauDuTinh() + ".Phải cách nhau hơn 2 tiếng");
+                response.setMessage("Đã của một chuyến bay từ " +sanbaybatdau+ "->" + sanbayketthuc  + " với thời gian : " + cb.getThoiGianBatDauDuTinh() + ".Hai chuyến bay có cùng tuyến bay phải cách nhau hơn 2 tiếng");
                 response.setData(null);
                 response.setStatusCode(409);
                 return new ResponseEntity<>(response, HttpStatus.CONFLICT);

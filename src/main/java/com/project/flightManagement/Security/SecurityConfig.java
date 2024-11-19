@@ -37,6 +37,9 @@ public class SecurityConfig {
     @Autowired
     @Lazy
     private CustomUserDetailsService customUserDetailsService;
+
+
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -142,8 +145,8 @@ public class SecurityConfig {
                         .requestMatchers("/getLoaiHDByKeyWord").hasAuthority("Quản lí loại hoá đơn_VIEW")
                         //Nhan vien
                         .requestMatchers(HttpMethod.GET, "/admin/nhanvien/**").hasAuthority("Quản lí nhân viên_VIEW")
-                        .requestMatchers(HttpMethod.POST, "/admin/nhanvien/addnhanvien").hasAuthority("Quản lí nhân viên_CREATE")
-                        .requestMatchers(HttpMethod.PUT, "/admin/nhanvien/**").hasAuthority("Quản lí nhân viên_CREATE")
+                        .requestMatchers(HttpMethod.POST, "/admin/nhanvien/**").hasAuthority("Quản lí nhân viên_CREATE")
+                        .requestMatchers(HttpMethod.PUT, "/admin/nhanvien/**").hasAuthority("Quản lí nhân viên_EDIT")
                         //May Bay
                         .requestMatchers(HttpMethod.GET, "/admin/maybay/**").hasAuthority("Quản lí máy bay_VIEW")
                         .requestMatchers(HttpMethod.POST,"/admin/maybay/**").hasAuthority("Quản lí máy bay_CREATE")

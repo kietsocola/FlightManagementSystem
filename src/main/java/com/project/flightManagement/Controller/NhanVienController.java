@@ -249,7 +249,11 @@ public class NhanVienController {
 
         if(type.equals("email")){
                 Iterable<NhanVienDTO> existingEmail = nvservice.getNhanVienByEmail(nvDTO.getEmail());
-                if(existingEmail.iterator().hasNext()){
+                int count = 0;
+                for (NhanVienDTO nhanVien : existingEmail) {
+                    count++;
+                }
+                if(count > 1){
                     NhanVienDTO error = new NhanVienDTO();
                     error.setEmail("Email đã tồn tại");
                     response.setMessage("Nhan vien voi email nay da ton tai");
@@ -260,7 +264,11 @@ public class NhanVienController {
         }
         else if(type.equals("cccd")){
                 Iterable<NhanVienDTO> existingCccd = nvservice.getNhanVienByCCCD(nvDTO.getCccd());
-                if(existingCccd.iterator().hasNext()){
+            int count = 0;
+            for (NhanVienDTO nhanVien : existingCccd) {
+                count++;
+            }
+                if(count > 1){
                     NhanVienDTO error = new NhanVienDTO();
                     error.setCccd("CCCD đã tồn tại");
                     response.setMessage("Nhan vien voi can cuoc cong dan nay da ton tai");
@@ -271,7 +279,11 @@ public class NhanVienController {
         }
         else if(type.equals("sdt")){
                 Iterable<NhanVienDTO> existingSDT = nvservice.getNhanVienBySDT(nvDTO.getSoDienThoai());
-                if(existingSDT.iterator().hasNext()){
+            int count = 0;
+            for (NhanVienDTO nhanVien : existingSDT) {
+                count++;
+            }
+                if(count > 1){
                     NhanVienDTO error = new NhanVienDTO();
                     error.setSoDienThoai("Số điện thoại đã tồn tại");
                     response.setMessage("Nhan vien voi so dien thoai nay da ton tai");
