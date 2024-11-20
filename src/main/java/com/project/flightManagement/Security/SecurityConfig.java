@@ -101,8 +101,8 @@ public class SecurityConfig {
                         //Hoa đơn
 //                        .requestMatchers("/getAllHoaDon").hasAuthority("Quản lí hoá đơn_VIEW")
 //                        .requestMatchers("/getHoaDonById/{idHD}").hasAuthority("Quản lí hoá đơn_VIEW")
-                        .requestMatchers("/addHoaDon").hasAuthority("Quản lí hoá đơn_CREATE")
-                        .requestMatchers("/updateHoaDon/{idHD}").hasAuthority("Quản lí hoá đơn_EDIT")
+//                        .requestMatchers("/addHoaDon").hasAuthority("Quản lí hoá đơn_CREATE")
+//                        .requestMatchers("/updateHoaDon/{idHD}").hasAuthority("Quản lí hoá đơn_EDIT")
 //                        .requestMatchers("/getListChiTietHoaDon/{idHD}").hasAuthority("Quản lí hoá đơn_VIEW")
 //                        .requestMatchers("/getHoaDonByKeyWord").hasAuthority("Quản lí hoá đơn_VIEW")
 //                        .requestMatchers("/getAllHoaDonSorted").hasAuthority("Quản lí hoá đơn_VIEW")
