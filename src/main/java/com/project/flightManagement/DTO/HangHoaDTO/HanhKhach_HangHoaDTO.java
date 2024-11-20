@@ -12,5 +12,6 @@ public class HanhKhach_HangHoaDTO {
     private String tenHangHoa;
     private Integer idHanhKhach;
     private String tenHanhKhach;
+    private String cccd;
     private double giaHangHoa;
 }

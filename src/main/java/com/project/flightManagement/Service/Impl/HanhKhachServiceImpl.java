@@ -52,21 +52,6 @@ public class HanhKhachServiceImpl implements HanhKhachService {
     }
 
 
-    public List<Map<String, Object>> getPassengerStatistics(LocalDateTime startDate, LocalDateTime endDate, String groupByType) {
-        List<Object[]> results = hanhKhachRepository.findPassengerCountByGroup(startDate, endDate, groupByType);
-
-        List<Map<String, Object>> formattedResults = new ArrayList<>();
-        for (Object[] row : results) {
-            Map<String, Object> data = new HashMap<>();
-            data.put("timeGroup", row[1]); // Tháng, quý hoặc năm
-            data.put("ageGroup", row[0]); // Nhóm tuổi
-            data.put("passengerCount", row[2]); // Số lượng hành khách
-            formattedResults.add(data);
-        }
-
-        return formattedResults;
-    }
-
     @Override
     public Optional<HanhKhach> findByCccd(String cccd) {
         return hanhKhachRepository.findByCccd(cccd);

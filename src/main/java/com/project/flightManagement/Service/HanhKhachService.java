@@ -22,8 +22,5 @@ public interface HanhKhachService {
 
     HanhKhach saveNewHanhKhachWhenBooking(HanhKhach hk);
 
-    public List<Map<String, Object>> getPassengerStatistics(LocalDateTime startDate, LocalDateTime endDate,
-            String groupByType);
-
     Optional<HanhKhach> findByCccd(String cccd);
 }

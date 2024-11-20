@@ -16,11 +16,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.math.BigInteger;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -256,4 +256,62 @@ public class HoaDonServiceImpl implements HoaDonService {
         int endMonth = quarter * 3;
         return LocalDateTime.of(year, endMonth, 1, 0, 0).with(TemporalAdjusters.lastDayOfMonth());
     }
+
+
+@Override
+    public Map<String, Map<String, Long>> getStatistics(String period) {
+        Map<String, Map<String, Long>> statistics = new LinkedHashMap<>();
+        LocalDate now = LocalDate.now();
+
+        switch (period.toLowerCase()) {
+            case "monthly":
+                for (int i = 1; i <= 12; i++) {
+                    LocalDate startOfMonth = now.withMonth(i).withDayOfMonth(1);
+                    LocalDate endOfMonth = startOfMonth.withDayOfMonth(startOfMonth.lengthOfMonth());
+
+                    Map<String, Long> ageGroupStats = processStatistics(startOfMonth, endOfMonth, now);
+                    statistics.put("Month " + i, ageGroupStats);
+                }
+                break;
+
+            case "quarterly":
+                for (int i = 1; i <= 4; i++) {
+                    LocalDate startOfQuarter = now.withMonth((i - 1) * 3 + 1).withDayOfMonth(1);
+                    LocalDate endOfQuarter = startOfQuarter.plusMonths(2).withDayOfMonth(startOfQuarter.plusMonths(2).lengthOfMonth());
+
+                    Map<String, Long> ageGroupStats = processStatistics(startOfQuarter, endOfQuarter, now);
+                    statistics.put("Quarter " + i, ageGroupStats);
+                }
+                break;
+
+            case "yearly":
+                for (int i = now.getYear() - 5; i <= now.getYear(); i++) {
+                    LocalDate startOfYear = LocalDate.of(i, 1, 1);
+                    LocalDate endOfYear = startOfYear.withDayOfYear(startOfYear.lengthOfYear());
+
+                    Map<String, Long> ageGroupStats = processStatistics(startOfYear, endOfYear, now);
+                    statistics.put("Year " + i, ageGroupStats);
+                }
+                break;
+
+            default:
+                throw new IllegalArgumentException("Invalid period. Use 'monthly', 'quarterly', or 'yearly'.");
+        }
+
+        return statistics;
+    }
+
+    private Map<String, Long> processStatistics(LocalDate startDate, LocalDate endDate, LocalDate referenceDate) {
+        List<Object[]> rawStats = hdRepo.getTicketsByAgeGroup(referenceDate, startDate, endDate);
+
+        Map<String, Long> stats = new LinkedHashMap<>();
+        for (Object[] record : rawStats) {
+            String ageGroup = ((Long) record[0]).intValue() + "-" + (((Long) record[0]).intValue() + 9);
+            Long count = (Long) record[1];
+            stats.put(ageGroup, count);
+        }
+        return stats;
+    }
 }
+
+

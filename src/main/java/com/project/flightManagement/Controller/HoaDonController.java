@@ -439,4 +439,20 @@ public class HoaDonController {
         response.setMessage("Lấy doanh thu từ "+startYear+" đến "+endYear+ " thành công");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    @GetMapping("/getTicketsByAgeGroup")
+    public ResponseEntity<Map<String, Object>> getTicketsByAgeGroup(
+            @RequestParam("period") String period) {
+        // Gọi service để lấy dữ liệu thống kê
+        Map<String, Map<String, Long>> statistics = hoaDonService.getStatistics(period);
+
+        // Tạo phản hồi chuẩn hóa
+        Map<String, Object> response = new HashMap<>();
+        response.put("statusCode", 200);
+        response.put("message", "Get tickets by age group successfully");
+        response.put("data", statistics);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
 }

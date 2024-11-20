@@ -5,6 +5,7 @@ import com.project.flightManagement.DTO.HoaDonDTO.HoaDonDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -27,5 +28,5 @@ public interface HoaDonService {
     public Double getRevenueBetweenMonths(int startMonth, int startYear, int endMonth, int endYear);
     public Double getRevenueBetweenQuarters(int startQuarter, int startYear, int endQuarter, int endYear);
     public Double getRevenueBetweenYears(int startYear, int endYear);
-
+    public Map<String, Map<String, Long>> getStatistics(String period);
 }
