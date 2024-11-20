@@ -90,14 +90,14 @@ public class TaiKhoanController {
     @GetMapping("/me")
     public ResponseEntity<?> getMyInfo(Authentication authentication) {
         ResponseData responseData = new ResponseData();
-        String userName = authentication.getName();
         TaiKhoanResponseDTO taiKhoan = new TaiKhoanResponseDTO();
         if(authentication == null) {
             responseData.setData("");
             responseData.setStatusCode(400);
             responseData.setMessage("Token het han roi, khong lay duoc thong tin");
-            return new ResponseEntity<>(responseData, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(responseData, HttpStatus.FORBIDDEN);
         }
+        String userName = authentication.getName();
         try {
             Optional<TaiKhoan> taiKhoanOptional = taiKhoanService.getTaiKhoanByTenDangNhap(userName);
             if(taiKhoanOptional.isPresent()) {
