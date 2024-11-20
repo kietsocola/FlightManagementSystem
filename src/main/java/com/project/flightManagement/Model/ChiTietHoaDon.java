@@ -29,7 +29,7 @@ public class ChiTietHoaDon {
     @JsonIgnore
     private HangHoa hangHoa;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_ve", nullable = false)
     @JsonBackReference
     private Ve ve;

@@ -9,9 +9,7 @@ import com.project.flightManagement.Enum.HoaDonEnum;
 import com.project.flightManagement.Mapper.HangHoaMapper;
 import com.project.flightManagement.Mapper.HoaDonMapper;
 import com.project.flightManagement.Payload.ResponseData;
-import com.project.flightManagement.Service.ChiTietHoaDonService;
-import com.project.flightManagement.Service.HangHoaService;
-import com.project.flightManagement.Service.HoaDonService;
+import com.project.flightManagement.Service.*;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,6 +29,9 @@ public class HoaDonController {
     private ChiTietHoaDonService chiTietHoaDonService;
     @Autowired
     HangHoaService hangHoaService;
+
+    @Autowired
+    private EmailService emailService;
     private ResponseData response = new ResponseData();
 
     @GetMapping("/getAllHoaDon")
@@ -336,6 +337,9 @@ public class HoaDonController {
             savedHoaDon.get().setTongTien(tongTien);
             savedHoaDon.get().setSoLuongVe(soLuongVe);
             hoaDonService.updateHoaDon(savedHoaDon.get());
+            String email = savedHoaDon.get().getKhachHang().getEmail();
+            System.out.println("Email khach hang: " + savedHoaDon.get().getKhachHang().getEmail());
+            emailService.sendHtmlVeOnlineEmail(email, savedHoaDon.get().getIdHoaDon());
 
             response.setMessage("Save Hoa Don successfully!");
             response.setData(savedHoaDon.get());

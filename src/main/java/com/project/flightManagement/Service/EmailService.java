@@ -12,5 +12,5 @@ public interface EmailService {
     void sendHtmlEMail(Email email, String resetLink, String userName);
     void sendEmailWithAttachment(Email email);
 
-    void sendHtmlVeOnlineEmail(Email email, VeDTO veDTO);
+    void sendHtmlVeOnlineEmail(String email, int idHoaDon);
 }
