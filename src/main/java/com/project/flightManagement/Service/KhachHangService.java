@@ -6,6 +6,7 @@ import com.project.flightManagement.DTO.KhachHangDTO.KhachHangCreateDTO;
 import com.project.flightManagement.Model.KhachHang;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -32,4 +33,5 @@ public interface KhachHangService {
     List<KhachHangDTO> getKhachHangChuaCoTaiKhoan();
     public Map<String, Double> calculateGrowthRate(String period);
     public long tinhTongSoKhachHang();
+    public List<KhachHangDTO> findKhachHangByNgayTaoBetween(LocalDate startDate, LocalDate endDate);
 }
