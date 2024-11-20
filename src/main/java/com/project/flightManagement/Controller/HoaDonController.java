@@ -6,6 +6,7 @@ import com.project.flightManagement.DTO.HoaDonDTO.HoaDonCreateDTO;
 import com.project.flightManagement.DTO.HoaDonDTO.HoaDonDTO;
 
 import com.project.flightManagement.Enum.HoaDonEnum;
+import com.project.flightManagement.Mapper.HangHoaMapper;
 import com.project.flightManagement.Mapper.HoaDonMapper;
 import com.project.flightManagement.Payload.ResponseData;
 import com.project.flightManagement.Service.ChiTietHoaDonService;
@@ -293,14 +294,34 @@ public class HoaDonController {
         }
         double tongTien = 0;
         int soLuongVe = 0;
+        System.out.println("hang hoa list: "+hoaDonCreateDTO.getHangHoaDTOList());
         // Tiến hành lưu hóa đơn
         Optional<HoaDonDTO> savedHoaDon = hoaDonService.addHoaDon(hoaDonCreateDTO.getHoaDonDTO());
         if (savedHoaDon.isPresent()) {
+
             // Thêm chi tiết hóa đơn
-            if (hoaDonCreateDTO.getChiTietHoaDonDTOList() != null) {
-                for (ChiTietHoaDonDTO chiTietHoaDonDTO : hoaDonCreateDTO.getChiTietHoaDonDTOList()) {
-                    System.out.println(chiTietHoaDonDTO);
-                    chiTietHoaDonDTO.setHoaDon(HoaDonMapper.toEntity(savedHoaDon.get())); // Gán ID hóa đơn cho chi tiết
+            if (hoaDonCreateDTO.getChiTietHoaDonDTOList() != null
+                    && hoaDonCreateDTO.getHangHoaDTOList() != null) {
+
+                List<ChiTietHoaDonDTO> listCTHD = hoaDonCreateDTO.getChiTietHoaDonDTOList();
+                List<HangHoaDTO> listHangHoa = hoaDonCreateDTO.getHangHoaDTOList();
+
+                // Kiểm tra nếu số lượng hàng hóa không đủ so với chi tiết hóa đơn
+                if (listHangHoa.size() < listCTHD.size()) {
+                    throw new IllegalArgumentException("Số lượng hàng hóa không đủ để gán cho chi tiết hóa đơn");
+                }
+
+                // Duyệt qua danh sách chi tiết hóa đơn
+                for (int i = 0; i < listCTHD.size(); i++) {
+                    ChiTietHoaDonDTO chiTietHoaDonDTO = listCTHD.get(i);
+                    HangHoaDTO hangHoaDTO = listHangHoa.get(i); // Lấy hàng hóa tương ứng
+                    System.out.println(hangHoaDTO);
+                    // Lưu hàng hóa xuống database
+                    Optional<HangHoaDTO> savedHangHoa = hangHoaService.addNewHangHoa(hangHoaDTO);
+
+                    // Gán hàng hóa đã lưu vào chi tiết hóa đơn
+                    chiTietHoaDonDTO.setHangHoa(HangHoaMapper.toEntity(savedHangHoa.get()));
+                    chiTietHoaDonDTO.setHoaDon(HoaDonMapper.toEntity(savedHoaDon.get()));
                     Optional<ChiTietHoaDonDTO> savedCTHD =  chiTietHoaDonService.addChiTietHoaDon(chiTietHoaDonDTO); // Gọi service để thêm chi tiết hóa đơn
 
                     if (savedCTHD.get().getVe() != null) {
@@ -308,8 +329,8 @@ public class HoaDonController {
                     }
                     tongTien+=savedCTHD.get().getSoTien();
                 }
-
             }
+
             System.out.println("tong tien: "+tongTien);
             savedHoaDon = hoaDonService.getHoaDonById(savedHoaDon.get().getIdHoaDon());
             savedHoaDon.get().setTongTien(tongTien);
