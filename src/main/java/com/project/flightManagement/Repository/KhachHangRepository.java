@@ -31,4 +31,5 @@ public interface KhachHangRepository extends JpaRepository<KhachHang, Integer> {
     List<KhachHang> findKhachHangChuaCoTaiKhoan();
 
     long countByNgayTaoBetween(LocalDate startDate, LocalDate endDate);
+    List<KhachHang> findByNgayTaoBetween(LocalDate startDate, LocalDate endDate);
 }

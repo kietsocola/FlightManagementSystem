@@ -125,14 +125,16 @@
     <div class="logo">
         <img src="https://www.bambooairways.com/o/wpbav-home-theme/css/assets/logo.png" alt="Logo" />
     </div>
+</header>
+<div th:each="ve : ${veList}">
     <div class="infoHanhKhach_XuatVe">
         <div class="infoHanhKhach">
             <p class="label">
-                Hành khách: <span class="content_label" th:text="${passengerName}">Nguyễn Văn Đạt</span>
+                Hành khách: <span class="content_label" th:text="${ve.getHanhKhach().getHoTen()}"></span>
             </p>
-            <p class="label">Mã đặt chỗ: <span class="content_label" th:text="${bookingCode}">E6</span></p>
+            <p class="label">Mã đặt chỗ: <span class="content_label" th:text="${#strings.concat(ve.choNgoi.columnIndex, ve.choNgoi.rowIndex)}"></span></p>
             <p class="label">
-                Mã vé: <span class="content_label" th:text="${ticketCode}">F572sd8Hgh2</span>
+                Mã vé: <span class="content_label" th:text="${ve.getMaVe()}"></span>
             </p>
         </div>
         <div class="infoVe">
@@ -143,98 +145,99 @@
                 Số điện thoại: <span class="content_label">1900 8585</span>
             </p>
             <p class="label_info">
-                Ngày: <span class="content_label" th:text="${issueDate}">24/10/2024</span>
+                Ngày: <span class="content_label" th:text="${currentDate}"></span>
             </p>
         </div>
     </div>
-</header>
-<div class="content">
-    <div class="seperate_block">
-        <span>PHIẾU THU VÉ ĐIỆN TỬ</span>
-    </div>
-    <span class="note">Quý khách vui lòng kiểm tra thông tin hành trình</span>
-    <table class="table">
-        <thead>
-        <tr>
-            <td>Từ</td>
-            <td>Đến</td>
-            <td>Chuyến bay</td>
-            <td>Khởi hành</td>
-            <td>Điểm đến</td>
-        </tr>
-        </thead>
-        <tbody>
-        <tr class="row_first">
-            <td><span class="bold" th:text="${nameDepartCity}">HA NOI</span><span th:text=" ${departureCity}"></span></td>
-            <td><span class="bold" th:text="${nameArriveCity}">HOCHIMINH</span><span th:text=" ${arrivalCity}"></span></td>
-            <td th:text="${flightNumber}">VN212</td>
-            <td class="bold" th:text="${departureTime}">11h30</td>
-            <td class="bold" th:text="${arrivalTime}">13h15</td>
-        </tr>
-        <tr class="row_first">
-            <td>Cổng: <span th:text="${departureGate}">1</span></td>
-            <td></td>
-            <td> </td>
-            <td th:text="${departureDate}">14/2/2023</td>
-            <td th:text="${arriveDate}">14/2/2023</td>
-        </tr>
-        <tr>
-            <td rowspan="2"><span class="label">Hạng: </span> <span th:text="${seatClass}">Thương gia</span></td>
-            <td><span class="label">Hãng vận chuyển: </span><span th:text="${carrier}">VIETNAM AIRLINE</span></td>
-            <td colspan="2"><span class="label">Thời gian bay: </span><span th:text="${flightDuration}">02:15</span></td>
-        </tr>
-        <tr>
-            <td><span class="label">Hãng xuất vé: </span><span th:text="${issuingCarrier}">BAMBOO AIRLINE</span></td>
-        </tr>
-        <tr>
-            <td><span class="label">Hành lý: </span><span th:text="${baggageCode}">###</span></td>
-        </tr>
-        </tbody>
-    </table>
-    <div class="seperate"></div>
+    <div class="content">
+        <div class="seperate_block">
+            <span>PHIẾU THU VÉ ĐIỆN TỬ</span>
+        </div>
+        <span class="note">Quý khách vui lòng kiểm tra thông tin hành trình</span>
+        <table class="table">
+            <thead>
+            <tr>
+                <td>Từ</td>
+                <td>Đến</td>
+                <td>Chuyến bay</td>
+                <td>Khởi hành</td>
+                <td>Điểm đến</td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="row_first">
+                <td><span class="bold" th:text="${ve.getChuyenBay().getTuyenBay().getSanBayBatDau().getThanhPho().getTenThanhPho()}">HA NOI</span><span th:text=" ${ve.getChuyenBay().getTuyenBay().getSanBayBatDau().getTenSanBay()}"></span></td>
+                <td><span class="bold" th:text="${ve.getChuyenBay().getTuyenBay().getSanBayKetThuc().getThanhPho().getTenThanhPho()}">HOCHIMINH</span><span th:text=" ${ve.getChuyenBay().getTuyenBay().getSanBayKetThuc().getTenSanBay()}"></span></td>
+                <td th:text="${ve.getChuyenBay().getMayBay().getSoHieu()}"></td>
+                <td class="bold" th:text="${ve.getChuyenBay().getTimeFormatBatDau()}"></td>
+                <td class="bold" th:text="${ve.getChuyenBay().getTimeFormatBatDau()}"></td>
+            </tr>
+            <tr class="row_first">
+                <td>Cổng: <span th:text="${ve.getChuyenBay().getCong().getTenCong()}"></span></td>
+                <td></td>
+                <td> </td>
+                <td th:text="${ve.getChuyenBay().getNgayFormatBatDau()}">14/2/2023</td>
+                <td th:text="${ve.getChuyenBay().getNgayFormatBatDau()}">14/2/2023</td>
+            </tr>
+            <tr>
+                <td rowspan="2"><span class="label">Hạng: </span> <span th:text="${ve.getHangVe().getTenHangVe()}"></span></td>
+                <td><span class="label">Hãng vận chuyển: </span>BAMBOO AIRLINE</span></td>
+                <td colspan="2"><span class="label">Thời gian bay: </span><span th:text="${ve.getChuyenBay().getTuyenBay().getThoiGianChuyenBay()}">02:15</span></td>
+            </tr>
+            <tr>
+                <td><span class="label">Hãng xuất vé: </span><span>BAMBOO AIRLINE</span></td>
+            </tr>
+            <tr>
+                <td><span class="label">Hành lý: </span><span th:text="${baggageCode}">###</span></td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="seperate"></div>
 
-    <div class="notice_label">LƯU Ý VỀ VẺ ĐIỆN TỬ</div>
-    <ul>
-        <li>
-            Làm thủ tục trực tuyến trong vòng 24 giờ đến 1 giờ trước thời gian
-            khởi hành, tại mục "Làm thủ tục" trên website/ứng dụng di động của
-            Vietnam Airlines. Hình thức làm thủ tục trực tuyến cho các chuyến bay
-            do Vietnam Airlines khai thác chỉ được chấp nhận ở một số sân bay nội
-            địa và quốc tế. Vui lòng tham khảo thông tin chi tiết tại đây.
-        </li>
-        <li>
-            Gỡ check-in: tại mục "Quản lý đặt chỗ" - "Trợ giúp sau bán" - "Gỡ
-            check-in" trên website của Vietnam Airlines.
-        </li>
-        <li>
-            Nếu Quý khách mua vé máy bay theo hình thức hợp tác giữa Vietnam
-            Airlines và hãng hàng không khác, trong đó hãng hàng không khác là
-            hãng khai thác chuyến bay, Quý khách lưu ý làm thủ tục tại quầy của
-            hãng khai thác.
-        </li>
-        <li>
-            Chủ động thay đổi, hoàn, hủy trên website/ứng dụng di động của Vietnam
-            Airlines tại mục "Quản lý đặt chỗ" - "Thay đổi chuyên bay"
-        </li>
-        <li>
-            Liên hệ trung tâm Chăm sóc khách hàng của Vietnam Airlines:
+
+        <div class="seperate"></div>
+    </div>
+</div>
+<div class="notice_label">LƯU Ý VỀ VẺ ĐIỆN TỬ</div>
+<ul>
+    <li>
+        Làm thủ tục trực tuyến trong vòng 24 giờ đến 1 giờ trước thời gian
+        khởi hành, tại mục "Làm thủ tục" trên website/ứng dụng di động của
+        Vietnam Airlines. Hình thức làm thủ tục trực tuyến cho các chuyến bay
+        do Vietnam Airlines khai thác chỉ được chấp nhận ở một số sân bay nội
+        địa và quốc tế. Vui lòng tham khảo thông tin chi tiết tại đây.
+    </li>
+    <li>
+        Gỡ check-in: tại mục "Quản lý đặt chỗ" - "Trợ giúp sau bán" - "Gỡ
+        check-in" trên website của Vietnam Airlines.
+    </li>
+    <li>
+        Nếu Quý khách mua vé máy bay theo hình thức hợp tác giữa Vietnam
+        Airlines và hãng hàng không khác, trong đó hãng hàng không khác là
+        hãng khai thác chuyến bay, Quý khách lưu ý làm thủ tục tại quầy của
+        hãng khai thác.
+    </li>
+    <li>
+        Chủ động thay đổi, hoàn, hủy trên website/ứng dụng di động của Vietnam
+        Airlines tại mục "Quản lý đặt chỗ" - "Thay đổi chuyên bay"
+    </li>
+    <li>
+        Liên hệ trung tâm Chăm sóc khách hàng của Vietnam Airlines:
+        <ul>
+            Điện thoại:
             <ul>
-                Điện thoại:
-                <ul>
-                    <li>Gọi trong lãnh thổ Việt Nam: 1900 1100</li>
-                    <li>Gọi từ nước ngoài về Việt Nam: +84 24 38320320</li>
-                </ul>
-                Email trợ giúp khách mua vé trực tuyến: onlinesupport@bamboo.com
+                <li>Gọi trong lãnh thổ Việt Nam: 1900 1100</li>
+                <li>Gọi từ nước ngoài về Việt Nam: +84 24 38320320</li>
             </ul>
-        </li>
-    </ul>
-    <div class="notice_label">Thông báo</div>
-    <span class="notice_last">
+            Email trợ giúp khách mua vé trực tuyến: onlinesupport@bamboo.com
+        </ul>
+    </li>
+</ul>
+<div class="notice_label">Thông báo</div>
+<span class="notice_last">
       Để biết thêm thông tin chi tiết, hành khách tham khảo Điều khoản & Điều
       kiện của Vietnam Airlines.
-    </span>
-    <div class="seperate"></div>
-</div>
+        </span>
 </body>
 
 </html>

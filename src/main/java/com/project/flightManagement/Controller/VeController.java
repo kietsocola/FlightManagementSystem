@@ -100,12 +100,11 @@ public class VeController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseData);
         }
     }
-    @PostMapping("/email")
-    public ResponseEntity<ResponseData> sendHtmlVeOnlineEmail(@RequestBody Email email) {
+    @PostMapping("/email/{email}/hoadon/{idHoaDon}")
+    public ResponseEntity<ResponseData> sendHtmlVeOnlineEmail(@PathVariable String email, @PathVariable int idHoaDon) {
         ResponseData responseData = new ResponseData();
         try {
-            VeDTO veDTO = veService.getVeById(23);
-            emailService.sendHtmlVeOnlineEmail(email, veDTO);
+            emailService.sendHtmlVeOnlineEmail(email, idHoaDon);
             responseData.setMessage("Email sent successfully.");
             responseData.setStatusCode(200);
             return ResponseEntity.ok(responseData);

@@ -19,10 +19,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.util.*;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
@@ -345,6 +343,27 @@ public class KhachHangController {
     public ResponseEntity<Long> getTotalCustomerCount() {
         long totalCustomers = khachHangService.tinhTongSoKhachHang();
         return ResponseEntity.ok(totalCustomers);
+    }
+
+    @GetMapping("/findByNgayTao")
+    public ResponseEntity<ResponseData> findKhachHangByNgayTao(
+            @RequestParam("startDate") String startDate,
+            @RequestParam("endDate") String endDate) {
+        ResponseData rp = new ResponseData();
+        LocalDate start = LocalDate.parse(startDate);
+        LocalDate end = LocalDate.parse(endDate);
+
+        List<KhachHangDTO> khachHangs = khachHangService.findKhachHangByNgayTaoBetween(start, end);
+
+        if (khachHangs.isEmpty()) {
+            rp.setStatusCode(404);
+            rp.setMessage("List khachhang in date null");
+            return new ResponseEntity<>(rp, HttpStatus.NOT_FOUND);
+        }
+        rp.setStatusCode(200);
+        rp.setMessage("Find by date successfully");
+        rp.setData(khachHangs);
+        return new ResponseEntity<>(rp, HttpStatus.OK);
     }
 
 }

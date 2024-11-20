@@ -12,6 +12,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.sql.Date;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Entity
@@ -85,4 +86,33 @@ public class ChuyenBay {
 
     @Column(name = "nvhk")
     private String nvhk ;  /// idcotruong/idcopho/idnhanvien1-idnhanvien2-idnhanvien3-.......
+
+    public String getTimeFormatBatDau() {
+        if (thoiGianBatDauDuTinh != null) {
+            return thoiGianBatDauDuTinh.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm"));
+        }
+        return null;
+    }
+
+    public String getTimeFormatKetThuc() {
+        if (thoiGianKetThucDuTinh != null) {
+            return thoiGianKetThucDuTinh.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm"));
+        }
+        return null;
+    }
+
+    public String getNgayFormatBatDau() {
+        if (thoiGianBatDauDuTinh != null) {
+            return thoiGianBatDauDuTinh.toLocalDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        }
+        return null;
+    }
+
+    public String getNgayFormatKetThuc() {
+        if (thoiGianKetThucDuTinh != null) {
+            return thoiGianKetThucDuTinh.toLocalDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        }
+        return null;
+    }
+
 }

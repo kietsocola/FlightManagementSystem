@@ -20,6 +20,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
@@ -146,9 +147,11 @@ public class ChuyenBayController {
                     && !isDifferenceGreaterThanTwoHour(cb.getThoiGianBatDauDuTinh() , cbDTO.getThoiGianBatDauThucTe())
                     && !completed.name().equals(status.name())
                     && !cancled.name().equals(status.name())){
+                String sanbaybatdau = sanBayService.getSanBayById(cb.getTuyenBay().getIdSanBayBatDau()).get().getTenSanBay();
+                String sanbayketthuc = sanBayService.getSanBayById(cb.getTuyenBay().getIdSanBayKetThuc()).get().getTenSanBay();
                 System.out.println("id chuyen bay : " +  cb.getIdChuyenBay());
                 System.out.println("khoang thoi gian >  2 gio : " + !isDifferenceGreaterThanTwoHour(cb.getThoiGianBatDauDuTinh() , cbDTO.getThoiGianBatDauThucTe()));
-                response.setMessage("Chuyến bay này gần với thời gian của một chuyến bay khác có cùng tuyến bay : " + cb.getThoiGianBatDauDuTinh() + ".Phải cách nhau hơn 2 tiếng");
+                response.setMessage("Chuyến bay này gần với thời gian của một chuyến bay từ " +sanbaybatdau+ "->" + sanbayketthuc  + " có cùng tuyến bay : " + cb.getThoiGianBatDauDuTinh() + ".Phải cách nhau hơn 2 tiếng");
                 response.setData(null);
                 response.setStatusCode(409);
                 return new ResponseEntity<>(response, HttpStatus.CONFLICT);
@@ -161,9 +164,11 @@ public class ChuyenBayController {
                     && cb.getMayBay().getIdMayBay() == cbDTO.getMayBay().getIdMayBay()
                     && !isDifferenceGreaterThanTwoHour(cb.getThoiGianKetThucThucTe(), cbDTO.getThoiGianBatDauThucTe())
                     && completed.name().equals(status.name())) {
+                String sanbaybatdau = sanBayService.getSanBayById(cb.getTuyenBay().getIdSanBayBatDau()).get().getTenSanBay();
+                String sanbayketthuc = sanBayService.getSanBayById(cb.getTuyenBay().getIdSanBayKetThuc()).get().getTenSanBay();
                 System.out.println("id chuyen bay : " + cb.getIdChuyenBay());
                 System.out.println("khoang thoi gian >  2 gio : " + !isDifferenceGreaterThanTwoHour(cb.getThoiGianKetThucThucTe(), cbDTO.getThoiGianBatDauThucTe()));
-                response.setMessage("Máy bay này vừa kết thúc chuyến bay luc : " + cb.getThoiGianKetThucThucTe() + ".Hãy đợi 2 tiếng để có thể tạo chuyến bay với máy bay này");
+                response.setMessage("Đã của một chuyến bay từ " +sanbaybatdau+ "->" + sanbayketthuc  + " với thời gian : " + cb.getThoiGianBatDauDuTinh() + ".Hai chuyến bay có cùng tuyến bay phải cách nhau hơn 2 tiếng");
                 response.setData(null);
                 response.setStatusCode(409);
                 return new ResponseEntity<>(response, HttpStatus.CONFLICT);
@@ -229,9 +234,11 @@ public class ChuyenBayController {
                     && !isDifferenceGreaterThanTwoHour(cb.getThoiGianBatDauDuTinh() , cbDTO.getThoiGianBatDauThucTe())
                     && !completed.name().equals(status.name())
                     && !cancled.name().equals(status.name())){
+                String sanbaybatdau = sanBayService.getSanBayById(cb.getTuyenBay().getIdSanBayBatDau()).get().getTenSanBay();
+                String sanbayketthuc = sanBayService.getSanBayById(cb.getTuyenBay().getIdSanBayKetThuc()).get().getTenSanBay();
                 System.out.println("id chuyen bay : " +  cb.getIdChuyenBay());
                 System.out.println("khoang thoi gian >  2 gio : " + !isDifferenceGreaterThanTwoHour(cb.getThoiGianBatDauDuTinh() , cbDTO.getThoiGianBatDauThucTe()));
-                response.setMessage("Chuyến bay này gần với thời gian của một chuyến bay khác có cùng tuyến bay : " + cb.getThoiGianBatDauDuTinh() + ".Phải cách nhau hơn 2 tiếng");
+                response.setMessage("Đã của một chuyến bay từ " +sanbaybatdau+ "->" + sanbayketthuc  + " với thời gian : " + cb.getThoiGianBatDauDuTinh() + ".Hai chuyến bay có cùng tuyến bay phải cách nhau hơn 2 tiếng");
                 response.setData(null);
                 response.setStatusCode(409);
                 return new ResponseEntity<>(response, HttpStatus.CONFLICT);
@@ -584,7 +591,7 @@ public class ChuyenBayController {
     public ResponseEntity<ResponseData> thongkechuyenbaytheotrangthaibyyear(){
 
         int namBatDau = 2017;
-        int namKetThuc = 2024 ;
+        int namKetThuc = LocalDate.now().getYear();
         List<Map<String , Map<String , Integer>>> result = new ArrayList<>();
 
         // loc theo nam
@@ -598,22 +605,23 @@ public class ChuyenBayController {
             trangThai.put("CANCELED" , count);
             tong+=count;
 
-            listChuyenBay = cbservice.getFilterChuyenBay(ChuyenBayEnum.SCHEDULED, LocalDateTime.parse(nam+"-01-01T00:00:00"),LocalDateTime.parse(nam+"-12-31T23:59:59"));
-            count = (int) StreamSupport.stream(listChuyenBay.spliterator(), false).count();
+            listChuyenBay = cbservice.getFilterChuyenBay(ChuyenBayEnum.COMPLETED , LocalDateTime.parse(nam+"-01-01T00:00:00"),LocalDateTime.parse(nam+"-12-31T23:59:59"));
+
+            count = 0 ;
+            for(ChuyenBayDTO cb : listChuyenBay)
+                if(cb.getDelay() == 0)
+                    ++count ;
             trangThai.put("SCHEDULED" , count);
             tong+=count;
 
 
-            listChuyenBay = cbservice.getFilterChuyenBay(ChuyenBayEnum.DELAYED, LocalDateTime.parse(nam+"-01-01T00:00:00"),LocalDateTime.parse(nam+"-12-31T23:59:59"));
-            count = (int) StreamSupport.stream(listChuyenBay.spliterator(), false).count();
+            count = 0 ;
+            for(ChuyenBayDTO cb : listChuyenBay)
+                if(cb.getDelay() > 0)
+                    ++count ;
             trangThai.put("DELAYED", count);
             tong+=count;
 
-
-            listChuyenBay = cbservice.getFilterChuyenBay(ChuyenBayEnum.COMPLETED , LocalDateTime.parse(nam+"-01-01T00:00:00"),LocalDateTime.parse(nam+"-12-31T23:59:59"));
-            count = (int) StreamSupport.stream(listChuyenBay.spliterator(), false).count();
-            trangThai.put("COMPLETED" , count);
-            tong+=count;
 
             trangThai.put("TONG" , tong);
 
@@ -662,7 +670,7 @@ public class ChuyenBayController {
                         .with(TemporalAdjusters.lastDayOfMonth());
                 Iterable<ChuyenBayDTO> listChuyenBay = cbservice.getFilterChuyenBay(ChuyenBayEnum.CANCELED , startOfMonth,endOfMonth);
                 int count= (int) StreamSupport.stream(listChuyenBay.spliterator(), false).count();
-                trangThai.put("CANCELED " , count);
+                trangThai.put("CANCELED" , count);
                 tong+=count;
 
                 listChuyenBay = cbservice.getFilterChuyenBay(ChuyenBayEnum.COMPLETED, startOfMonth,endOfMonth);
@@ -671,7 +679,7 @@ public class ChuyenBayController {
                 for(ChuyenBayDTO cb : listChuyenBay)
                     if(cb.getDelay() == 0)
                         ++count ;
-                trangThai.put("SCHEDULED " , count);
+                trangThai.put("SCHEDULED" , count);
                 tong+=count;
 
 
@@ -679,7 +687,7 @@ public class ChuyenBayController {
                 for(ChuyenBayDTO cb : listChuyenBay)
                     if(cb.getDelay() > 0)
                         ++count ;
-                trangThai.put("DELAYED ", count);
+                trangThai.put("DELAYED", count);
                 tong+=count;
 
 
@@ -778,7 +786,7 @@ public class ChuyenBayController {
     public ResponseEntity<ResponseData> thongketuyenbaybyyear() {
 
         int namBatDau = 2017;
-        int namKetThuc = 2024;
+        int namKetThuc = LocalDate.now().getYear();
 
         // Lấy danh sách tất cả các tuyến bay
         Iterable<TuyenBayDTO> listTuyenBay = tuyenBayService.getAllTuyenBay();

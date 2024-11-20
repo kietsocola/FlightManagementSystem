@@ -124,7 +124,7 @@ public class HoaDonServiceImpl implements HoaDonService {
     public Iterable<HoaDonDTO> getAllHoaDonSorted(String sortBy, String direction) {
         try {
             List<HoaDon> hoaDonList;
-            if(direction.equals("asc")) {
+            if (direction.equals("asc")) {
                 hoaDonList = hdRepo.findAll(Sort.by(Sort.Direction.ASC, sortBy));
             } else {
                 hoaDonList = hdRepo.findAll(Sort.by(Sort.Direction.DESC, sortBy));
@@ -135,7 +135,8 @@ public class HoaDonServiceImpl implements HoaDonService {
             return hoaDonListDTO;
 
         } catch (IllegalArgumentException e) {
-            // Xử lý lỗi nếu tham số sortBy không hợp lệ hoặc có lỗi khác liên quan đến tham số
+            // Xử lý lỗi nếu tham số sortBy không hợp lệ hoặc có lỗi khác liên quan đến tham
+            // số
             System.err.println("Invalid sorting field: " + sortBy);
             return Collections.emptyList(); // Trả về danh sách rỗng
 
@@ -145,6 +146,7 @@ public class HoaDonServiceImpl implements HoaDonService {
             return Collections.emptyList(); // Trả về danh sách rỗng nếu có lỗi
         }
     }
+
     @Override
     public List<HoaDonDTO> getHoaDonByNV(int idNV) {
         try {
@@ -163,9 +165,8 @@ public class HoaDonServiceImpl implements HoaDonService {
     public List<HoaDonDTO> getHoaDonByKH(int idKH) {
         try {
             List<HoaDon> listHD = hdRepo.findHoaDonByKhachHang(idKH);
-            List<HoaDonDTO> listHDDTO = StreamSupport.stream(listHD.spliterator(), false).
-                    map(HoaDonMapper::toDTO).
-                    toList();
+            List<HoaDonDTO> listHDDTO = StreamSupport.stream(listHD.spliterator(), false).map(HoaDonMapper::toDTO)
+                    .toList();
             return listHDDTO;
         } catch (Exception e) {
             System.err.println("Error occurred while get Hoa Don by Id KH");
@@ -177,8 +178,8 @@ public class HoaDonServiceImpl implements HoaDonService {
     public List<HoaDonDTO> getHoaDonByPTTT(int idPTTT) {
         try {
             List<HoaDon> listHD = hdRepo.findHoaDonByPTTT(idPTTT);
-            List<HoaDonDTO> listHDDTO = StreamSupport.stream(listHD.spliterator(), false).
-                    map(HoaDonMapper::toDTO).toList();
+            List<HoaDonDTO> listHDDTO = StreamSupport.stream(listHD.spliterator(), false).map(HoaDonMapper::toDTO)
+                    .toList();
             return listHDDTO;
         } catch (Exception e) {
             System.err.println("Error occurred while get Hoa Don by ID PTTT");
@@ -190,14 +191,15 @@ public class HoaDonServiceImpl implements HoaDonService {
     public List<HoaDonDTO> getHoaDonByLoaiHD(int idLoaiHD) {
         try {
             List<HoaDon> listHD = hdRepo.findHoaDonByLoaiHD(idLoaiHD);
-            List<HoaDonDTO> listHDDTO = StreamSupport.stream(listHD.spliterator(), false).
-                    map(HoaDonMapper::toDTO).toList();
+            List<HoaDonDTO> listHDDTO = StreamSupport.stream(listHD.spliterator(), false).map(HoaDonMapper::toDTO)
+                    .toList();
             return listHDDTO;
         } catch (Exception e) {
             System.err.println("Error occurred while get Hoa Don by ID PTTT");
             return Collections.emptyList();
         }
     }
+
     @Override
     public boolean markDanhGia(int idHoaDon) {
         try {
@@ -257,8 +259,26 @@ public class HoaDonServiceImpl implements HoaDonService {
         return LocalDateTime.of(year, endMonth, 1, 0, 0).with(TemporalAdjusters.lastDayOfMonth());
     }
 
+    // Lấy doanh thu cho tất cả các năm
+    @Override
+    public Map<Integer, Double> getRevenueForAllYears() {
+        List<Integer> years = getAllYears();
+        Map<Integer, Double> revenueByYear = new HashMap<>();
 
-@Override
+        for (Integer year : years) {
+            Double revenue = getRevenueByYear(year);
+            revenueByYear.put(year, revenue != null ? revenue : 0.0);
+        }
+
+        return revenueByYear;
+    }
+
+    // Lấy tất cả các năm từ cơ sở dữ liệu
+    public List<Integer> getAllYears() {
+        return hdRepo.findDistinctYears();
+    }
+
+    @Override
     public Map<String, Map<String, Long>> getStatistics(String period) {
         Map<String, Map<String, Long>> statistics = new LinkedHashMap<>();
         LocalDate now = LocalDate.now();
@@ -277,7 +297,8 @@ public class HoaDonServiceImpl implements HoaDonService {
             case "quarterly":
                 for (int i = 1; i <= 4; i++) {
                     LocalDate startOfQuarter = now.withMonth((i - 1) * 3 + 1).withDayOfMonth(1);
-                    LocalDate endOfQuarter = startOfQuarter.plusMonths(2).withDayOfMonth(startOfQuarter.plusMonths(2).lengthOfMonth());
+                    LocalDate endOfQuarter = startOfQuarter.plusMonths(2)
+                            .withDayOfMonth(startOfQuarter.plusMonths(2).lengthOfMonth());
 
                     Map<String, Long> ageGroupStats = processStatistics(startOfQuarter, endOfQuarter, now);
                     statistics.put("Quarter " + i, ageGroupStats);
@@ -313,5 +334,3 @@ public class HoaDonServiceImpl implements HoaDonService {
         return stats;
     }
 }
-
-

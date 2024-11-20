@@ -57,4 +57,6 @@ public class Ve {
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private VeEnum trangThai;
+
+
 }

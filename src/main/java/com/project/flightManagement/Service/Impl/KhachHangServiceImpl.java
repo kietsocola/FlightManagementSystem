@@ -294,6 +294,17 @@ public class KhachHangServiceImpl implements KhachHangService {
         return khRepo.count();
     }
 
+    @Override
+    public List<KhachHangDTO> findKhachHangByNgayTaoBetween(LocalDate startDate, LocalDate endDate) {
+        List<KhachHang> khs = khRepo.findByNgayTaoBetween(startDate, endDate);
+        if (khs == null || khs.isEmpty()) {
+            return Collections.emptyList(); // Trả về danh sách rỗng nếu không có khách hàng
+        }
+        return khs.stream()
+                .map(KhachHangMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
     private double calculateRate(long previousCount, long currentCount) {
         if (previousCount == 0) {
             return currentCount > 0 ? 100.0 : 0.0;

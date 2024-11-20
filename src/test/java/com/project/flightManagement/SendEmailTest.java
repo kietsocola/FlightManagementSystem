@@ -1,5 +1,6 @@
 package com.project.flightManagement;
 
+import com.project.flightManagement.Service.EmailService;
 import com.project.flightManagement.Service.VeService;
 import com.project.flightManagement.Util.EmailSenderUtil;
 import jakarta.validation.constraints.Email;
@@ -15,6 +16,8 @@ import java.io.IOException;
 public class SendEmailTest {
     @Autowired
     private EmailSenderUtil emailSenderUtil;
+    @Autowired
+    private EmailService emailService;
 
     @Autowired
     private VeService veService;
@@ -46,6 +49,9 @@ public class SendEmailTest {
     void updateAutoVe() {
         veService.updateAutoGiaVeByIdChuyenBay(18, 1, 996);
     }
-
+    @Test
+    void sendVeOnlineEmailByIdHoaDon() {
+        emailService.sendHtmlVeOnlineEmail("lockbkbang@gmail.com", 163);
+    }
 
 }

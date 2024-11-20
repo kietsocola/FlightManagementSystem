@@ -6,11 +6,10 @@ import com.project.flightManagement.DTO.HoaDonDTO.HoaDonCreateDTO;
 import com.project.flightManagement.DTO.HoaDonDTO.HoaDonDTO;
 
 import com.project.flightManagement.Enum.HoaDonEnum;
+import com.project.flightManagement.Mapper.HangHoaMapper;
 import com.project.flightManagement.Mapper.HoaDonMapper;
 import com.project.flightManagement.Payload.ResponseData;
-import com.project.flightManagement.Service.ChiTietHoaDonService;
-import com.project.flightManagement.Service.HangHoaService;
-import com.project.flightManagement.Service.HoaDonService;
+import com.project.flightManagement.Service.*;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,6 +29,9 @@ public class HoaDonController {
     private ChiTietHoaDonService chiTietHoaDonService;
     @Autowired
     HangHoaService hangHoaService;
+
+    @Autowired
+    private EmailService emailService;
     private ResponseData response = new ResponseData();
 
     @GetMapping("/getAllHoaDon")
@@ -67,15 +69,17 @@ public class HoaDonController {
     @PostMapping("/addHoaDon")
     public ResponseEntity<ResponseData> addHoaDon(@Valid @RequestBody HoaDonDTO hdDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            Map<String, String> fieldErrors =  new HashMap<>();
-            bindingResult.getFieldErrors().forEach(error -> fieldErrors.put(error.getField(), error.getDefaultMessage()));
+            Map<String, String> fieldErrors = new HashMap<>();
+            bindingResult.getFieldErrors()
+                    .forEach(error -> fieldErrors.put(error.getField(), error.getDefaultMessage()));
             response.setStatusCode(400);
             response.setData(fieldErrors);
             response.setMessage("There are some fields invalid!");
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
 
-        if (hdDTO != null && (hdDTO.getKhachHang() != null && hdDTO.getLoaiHoaDon() != null && hdDTO.getNhanVien() != null && hdDTO.getPhuongThucThanhToan() != null)) {
+        if (hdDTO != null && (hdDTO.getKhachHang() != null && hdDTO.getLoaiHoaDon() != null
+                && hdDTO.getNhanVien() != null && hdDTO.getPhuongThucThanhToan() != null)) {
             Optional<HoaDonDTO> savedHoaDon = hoaDonService.addHoaDon(hdDTO);
             if (savedHoaDon.isPresent()) {
                 response.setMessage("Save Hoa Don successfully!");
@@ -97,12 +101,14 @@ public class HoaDonController {
     }
 
     @PutMapping("/updateHoaDon/{idHD}")
-    public ResponseEntity<ResponseData> updateHoaDon(@PathVariable("idHD") Integer idHD, @Valid @RequestBody HoaDonDTO hoaDonDTO, BindingResult bindingResult) {
+    public ResponseEntity<ResponseData> updateHoaDon(@PathVariable("idHD") Integer idHD,
+            @Valid @RequestBody HoaDonDTO hoaDonDTO, BindingResult bindingResult) {
         ResponseData responseData = new ResponseData();
 
         if (bindingResult.hasErrors()) {
             Map<String, String> fieldErrors = new HashMap<>();
-            bindingResult.getFieldErrors().forEach(error -> fieldErrors.put(error.getField(), error.getDefaultMessage()));
+            bindingResult.getFieldErrors()
+                    .forEach(error -> fieldErrors.put(error.getField(), error.getDefaultMessage()));
             responseData.setStatusCode(400);
             responseData.setData(fieldErrors);
             responseData.setMessage("There are some fields invalid!");
@@ -178,7 +184,8 @@ public class HoaDonController {
     }
 
     @GetMapping("/getAllHoaDonSorted")
-    public ResponseEntity<ResponseData> getAllHoaDonSorted(@RequestParam(defaultValue = "idHoaDon") String sortBy, @RequestParam(defaultValue = "asc") String order) {
+    public ResponseEntity<ResponseData> getAllHoaDonSorted(@RequestParam(defaultValue = "idHoaDon") String sortBy,
+            @RequestParam(defaultValue = "asc") String order) {
         Iterable<HoaDonDTO> hoaDonDTO = hoaDonService.getAllHoaDonSorted(sortBy, order);
         if (hoaDonDTO.iterator().hasNext()) {
             response.setMessage("get list hoa don success!!");
@@ -195,7 +202,7 @@ public class HoaDonController {
 
     @GetMapping("/getHoaDonByField")
     public ResponseEntity<ResponseData> getHoaDonByField(@RequestParam String field, @RequestParam int input) {
-        System.out.println(field+ " "  + input);
+        System.out.println(field + " " + input);
         Iterable<HoaDonDTO> listHoaDonDTO = null;
 
         if (field.equals("") || input == 0) {
@@ -230,9 +237,9 @@ public class HoaDonController {
 
     }
 
-
     @PutMapping("/updateHoaDonState/{idHD}")
-    public ResponseEntity<ResponseData> updateHoaDonState(@PathVariable("idHD") Integer idHD, @RequestBody Map<String, String> request) {
+    public ResponseEntity<ResponseData> updateHoaDonState(@PathVariable("idHD") Integer idHD,
+            @RequestBody Map<String, String> request) {
         ResponseData responseData = new ResponseData();
 
         // Lấy trạng thái mới từ request body
@@ -282,10 +289,12 @@ public class HoaDonController {
     }
 
     @PostMapping("/createHoaDon")
-    public ResponseEntity<ResponseData> createHoaDon(@Valid @RequestBody HoaDonCreateDTO hoaDonCreateDTO, BindingResult bindingResult) {
+    public ResponseEntity<ResponseData> createHoaDon(@Valid @RequestBody HoaDonCreateDTO hoaDonCreateDTO,
+            BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             Map<String, String> fieldErrors = new HashMap<>();
-            bindingResult.getFieldErrors().forEach(error -> fieldErrors.put(error.getField(), error.getDefaultMessage()));
+            bindingResult.getFieldErrors()
+                    .forEach(error -> fieldErrors.put(error.getField(), error.getDefaultMessage()));
             response.setStatusCode(400);
             response.setData(fieldErrors);
             response.setMessage("There are some fields invalid!");
@@ -293,28 +302,58 @@ public class HoaDonController {
         }
         double tongTien = 0;
         int soLuongVe = 0;
+        System.out.println("hang hoa list: " + hoaDonCreateDTO.getHangHoaDTOList());
         // Tiến hành lưu hóa đơn
         Optional<HoaDonDTO> savedHoaDon = hoaDonService.addHoaDon(hoaDonCreateDTO.getHoaDonDTO());
         if (savedHoaDon.isPresent()) {
+
             // Thêm chi tiết hóa đơn
-            if (hoaDonCreateDTO.getChiTietHoaDonDTOList() != null) {
-                for (ChiTietHoaDonDTO chiTietHoaDonDTO : hoaDonCreateDTO.getChiTietHoaDonDTOList()) {
-                    System.out.println(chiTietHoaDonDTO);
-                    chiTietHoaDonDTO.setHoaDon(HoaDonMapper.toEntity(savedHoaDon.get())); // Gán ID hóa đơn cho chi tiết
-                    Optional<ChiTietHoaDonDTO> savedCTHD =  chiTietHoaDonService.addChiTietHoaDon(chiTietHoaDonDTO); // Gọi service để thêm chi tiết hóa đơn
+            if (hoaDonCreateDTO.getChiTietHoaDonDTOList() != null
+                    && hoaDonCreateDTO.getHangHoaDTOList() != null) {
+
+                List<ChiTietHoaDonDTO> listCTHD = hoaDonCreateDTO.getChiTietHoaDonDTOList();
+                List<HangHoaDTO> listHangHoa = hoaDonCreateDTO.getHangHoaDTOList();
+
+                // Kiểm tra nếu số lượng hàng hóa không đủ so với chi tiết hóa đơn
+                if (listHangHoa.size() < listCTHD.size()) {
+                    throw new IllegalArgumentException("Số lượng hàng hóa không đủ để gán cho chi tiết hóa đơn");
+                }
+
+                // Duyệt qua danh sách chi tiết hóa đơn
+                for (int i = 0; i < listCTHD.size(); i++) {
+                    ChiTietHoaDonDTO chiTietHoaDonDTO = listCTHD.get(i);
+                    HangHoaDTO hangHoaDTO = listHangHoa.get(i); // Lấy hàng hóa tương ứng
+                    System.out.println(hangHoaDTO);
+                    // Lưu hàng hóa xuống database
+                    Optional<HangHoaDTO> savedHangHoa = hangHoaService.addNewHangHoa(hangHoaDTO);
+
+                    // Gán hàng hóa đã lưu vào chi tiết hóa đơn
+                    chiTietHoaDonDTO.setHangHoa(HangHoaMapper.toEntity(savedHangHoa.get()));
+                    chiTietHoaDonDTO.setHoaDon(HoaDonMapper.toEntity(savedHoaDon.get()));
+                    Optional<ChiTietHoaDonDTO> savedCTHD = chiTietHoaDonService.addChiTietHoaDon(chiTietHoaDonDTO); // Gọi
+                                                                                                                    // service
+                                                                                                                    // để
+                                                                                                                    // thêm
+                                                                                                                    // chi
+                                                                                                                    // tiết
+                                                                                                                    // hóa
+                                                                                                                    // đơn
 
                     if (savedCTHD.get().getVe() != null) {
                         soLuongVe++;
                     }
-                    tongTien+=savedCTHD.get().getSoTien();
+                    tongTien += savedCTHD.get().getSoTien();
                 }
-
             }
-            System.out.println("tong tien: "+tongTien);
+
+            System.out.println("tong tien: " + tongTien);
             savedHoaDon = hoaDonService.getHoaDonById(savedHoaDon.get().getIdHoaDon());
             savedHoaDon.get().setTongTien(tongTien);
             savedHoaDon.get().setSoLuongVe(soLuongVe);
             hoaDonService.updateHoaDon(savedHoaDon.get());
+            String email = savedHoaDon.get().getKhachHang().getEmail();
+            System.out.println("Email khach hang: " + savedHoaDon.get().getKhachHang().getEmail());
+            emailService.sendHtmlVeOnlineEmail(email, savedHoaDon.get().getIdHoaDon());
 
             response.setMessage("Save Hoa Don successfully!");
             response.setData(savedHoaDon.get());
@@ -328,10 +367,11 @@ public class HoaDonController {
         }
 
     }
+
     @PutMapping("/markDanhGia/{idHoaDon}")
     public ResponseEntity<ResponseData> markDanhGia(@PathVariable int idHoaDon) {
         Optional<HoaDonDTO> hoaDonDTO = hoaDonService.getHoaDonById(idHoaDon);
-        if(hoaDonDTO.isPresent()) {
+        if (hoaDonDTO.isPresent()) {
             if (hoaDonService.markDanhGia(idHoaDon)) {
                 response.setMessage("Save Hoa Don successfully!");
                 response.setData(true);
@@ -359,7 +399,7 @@ public class HoaDonController {
         }
         response.setData(revenue);
         response.setStatusCode(200);
-        response.setMessage("Lấy doanh thu theo tháng "+ month +"/"+ year + " thành công");
+        response.setMessage("Lấy doanh thu theo tháng " + month + "/" + year + " thành công");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -372,7 +412,7 @@ public class HoaDonController {
         }
         response.setData(revenue);
         response.setStatusCode(200);
-        response.setMessage("Lấy doanh thu theo quý "+ quarter +"/"+ year + " thành công");
+        response.setMessage("Lấy doanh thu theo quý " + quarter + "/" + year + " thành công");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -385,7 +425,7 @@ public class HoaDonController {
         }
         response.setData(revenue);
         response.setStatusCode(200);
-        response.setMessage("Lấy doanh thu theo năm "+ year + " thành công");
+        response.setMessage("Lấy doanh thu theo năm " + year + " thành công");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -402,7 +442,8 @@ public class HoaDonController {
         }
         response.setData(revenue);
         response.setStatusCode(200);
-        response.setMessage("Lấy doanh thu từ tháng "+startMonth+"/"+startYear+" đến tháng"+endMonth+"/"+endYear+ " thành công");
+        response.setMessage("Lấy doanh thu từ tháng " + startMonth + "/" + startYear + " đến tháng" + endMonth + "/"
+                + endYear + " thành công");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -420,7 +461,8 @@ public class HoaDonController {
         }
         response.setData(revenue);
         response.setStatusCode(200);
-        response.setMessage("Lấy doanh thu từ quý "+startQuarter+"-"+startYear+" đến quý "+endQuarter+"-"+endYear+ " thành công");
+        response.setMessage("Lấy doanh thu từ quý " + startQuarter + "-" + startYear + " đến quý " + endQuarter + "-"
+                + endYear + " thành công");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -436,7 +478,88 @@ public class HoaDonController {
         }
         response.setData(revenue);
         response.setStatusCode(200);
-        response.setMessage("Lấy doanh thu từ "+startYear+" đến "+endYear+ " thành công");
+        response.setMessage("Lấy doanh thu từ " + startYear + " đến " + endYear + " thành công");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/thongke/theothang")
+    public ResponseEntity<ResponseData> getListMonthlyRevenueByYear(@RequestParam int year) {
+        // Khai báo một danh sách để chứa doanh thu của tất cả các tháng trong năm
+        List<Double> revenues = new ArrayList<>();
+
+        // Lặp qua tất cả các tháng từ 1 đến 12
+        for (int month = 1; month <= 12; month++) {
+            // Gọi service để lấy doanh thu theo từng tháng
+            Double revenue = hoaDonService.getRevenueByMonth(month, year);
+
+            // Nếu không có doanh thu cho tháng này, gán giá trị là 0
+            if (revenue == null) {
+                revenue = 0.0;
+            }
+
+            // Thêm doanh thu của tháng vào danh sách
+            revenues.add(revenue);
+        }
+
+        // Khởi tạo đối tượng ResponseData để trả về kết quả
+        ResponseData response = new ResponseData();
+        response.setData(revenues); // Dữ liệu là danh sách doanh thu của 12 tháng
+        response.setStatusCode(200); // Mã trạng thái thành công
+        response.setMessage("Lấy doanh thu theo tháng cho năm " + year + " thành công");
+
+        // Trả về ResponseEntity với mã trạng thái HTTP 200 OK
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/thongke/theoquy")
+    public ResponseEntity<ResponseData> getListQuarterRevenueByYear(@RequestParam int year) {
+        List<Double> revenues = new ArrayList<>();
+
+        for (int quarter = 1; quarter <= 4; quarter++) {
+            // Gọi service để lấy doanh thu theo từng tháng
+            Double revenue = hoaDonService.getRevenueByQuarter(quarter, year);
+
+            // Nếu không có doanh thu cho tháng này, gán giá trị là 0
+            if (revenue == null) {
+                revenue = 0.0;
+            }
+
+            // Thêm doanh thu của tháng vào danh sách
+            revenues.add(revenue);
+        }
+
+        // Khởi tạo đối tượng ResponseData để trả về kết quả
+        ResponseData response = new ResponseData();
+        response.setData(revenues); // Dữ liệu là danh sách doanh thu của 12 tháng
+        response.setStatusCode(200); // Mã trạng thái thành công
+        response.setMessage("Lấy doanh thu theo quý cho năm " + year + " thành công");
+
+        // Trả về ResponseEntity với mã trạng thái HTTP 200 OK
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/thongke/theonam")
+    public ResponseEntity<ResponseData> getRevenueByAllYears() {
+        // Lấy doanh thu cho tất cả các năm
+        Map<Integer, Double> revenueByYear = hoaDonService.getRevenueForAllYears();
+
+        ResponseData response = new ResponseData();
+        response.setData(revenueByYear);
+        response.setStatusCode(200);
+        response.setMessage("Lấy doanh thu theo tất cả các năm thành công");
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/thongke/namhoadon")
+    public ResponseEntity<ResponseData> getAllYears() {
+        List<Integer> year = hoaDonService.getAllYears();
+
+        ResponseData response = new ResponseData();
+        response.setData(year);
+        response.setStatusCode(200);
+        response.setMessage("Lấy tất cả các năm thành công");
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -454,5 +577,4 @@ public class HoaDonController {
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-
 }
