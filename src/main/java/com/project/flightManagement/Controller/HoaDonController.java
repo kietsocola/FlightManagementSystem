@@ -439,4 +439,85 @@ public class HoaDonController {
         response.setMessage("Lấy doanh thu từ "+startYear+" đến "+endYear+ " thành công");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    @GetMapping("/thongke/theothang")
+    public ResponseEntity<ResponseData> getListMonthlyRevenueByYear(@RequestParam int year) {
+        // Khai báo một danh sách để chứa doanh thu của tất cả các tháng trong năm
+        List<Double> revenues = new ArrayList<>();
+
+        // Lặp qua tất cả các tháng từ 1 đến 12
+        for (int month = 1; month <= 12; month++) {
+            // Gọi service để lấy doanh thu theo từng tháng
+            Double revenue = hoaDonService.getRevenueByMonth(month, year);
+
+            // Nếu không có doanh thu cho tháng này, gán giá trị là 0
+            if (revenue == null) {
+                revenue = 0.0;
+            }
+
+            // Thêm doanh thu của tháng vào danh sách
+            revenues.add(revenue);
+        }
+
+        // Khởi tạo đối tượng ResponseData để trả về kết quả
+        ResponseData response = new ResponseData();
+        response.setData(revenues);  // Dữ liệu là danh sách doanh thu của 12 tháng
+        response.setStatusCode(200); // Mã trạng thái thành công
+        response.setMessage("Lấy doanh thu theo tháng cho năm " + year + " thành công");
+
+        // Trả về ResponseEntity với mã trạng thái HTTP 200 OK
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/thongke/theoquy")
+    public ResponseEntity<ResponseData> getListQuarterRevenueByYear(@RequestParam int year) {
+        List<Double> revenues = new ArrayList<>();
+
+        for (int quarter = 1; quarter <= 4; quarter++) {
+            // Gọi service để lấy doanh thu theo từng tháng
+            Double revenue = hoaDonService.getRevenueByQuarter(quarter, year);
+
+            // Nếu không có doanh thu cho tháng này, gán giá trị là 0
+            if (revenue == null) {
+                revenue = 0.0;
+            }
+
+            // Thêm doanh thu của tháng vào danh sách
+            revenues.add(revenue);
+        }
+
+        // Khởi tạo đối tượng ResponseData để trả về kết quả
+        ResponseData response = new ResponseData();
+        response.setData(revenues);  // Dữ liệu là danh sách doanh thu của 12 tháng
+        response.setStatusCode(200); // Mã trạng thái thành công
+        response.setMessage("Lấy doanh thu theo quý cho năm " + year + " thành công");
+
+        // Trả về ResponseEntity với mã trạng thái HTTP 200 OK
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/thongke/theonam")
+    public ResponseEntity<ResponseData> getRevenueByAllYears() {
+        // Lấy doanh thu cho tất cả các năm
+        Map<Integer, Double> revenueByYear = hoaDonService.getRevenueForAllYears();
+
+        ResponseData response = new ResponseData();
+        response.setData(revenueByYear);
+        response.setStatusCode(200);
+        response.setMessage("Lấy doanh thu theo tất cả các năm thành công");
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/thongke/namhoadon")
+    public ResponseEntity<ResponseData> getAllYears() {
+        List<Integer> year = hoaDonService.getAllYears();
+
+        ResponseData response = new ResponseData();
+        response.setData(year);
+        response.setStatusCode(200);
+        response.setMessage("Lấy tất cả các năm thành công");
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }

@@ -46,5 +46,7 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
     @Query("SELECT SUM(hd.tongTien) FROM HoaDon hd WHERE hd.thoiGianLap BETWEEN :startDate AND :endDate")
     Double findRevenueBetweenDates(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
-
+    // Lấy danh sách các năm có trong hóa đơn
+    @Query("SELECT DISTINCT YEAR(h.thoiGianLap) FROM HoaDon h ORDER BY YEAR(h.thoiGianLap) DESC")
+    List<Integer> findDistinctYears();
 }
