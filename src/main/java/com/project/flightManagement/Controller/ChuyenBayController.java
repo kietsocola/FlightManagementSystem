@@ -20,6 +20,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
@@ -590,7 +591,7 @@ public class ChuyenBayController {
     public ResponseEntity<ResponseData> thongkechuyenbaytheotrangthaibyyear(){
 
         int namBatDau = 2017;
-        int namKetThuc = 2024 ;
+        int namKetThuc = LocalDate.now().getYear();
         List<Map<String , Map<String , Integer>>> result = new ArrayList<>();
 
         // loc theo nam
@@ -610,7 +611,7 @@ public class ChuyenBayController {
             for(ChuyenBayDTO cb : listChuyenBay)
                 if(cb.getDelay() == 0)
                     ++count ;
-            trangThai.put("SCHEDULED " , count);
+            trangThai.put("SCHEDULED" , count);
             tong+=count;
 
 
@@ -618,7 +619,7 @@ public class ChuyenBayController {
             for(ChuyenBayDTO cb : listChuyenBay)
                 if(cb.getDelay() > 0)
                     ++count ;
-            trangThai.put("DELAYED ", count);
+            trangThai.put("DELAYED", count);
             tong+=count;
 
 
@@ -669,7 +670,7 @@ public class ChuyenBayController {
                         .with(TemporalAdjusters.lastDayOfMonth());
                 Iterable<ChuyenBayDTO> listChuyenBay = cbservice.getFilterChuyenBay(ChuyenBayEnum.CANCELED , startOfMonth,endOfMonth);
                 int count= (int) StreamSupport.stream(listChuyenBay.spliterator(), false).count();
-                trangThai.put("CANCELED " , count);
+                trangThai.put("CANCELED" , count);
                 tong+=count;
 
                 listChuyenBay = cbservice.getFilterChuyenBay(ChuyenBayEnum.COMPLETED, startOfMonth,endOfMonth);
@@ -678,7 +679,7 @@ public class ChuyenBayController {
                 for(ChuyenBayDTO cb : listChuyenBay)
                     if(cb.getDelay() == 0)
                         ++count ;
-                trangThai.put("SCHEDULED " , count);
+                trangThai.put("SCHEDULED" , count);
                 tong+=count;
 
 
@@ -686,7 +687,7 @@ public class ChuyenBayController {
                 for(ChuyenBayDTO cb : listChuyenBay)
                     if(cb.getDelay() > 0)
                         ++count ;
-                trangThai.put("DELAYED ", count);
+                trangThai.put("DELAYED", count);
                 tong+=count;
 
 
@@ -785,7 +786,7 @@ public class ChuyenBayController {
     public ResponseEntity<ResponseData> thongketuyenbaybyyear() {
 
         int namBatDau = 2017;
-        int namKetThuc = 2024;
+        int namKetThuc = LocalDate.now().getYear();
 
         // Lấy danh sách tất cả các tuyến bay
         Iterable<TuyenBayDTO> listTuyenBay = tuyenBayService.getAllTuyenBay();
