@@ -1,8 +1,11 @@
 package com.project.flightManagement.Service.Impl;
 
+import com.project.flightManagement.DTO.ChiTietHoaDonDTO.ChiTietHoaDonDTO;
 import com.project.flightManagement.DTO.HoaDonDTO.HoaDonDTO;
 import com.project.flightManagement.DTO.ThongKeDTO.TKTongQuatDTO;
+import com.project.flightManagement.Model.Ve;
 import com.project.flightManagement.Service.HoaDonService;
+import com.project.flightManagement.Service.VeService;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -12,12 +15,17 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
 public class ExcelService {
     @Autowired
     private HoaDonService hoaDonService;
+
+    @Autowired
+    private VeService veService;
 
     public ByteArrayOutputStream exportThongKeToExcel(LocalDate startDate, LocalDate endDate) throws IOException {
         // Lấy dữ liệu thống kê từ service
@@ -26,6 +34,23 @@ public class ExcelService {
 
         // Tạo workbook mới
         Workbook workbook = new XSSFWorkbook();
+
+        // Tạo sheet thứ nhất
+        createSheet1(workbook, thongKe, startDate, endDate);
+
+        // Tạo sheet thứ hai
+        createSheet2(workbook, hoaDonDTOList);
+
+        // Lưu file Excel vào ByteArrayOutputStream
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        workbook.write(outputStream);
+        workbook.close();
+
+        return outputStream;
+    }
+
+    private void createSheet1(Workbook workbook, TKTongQuatDTO thongKe, LocalDate startDate, LocalDate endDate) {
+        // Tạo sheet thứ nhất (thống kê tổng quát)
         Sheet sheet = workbook.createSheet("Thống kê tổng quát");
 
         // Tiêu đề headerRow0 (Báo cáo doanh thu tổng quát)
@@ -67,8 +92,6 @@ public class ExcelService {
 
         headerRow1.getCell(0).setCellStyle(headerStyle1);
         headerRow1.getCell(2).setCellStyle(headerStyle1);
-//        sheet.addMergedRegion(new CellRangeAddress(1, 1, 0, 1));  // Merge ô cho ngày bắt đầu và kết thúc
-        // Merge ô cho ngày bắt đầu và kết thúc
         sheet.addMergedRegion(new CellRangeAddress(1, 1, 0, 1));  // Merge ô cho ngày bắt đầu
         sheet.addMergedRegion(new CellRangeAddress(1, 1, 2, 3));  // Merge ô cho ngày kết thúc
 
@@ -102,14 +125,84 @@ public class ExcelService {
         for (int i = 0; i < headers.length; i++) {
             sheet.autoSizeColumn(i);
         }
-
-        // Lưu file Excel vào ByteArrayOutputStream
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        workbook.write(outputStream);
-        workbook.close();
-
-        return outputStream;
     }
 
+    private void createSheet2(Workbook workbook, List<HoaDonDTO> hoaDonDTOList) {
+        // Tạo sheet thứ hai (danh sách hóa đơn)
+        Sheet sheet = workbook.createSheet("Danh sách hóa đơn");
+
+        // Tiêu đề header chính cho sheet thứ 2
+        Row headerRow = sheet.createRow(0);
+        String[] headers = {"STT","Mã Hóa Đơn", "Họ tên", "CCCD", "Thời gian lập", "Tuyến bay" , "Hạng vé", "Số lượng vé", "Tổng Tiền"};
+
+        // Tạo kiểu dáng cho header
+        CellStyle headerStyle = workbook.createCellStyle();
+        headerStyle.setFillForegroundColor(IndexedColors.LIGHT_YELLOW.getIndex());
+        headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        headerStyle.setAlignment(HorizontalAlignment.CENTER);
+        Font headerFont = workbook.createFont();
+        headerFont.setBold(true);
+        headerStyle.setFont(headerFont);
+
+        for (int i = 0; i < headers.length; i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(headers[i]);
+            cell.setCellStyle(headerStyle);
+        }
+
+
+        // Tạo các dòng dữ liệu từ danh sách hoaDonDTOList
+        int rowNum = 1;
+        for (HoaDonDTO hoaDonDTO : hoaDonDTOList) {
+            List<ChiTietHoaDonDTO> chiTietHoaDonDTOList = hoaDonService.getChiTietHoaDon(hoaDonDTO.getIdHoaDon());
+
+            // Check for null values and set default to "N/A"
+            String iataSanBayBatDau = (chiTietHoaDonDTOList.isEmpty() || chiTietHoaDonDTOList.get(0).getVe() == null ||
+                    chiTietHoaDonDTOList.get(0).getVe().getChuyenBay() == null ||
+                    chiTietHoaDonDTOList.get(0).getVe().getChuyenBay().getTuyenBay() == null ||
+                    chiTietHoaDonDTOList.get(0).getVe().getChuyenBay().getTuyenBay().getSanBayBatDau() == null)
+                    ? "N/A"
+                    : chiTietHoaDonDTOList.get(0).getVe().getChuyenBay().getTuyenBay().getSanBayBatDau().getIataSanBay();
+
+            String iataSanBayKetThuc = (chiTietHoaDonDTOList.isEmpty() || chiTietHoaDonDTOList.get(0).getVe() == null ||
+                    chiTietHoaDonDTOList.get(0).getVe().getChuyenBay() == null ||
+                    chiTietHoaDonDTOList.get(0).getVe().getChuyenBay().getTuyenBay() == null ||
+                    chiTietHoaDonDTOList.get(0).getVe().getChuyenBay().getTuyenBay().getSanBayKetThuc() == null)
+                    ? "N/A"
+                    : chiTietHoaDonDTOList.get(0).getVe().getChuyenBay().getTuyenBay().getSanBayKetThuc().getIataSanBay();
+
+            String hangVe = (chiTietHoaDonDTOList.isEmpty() || chiTietHoaDonDTOList.get(0).getVe() == null ||
+                    chiTietHoaDonDTOList.get(0).getVe().getHangVe().getTenHangVe() == null)
+                    ? "N/A"
+                    : chiTietHoaDonDTOList.get(0).getVe().getHangVe().getTenHangVe();
+
+            Row dataRow = sheet.createRow(rowNum++);
+            dataRow.createCell(0).setCellValue(rowNum - 1); // ben tren ++ roi, ben duoi tru di de lay cai index
+            dataRow.createCell(1).setCellValue("HD" + hoaDonDTO.getIdHoaDon());
+            dataRow.createCell(2).setCellValue(hoaDonDTO.getKhachHang() != null && hoaDonDTO.getKhachHang().getHoTen() != null ? hoaDonDTO.getKhachHang().getHoTen() : "N/A");
+            dataRow.createCell(3).setCellValue(hoaDonDTO.getKhachHang() != null && hoaDonDTO.getKhachHang().getCccd() != null ? hoaDonDTO.getKhachHang().getCccd() : "N/A");
+            dataRow.createCell(4).setCellValue(hoaDonDTO.getThoiGianLap() != null ? formatDateTime(hoaDonDTO.getThoiGianLap().toString()).toString() : "N/A");
+            dataRow.createCell(5).setCellValue(iataSanBayBatDau + " - " + iataSanBayKetThuc);
+            dataRow.createCell(6).setCellValue(hangVe);
+            dataRow.createCell(7).setCellValue(hoaDonDTO.getSoLuongVe());
+            dataRow.createCell(8).setCellValue(hoaDonDTO.getTongTien());
+        }
+
+        // Cài đặt chiều rộng của cột
+        for (int i = 0; i < headers.length; i++) {
+            sheet.autoSizeColumn(i);
+        }
+    }
+    // Private method to format the input datetime string
+    private static String formatDateTime(String dateTimeString) {
+        // Parse the string to LocalDateTime
+        LocalDateTime dateTime = LocalDateTime.parse(dateTimeString);
+
+        // Define the desired format
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        // Format the date and return it
+        return dateTime.format(formatter);
+    }
 
 }
