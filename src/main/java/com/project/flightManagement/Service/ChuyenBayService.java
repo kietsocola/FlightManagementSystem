@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -32,4 +33,5 @@ public interface ChuyenBayService {
     public Iterable<ChuyenBayDTO> filterChuyenBayByQuyAndNam(int year , int month) ;
     public List<ChuyenBayDTO> getChuyenBayByMayBay(MayBay mb);
     public String getHoursOfFlight(int idChuyenBay);
+
 }

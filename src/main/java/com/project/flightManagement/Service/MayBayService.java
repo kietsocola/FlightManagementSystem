@@ -7,7 +7,9 @@ import com.project.flightManagement.Model.MayBay;
 import com.project.flightManagement.Model.SanBay;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -24,4 +26,5 @@ public interface MayBayService {
     public Optional<MayBayDTO> unblockMayBay(int id);
     public List<MayBayDTO> findMayBayBySanBay(SanBay sanBay);
     String getHoursOfPlane(int id);
+    Map<Integer, Map<Integer, Double>> calculateHoursOfPlane(String period);
 }

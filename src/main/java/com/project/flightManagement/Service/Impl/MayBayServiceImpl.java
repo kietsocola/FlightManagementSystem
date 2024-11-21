@@ -3,6 +3,7 @@ package com.project.flightManagement.Service.Impl;
 import com.project.flightManagement.DTO.HangBayDTO.HangBayDTO;
 import com.project.flightManagement.DTO.MayBayDTO.MayBayDTO;
 import com.project.flightManagement.Enum.ActiveEnum;
+import com.project.flightManagement.Enum.ChuyenBayEnum;
 import com.project.flightManagement.Mapper.MayBayMapper;
 import com.project.flightManagement.Model.ChuyenBay;
 import com.project.flightManagement.Model.HangBay;
@@ -16,10 +17,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -166,16 +166,15 @@ public class MayBayServiceImpl implements MayBayService {
         if (mb.isPresent()) {
             List<ChuyenBay> listCB = cbRepo.findByMayBay(mb.get().getIdMayBay());
             if (!listCB.isEmpty()) {
-                long totalSeconds = 0; // Biến để lưu tổng số giây
+                long totalSeconds = 0;
 
                 for (ChuyenBay cb : listCB) {
                     LocalDateTime start = cb.getThoiGianBatDauThucTe();
                     LocalDateTime end = cb.getThoiGianKetThucThucTe();
                     Duration duration = Duration.between(start, end);
-                    totalSeconds += duration.getSeconds(); // Cộng dồn tổng số giây
+                    totalSeconds += duration.getSeconds();
                 }
 
-                // Tính toán giờ, phút, giây từ tổng số giây
                 long hours = totalSeconds / 3600;
                 long minutes = (totalSeconds % 3600) / 60;
                 long seconds = totalSeconds % 60;
@@ -191,4 +190,136 @@ public class MayBayServiceImpl implements MayBayService {
             return "00:00:00"; // Trả về 0 giờ nếu không tìm thấy máy bay
         }
     }
+    public double getHoursOfPlaneInABetweenTime(int idMayBay, LocalDateTime startTime, LocalDateTime endTime) {
+        Optional<MayBay> mb = mbRepo.findById(idMayBay);
+        if (mb.isPresent()) {
+            List<ChuyenBay> listCB = cbRepo.findByMayBay(mb.get().getIdMayBay());
+            long totalSeconds = 0;
+            if (!listCB.isEmpty()) {
+                for (ChuyenBay cb : listCB) {
+                    if ((cb.getThoiGianBatDauThucTe().isAfter(startTime) || cb.getThoiGianBatDauThucTe().isEqual(startTime)) &&
+                            (cb.getThoiGianKetThucThucTe().isBefore(endTime) || cb.getThoiGianKetThucThucTe().isEqual(endTime)) && cb.getTrangThai().equals(ChuyenBayEnum.COMPLETED)) {
+
+                        long durationInSeconds = java.time.Duration.between(cb.getThoiGianBatDauThucTe(), cb.getThoiGianKetThucThucTe()).getSeconds();
+                        totalSeconds += durationInSeconds; // Cộng dồn tổng số giây
+                    }
+                }
+
+                // Chuyển đổi tổng số giây thành số giờ kiểu double
+                double totalHours = totalSeconds / 3600.0; // 1 giờ = 3600 giây
+                return totalHours;
+            } else {
+                System.out.println("The plane had not flight time yet!!");
+                return 0.0; // Trả về 0 giờ nếu không có chuyến bay
+            }
+
+        } else {
+            System.out.println("Can't find plane!!");
+            return 0.0; // Trả về 0 giờ nếu không tìm thấy máy bay
+        }
+    }
+
+    public double convertToHour(String time) {
+        String[] timeParts = time.split(":");
+        long hours = Long.parseLong(timeParts[0]); // 1 giờ = 3600 giây
+        long minutesInHours = Long.parseLong(timeParts[1]) / 60; // 1 phút = 60 giây
+        long secondsInHours = Long.parseLong(timeParts[2]) / 3600;
+
+        return hours + minutesInHours + secondsInHours;
+    }
+
+    @Override
+    public Map<Integer, Map<Integer, Double>> calculateHoursOfPlane(String period) {
+        Map<Integer, Map<Integer, Double>> maxOfTimeFlightOfPlane = new HashMap<>();
+        LocalDate now = LocalDate.now();
+
+        try {
+            switch (period.toLowerCase()) {
+                case "monthly":
+                    for (int i = 1; i <= 12; i++) {
+                        LocalDateTime startOfMonth = LocalDateTime.of(now.getYear(), i, 1, 0, 0, 0);
+                        LocalDate endOfMonthDate = LocalDate.of(now.getYear(), i, 1)
+                                .withDayOfMonth(LocalDate.of(now.getYear(), i, 1).lengthOfMonth());
+                        LocalDateTime endOfMonth = LocalDateTime.of(endOfMonthDate, LocalDateTime.MAX.toLocalTime().withNano(0));
+
+                        // Danh sách các máy bay
+                        List<MayBay> listMB = mbRepo.findAll();
+                        Map<Integer, Double> maxPlaneData = new HashMap<>();
+                        double maxHours = 0.0; // Giờ bay lớn nhất, mặc định là 0.0
+                        int maxPlaneId = 0; // ID máy bay, mặc định là 0 nếu không có máy bay nào bay
+
+                        for (MayBay mb : listMB) {
+                            Double hours = getHoursOfPlaneInABetweenTime(mb.getIdMayBay(), startOfMonth, endOfMonth);
+
+                            if (hours > maxHours) {
+                                maxHours = hours;
+                                maxPlaneId = mb.getIdMayBay(); // Cập nhật ID máy bay có giờ bay cao nhất
+                            }
+                        }
+
+                        // Nếu không có máy bay nào bay trong tháng, giữ maxPlaneId = 0 và maxHours = 0.0
+                        maxPlaneData.put(maxPlaneId, maxHours);
+                        maxOfTimeFlightOfPlane.put(i, maxPlaneData);
+                    }
+                    break;
+
+                case "quarterly":
+                    for (int i = 1; i <= 4; i++) {
+                        LocalDate startOfQuarter = now.withMonth((i - 1) * 3 + 1).withDayOfMonth(1);
+                        LocalDate endOfQuarter = startOfQuarter.plusMonths(2).withDayOfMonth(startOfQuarter.plusMonths(2).lengthOfMonth());
+
+                        List<MayBay> listMB = mbRepo.findAll();
+                        Map<Integer, Double> maxPlaneData = new HashMap<>();
+                        double maxHours = 0.0;
+                        int maxPlaneId = 0;
+
+                        for (MayBay mb : listMB) {
+                            Double hours = getHoursOfPlaneInABetweenTime(mb.getIdMayBay(), startOfQuarter.atStartOfDay(), endOfQuarter.atStartOfDay());
+
+                            if (hours > maxHours) {
+                                maxHours = hours;
+                                maxPlaneId = mb.getIdMayBay();
+                            }
+                        }
+
+                        maxPlaneData.put(maxPlaneId, maxHours);
+                        maxOfTimeFlightOfPlane.put(i, maxPlaneData);
+                    }
+                    break;
+
+                case "yearly":
+                    for (int i = now.getYear() - 5; i <= now.getYear(); i++) {
+                        LocalDate startOfYear = LocalDate.of(i, 1, 1);
+                        LocalDate endOfYear = startOfYear.withDayOfYear(startOfYear.lengthOfYear());
+
+                        List<MayBay> listMB = mbRepo.findAll();
+                        Map<Integer, Double> maxPlaneData = new HashMap<>();
+                        double maxHours = 0.0;
+                        int maxPlaneId = 0;
+
+                        for (MayBay mb : listMB) {
+                            Double hours = getHoursOfPlaneInABetweenTime(mb.getIdMayBay(), startOfYear.atStartOfDay(), endOfYear.atStartOfDay());
+
+                            if (hours > maxHours) {
+                                maxHours = hours;
+                                maxPlaneId = mb.getIdMayBay();
+                            }
+                        }
+
+                        maxPlaneData.put(maxPlaneId, maxHours);
+                        maxOfTimeFlightOfPlane.put(i, maxPlaneData);
+                    }
+                    break;
+
+                default:
+                    throw new IllegalArgumentException("Invalid period specified. Use 'monthly', 'quarterly', or 'yearly'.");
+            }
+        } catch (Exception e) {
+            System.err.println("Error occurred while calculating hour of plane: " + e.getMessage());
+        }
+
+        return maxOfTimeFlightOfPlane;
+    }
+
+
 }
