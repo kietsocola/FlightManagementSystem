@@ -3,6 +3,7 @@ package com.project.flightManagement.Service.Impl;
 import com.project.flightManagement.DTO.ChiTietHoaDonDTO.ChiTietHoaDonDTO;
 import com.project.flightManagement.DTO.HoaDonDTO.HoaDonDTO;
 import com.project.flightManagement.DTO.PTTTDTO.PTTTDTO;
+import com.project.flightManagement.DTO.ThongKeDTO.TKTongQuatDTO;
 import com.project.flightManagement.Mapper.ChiTietHoaDonMapper;
 import com.project.flightManagement.Mapper.HoaDonMapper;
 import com.project.flightManagement.Mapper.PTTTMapper;
@@ -284,6 +285,36 @@ public class HoaDonServiceImpl implements HoaDonService {
     // Lấy tất cả các năm từ cơ sở dữ liệu
     public List<Integer> getAllYears() {
         return hdRepo.findDistinctYears();
+    }
+    @Override
+    public TKTongQuatDTO getTKTongQuat(LocalDate startDate, LocalDate endDate) {
+        // Lấy dữ liệu từ repository
+        List<Object[]> result = hdRepo.getTKTongQuatRaw(startDate, endDate);
+
+        // Kiểm tra nếu có dữ liệu trả về
+        if (result != null && !result.isEmpty()) {
+            Object[] row = result.get(0);  // Dữ liệu của dòng đầu tiên
+
+            // Kiểm tra và lấy giá trị từ Object[], nếu là null thì gán giá trị mặc định
+            int tongSoHoaDon = (row[0] != null) ? ((Number) row[0]).intValue() : 0;
+            double tongDoanhThu = (row[1] != null) ? ((Number) row[1]).doubleValue() : 0.0;
+            double doanhThuTrungBinh = (row[2] != null) ? ((Number) row[2]).doubleValue() : 0.0;
+            int tongSoVe = (row[3] != null) ? ((Number) row[3]).intValue() : 0;
+
+            return new TKTongQuatDTO(tongSoHoaDon, tongDoanhThu, doanhThuTrungBinh, tongSoVe);
+        }
+
+        // Trả về DTO mặc định nếu không có dữ liệu
+        return new TKTongQuatDTO();
+    }
+
+    @Override
+    public List<HoaDonDTO> getHoaDonByStartAndEndDate(LocalDate startdate, LocalDate endDate) {
+
+        List<HoaDon> listHD = hdRepo.getHoaDonByStartAndEndDate(startdate, endDate);
+        List<HoaDonDTO> listHDDTO = StreamSupport.stream(listHD.spliterator(), false).map(HoaDonMapper::toDTO)
+                .toList();
+        return listHDDTO;
     }
 
     @Override
