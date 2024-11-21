@@ -366,4 +366,19 @@ public class KhachHangController {
         return new ResponseEntity<>(rp, HttpStatus.OK);
     }
 
+    @GetMapping("/findByCccd")
+    public ResponseEntity<ResponseData> getKhachHangByCccd(@RequestParam String cccd){
+        Optional<KhachHangDTO> existingKHByCccd = khachHangService.getKhachHangByCccd(cccd);
+        if (existingKHByCccd.isPresent()) {
+            response.setMessage("Get customer by cccd successfully!!");
+            response.setData(existingKHByCccd.get());
+            response.setStatusCode(200); //
+            return new ResponseEntity<>(response, HttpStatus.FOUND);
+        }
+        response.setMessage("Get customer by cccd unsuccessfully!!");
+        response.setData(null);
+        response.setStatusCode(404); //
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
 }
