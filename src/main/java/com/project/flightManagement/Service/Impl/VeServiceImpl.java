@@ -120,6 +120,7 @@ public class VeServiceImpl implements VeService {
 
 
     @Override
+    @Transactional
     public boolean updateVe(int idVe, VeUpdateDTO veUpdateDTO) {
         if (idVe != veUpdateDTO.getIdVe()) {
             throw new IdMismatchException("ID in the path and DTO do not match.");
@@ -130,20 +131,15 @@ public class VeServiceImpl implements VeService {
                 .orElseThrow(() -> new ResourceNotFoundException("Ve", idVe));
 
         // Cập nhật các thuộc tính của Ve từ DTO
-        existingVe.setGiaVe(veUpdateDTO.getGiaVe());
         existingVe.setTrangThaiActive(veUpdateDTO.getTrangThaiActive());
-        existingVe.setTrangThai(veUpdateDTO.getTrangThai());
 
         HanhKhach hanhKhach = existingVe.getHanhKhach();
-        if (hanhKhach != null
-                && veRepository.existsByHanhKhach_IdHanhKhach(hanhKhach.getIdHanhKhach())
-                && !hanhKhach.getHoTen().equals(veUpdateDTO.getTenHanhKhach())) {
-
-            // Tạo đối tượng hành khách mới và cập nhật tên
-            HanhKhach hanhKhachMoi = taoMoiHanhKhachVaDoiTen(hanhKhach, veUpdateDTO.getTenHanhKhach());
-            existingVe.setHanhKhach(hanhKhachMoi);
-        }
-
+        System.out.println("HO ten cu: " + hanhKhach.getHoTen());
+        hanhKhach.setNgaySinh(String.valueOf(veUpdateDTO.getNgaySinh()));
+        hanhKhach.setHoTen(veUpdateDTO.getTenHanhKhach());
+        hanhKhach.setGioiTinhEnum(veUpdateDTO.getGioiTinhEnum());
+        System.out.println("Ho ten moi: " + hanhKhach.getHoTen());
+        existingVe.setHanhKhach(hanhKhach);
         // Lưu lại Ve sau khi cập nhật hoàn tất
         veRepository.save(existingVe);
         return true;
@@ -224,8 +220,8 @@ public class VeServiceImpl implements VeService {
     }
 
     @Override
-    public Page<VeDTO> searchVeMaVaAndDateBay(String maVe, LocalDate startDate, LocalDate endDate, int page, int size) {
-        Page<Ve> vePage = veRepository.findByMaVeContainingIgnoreCaseAndNgayBayBetween(maVe, startDate, endDate,
+    public Page<VeDTO> searchVeMaVaAndDateBay(String maVe, LocalDate startDate, LocalDate endDate, String cccd, int page, int size) {
+        Page<Ve> vePage = veRepository.searchVeMaVaAndDateBay(maVe, startDate, endDate, cccd,
                 PageRequest.of(page, size));
         return vePage.map(veMapper::toDto);
     }

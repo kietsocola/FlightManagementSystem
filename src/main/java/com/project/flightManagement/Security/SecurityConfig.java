@@ -101,8 +101,8 @@ public class SecurityConfig {
                         //Hoa đơn
 //                        .requestMatchers("/getAllHoaDon").hasAuthority("Quản lí hoá đơn_VIEW")
 //                        .requestMatchers("/getHoaDonById/{idHD}").hasAuthority("Quản lí hoá đơn_VIEW")
-                        .requestMatchers("/addHoaDon").hasAuthority("Quản lí hoá đơn_CREATE")
-                        .requestMatchers("/updateHoaDon/{idHD}").hasAuthority("Quản lí hoá đơn_EDIT")
+//                        .requestMatchers("/addHoaDon").hasAuthority("Quản lí hoá đơn_CREATE")
+//                        .requestMatchers("/updateHoaDon/{idHD}").hasAuthority("Quản lí hoá đơn_EDIT")
 //                        .requestMatchers("/getListChiTietHoaDon/{idHD}").hasAuthority("Quản lí hoá đơn_VIEW")
 //                        .requestMatchers("/getHoaDonByKeyWord").hasAuthority("Quản lí hoá đơn_VIEW")
 //                        .requestMatchers("/getAllHoaDonSorted").hasAuthority("Quản lí hoá đơn_VIEW")
@@ -172,9 +172,9 @@ public class SecurityConfig {
 //                        .requestMatchers("/admin/danhgia/getReviewByNameOfCustomer").hasAuthority("Quản lí đánh giá_VIEW")
 //                        .requestMatchers("/admin/danhgia/getReviewByHangBay/{idHangBay}").hasAuthority("Quản lí đánh giá_VIEW")
 //                        .requestMatchers("/admin/danhgia/getReviewByStartTimeAndEndTime").hasAuthority("Quản lí đánh giá_VIEW")
-                        .requestMatchers("/admin/danhgia/addCMT").hasAuthority("Quản lí đánh giá_CREATE")
-                        .requestMatchers("/admin/danhgia/addNewReview").hasAuthority("Quản lí đánh giá_CREATE")
-                        .requestMatchers("/admin/danhgia/blockReview/{idDanhGia}").hasAuthority("Quản lí đánh giá_EDIT")
+//                        .requestMatchers("/admin/danhgia/addCMT").hasAuthority("Quản lí đánh giá_CREATE")
+//                        .requestMatchers("/admin/danhgia/addNewReview").hasAuthority("Quản lí đánh giá_CREATE")
+//                        .requestMatchers("/admin/danhgia/blockReview/{idDanhGia}").hasAuthority("Quản lí đánh giá_EDIT")
                         .anyRequest().permitAll());
         http.sessionManagement(session ->session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS));

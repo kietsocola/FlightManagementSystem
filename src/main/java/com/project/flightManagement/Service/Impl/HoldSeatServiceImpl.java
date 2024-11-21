@@ -38,14 +38,14 @@ public class HoldSeatServiceImpl implements HoldSeatService {
     }
     @Override
     public void holdSeat(int idVe) {
-        Ve ve = veRepo.findById(idVe).get();
+        Ve ve = veRepo.findById(idVe).orElseThrow(() -> new RuntimeException("Không tìm thấy vé!"));
 // Cập nhật trạng thái vé thành "HOLD"
         ve.setTrangThai(VeEnum.HOLD);
         veRepo.save(ve);
 
-        // Tạo tác vụ để hủy ghế sau 5 phút
+        // Tạo tác vụ để hủy ghế sau 20 phút
         ScheduledFuture<?> scheduledTask = taskScheduler.schedule(() -> cancelSeat(idVe),
-                new Date(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(10)));
+                new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(20)));
 
         // Lưu tác vụ vào bản đồ để quản lý
         holdSeatTasks.put(ve.getIdVe(), scheduledTask);
