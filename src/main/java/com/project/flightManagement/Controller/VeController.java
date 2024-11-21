@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Collections;
+import java.util.List;
 
 @Controller
 @RequestMapping("/ve")
@@ -332,5 +333,21 @@ public class VeController {
             response.setStatusCode(204);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
+    }
+
+    @GetMapping("/getVeByIdCBNotPaging")
+    public ResponseEntity<?> getVeByIdCBNotPaging(@RequestParam int idChuyenBay) {
+        List<VeDTO> veDTOList = veService.getAllVeByIdChuyenBayNotPaging(idChuyenBay);
+        ResponseData responseData = new ResponseData();
+        if (veDTOList.isEmpty()) {
+            responseData.setStatusCode(204);
+            responseData.setMessage("No ve found.");
+            responseData.setData(Collections.emptyList());
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(responseData);
+        }
+        responseData.setStatusCode(200);
+        responseData.setData(veDTOList);
+        responseData.setMessage("Successfully retrieved ve by ma ve.");
+        return ResponseEntity.ok(responseData);
     }
 }

@@ -33,5 +33,4 @@ public interface ChuyenBayService {
     public Iterable<ChuyenBayDTO> filterChuyenBayByQuyAndNam(int year , int month) ;
     public List<ChuyenBayDTO> getChuyenBayByMayBay(MayBay mb);
     public String getHoursOfFlight(int idChuyenBay);
-
 }

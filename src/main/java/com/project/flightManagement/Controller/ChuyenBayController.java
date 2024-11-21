@@ -5,6 +5,7 @@ import com.project.flightManagement.DTO.NhanVienDTO.NhanVienDTO;
 import com.project.flightManagement.DTO.TuyenBayDTO.TuyenBayDTO;
 import com.project.flightManagement.DTO.VeDTO.VeDTO;
 import com.project.flightManagement.Enum.ChuyenBayEnum;
+import com.project.flightManagement.Enum.VeEnum;
 import com.project.flightManagement.Payload.ResponseData;
 import com.project.flightManagement.Service.*;
 import jakarta.validation.Valid;
@@ -1254,5 +1255,26 @@ public class ChuyenBayController {
             response.setStatusCode(500); // Internal Server Error
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping("/getSoGheTrong")
+    public ResponseEntity<ResponseData> getSoGheTrong(@RequestParam int idChuyenBay) {
+        // Giả sử bạn có một service để lấy thông tin chuyến bay và hóa đơn
+        int soGheTrong = 0;
+        List<VeDTO> veDTOList = veService.getAllVeByIdChuyenBayNotPaging(idChuyenBay);
+        System.out.println(veDTOList);
+        for (VeDTO veDTO : veDTOList) {
+            System.out.println(veDTO.getTrangThai());
+            if (veDTO.getTrangThai() == VeEnum.EMPTY) {
+                soGheTrong++;
+            }
+        }
+        System.out.println(soGheTrong);
+
+        ResponseData responseData = new ResponseData();
+        responseData.setMessage("Thành công");
+        responseData.setData(soGheTrong);
+
+        return ResponseEntity.ok(responseData);
     }
 }
