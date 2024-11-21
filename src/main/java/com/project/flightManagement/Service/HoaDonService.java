@@ -2,9 +2,12 @@ package com.project.flightManagement.Service;
 
 import com.project.flightManagement.DTO.ChiTietHoaDonDTO.ChiTietHoaDonDTO;
 import com.project.flightManagement.DTO.HoaDonDTO.HoaDonDTO;
+import com.project.flightManagement.DTO.ThongKeDTO.TKTongQuatDTO;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -32,6 +35,8 @@ public interface HoaDonService {
 
     public List<HoaDonDTO> getHoaDonByLoaiHD(int idLoaiHD);
 
+    public List<HoaDonDTO> getHoaDonByNgaylap(LocalDate ngayLap);
+
     public boolean markDanhGia(int idHoaDon);
 
     public Double getRevenueByMonth(int month, int year);
@@ -51,4 +56,7 @@ public interface HoaDonService {
     public Map<Integer, Double> getRevenueForAllYears();
 
     public List<Integer> getAllYears();
+
+    public TKTongQuatDTO getTKTongQuat(LocalDate startdate, LocalDate endDate);
+    public List<HoaDonDTO> getHoaDonByStartAndEndDate(LocalDate startdate, LocalDate endDate);
 }

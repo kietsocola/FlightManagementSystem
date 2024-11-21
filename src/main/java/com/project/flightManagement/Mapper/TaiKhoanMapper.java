@@ -1,8 +1,10 @@
 package com.project.flightManagement.Mapper;
 
 import com.project.flightManagement.DTO.KhachHangDTO.KhachHangBasicDTO;
+import com.project.flightManagement.DTO.KhachHangDTO.KhachHangDTO;
 import com.project.flightManagement.DTO.NhanVienDTO.NhanVienDTO;
 import com.project.flightManagement.DTO.QuyenDTO.QuyenBasicDTO;
+import com.project.flightManagement.DTO.QuyenDTO.QuyenResponseDTO;
 import com.project.flightManagement.DTO.TaiKhoanDTO.TaiKhoanDTO;
 import com.project.flightManagement.DTO.TaiKhoanDTO.TaiKhoanResponseDTO;
 import com.project.flightManagement.Model.KhachHang;
@@ -12,6 +14,7 @@ import com.project.flightManagement.Model.TaiKhoan;
 import com.project.flightManagement.Service.KhachHangService;
 import com.project.flightManagement.Service.NhanVienService;
 import com.project.flightManagement.Service.QuyenService;
+import com.project.flightManagement.Service.TaiKhoanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -26,6 +29,10 @@ public class TaiKhoanMapper {
     private NhanVienService nhanVienService;
     @Autowired
     private QuyenMapper quyenMapper;
+    @Autowired
+    private KhachHangMapper khachHangMapper;
+
+
     public static TaiKhoan toTaiKhoan(TaiKhoanDTO taiKhoanDTO) {
         TaiKhoan taiKhoan = new TaiKhoan();
         taiKhoan.setIdTaiKhoan(taiKhoanDTO.getIdTaiKhoan());
@@ -134,5 +141,43 @@ public class TaiKhoanMapper {
         nhanVienDTO.setGioiTinhEnum(nhanVien.getGioiTinhEnum());
         nhanVienDTO.setTrangThaiActive(nhanVien.getTrangThaiActive());
         return nhanVienDTO;
+    }
+
+    public TaiKhoan toTaiKhoan(TaiKhoanResponseDTO taiKhoanResponseDTO) {
+        TaiKhoan taiKhoan = new TaiKhoan();
+        taiKhoan.setIdTaiKhoan(taiKhoanResponseDTO.getIdTaiKhoan());
+         // Ánh xạ KhachHang
+        KhachHangBasicDTO khachHang = taiKhoanResponseDTO.getKhachHang();
+        if (khachHang != null) {
+            Optional<KhachHangDTO> khachHangDTO = khachHangService.getKhachHangByIdKhachHang(khachHang.getIdKhachHang());
+            taiKhoan.setKhachHang(KhachHangMapper.toEntity(khachHangDTO.get()));
+        } else {
+            taiKhoan.setKhachHang(null);
+        }
+        taiKhoan.setTenDangNhap(taiKhoanResponseDTO.getTenDangNhap());
+        taiKhoan.setThoiGianTao(taiKhoanResponseDTO.getThoiGianTao());
+        taiKhoan.setTrangThaiActive(taiKhoanResponseDTO.getTrangThaiActive());
+
+        // Ánh xạ NhanVien
+        NhanVienDTO nhanVien = taiKhoanResponseDTO.getNhanVien();
+        if (nhanVien != null) {
+            Optional<NhanVienDTO> nhanVienDTO = nhanVienService.getNhanVienByIdNhanVien(nhanVien.getIdNhanVien());
+            if (nhanVienDTO.isPresent()) {
+                taiKhoan.setNhanVien(NhanVienMapper.toEntity(nhanVienDTO.get()));
+            }
+        } else {
+            taiKhoan.setNhanVien(null);
+        }
+
+        // Ánh xạ Quyen
+        QuyenResponseDTO quyen = taiKhoanResponseDTO.getQuyen();
+        if (quyen != null) {
+            Optional<QuyenBasicDTO> optionalQuyenBasicDTO = quyenService.getQuyenByIdQuyen(quyen.getIdQuyen());
+            if(optionalQuyenBasicDTO.isPresent()) {
+                taiKhoan.setQuyen(quyenMapper.toQuyen(optionalQuyenBasicDTO.get()));
+            }
+        }
+
+        return taiKhoan;
     }
 }

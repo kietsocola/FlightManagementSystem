@@ -21,16 +21,22 @@ public interface VeRepository extends JpaRepository<Ve, Integer> {
         List<Ve> findByChuyenBay_IdChuyenBay(int idChuyenBay);
 
         boolean existsByHanhKhach_IdHanhKhach(int idHanhKhach);
-
+        @Query("SELECT v FROM Ve v " +
+                "JOIN v.chuyenBay cb " +
+                "JOIN v.hanhKhach hk " +
+                "WHERE (:maVe IS NULL OR LOWER(v.maVe) LIKE LOWER(CONCAT('%', :maVe, '%'))) " +
+                "AND (:startDate IS NULL OR cb.ngayBay BETWEEN :startDate AND :endDate) " +
+                "AND (:cccd IS NULL OR LOWER(hk.cccd) LIKE LOWER(CONCAT('%', :cccd, '%'))) " +
+                "AND v.hanhKhach.idHanhKhach = hk.idHanhKhach")
+        Page<Ve> searchVeMaVaAndDateBay(
+                @Param("maVe") String maVe,
+                @Param("startDate") LocalDate startDate,
+                @Param("endDate") LocalDate endDate,
+                @Param("cccd") String cccd,
+                Pageable pageable);
         List<Ve> findByChuyenBay_IdChuyenBayAndHangVe_IdHangVe(int idChuyenBay, int idHangVe);
 
-        @Query("SELECT v FROM Ve v JOIN v.chuyenBay cb WHERE LOWER(v.maVe) LIKE LOWER(CONCAT('%', :maVe, '%'))" +
-                        " AND cb.ngayBay BETWEEN :startDate AND :endDate")
-        Page<Ve> findByMaVeContainingIgnoreCaseAndNgayBayBetween(
-                        @Param("maVe") String maVe,
-                        @Param("startDate") LocalDate startDate,
-                        @Param("endDate") LocalDate endDate,
-                        Pageable pageable);
+
 
         Page<Ve> findByMaVeContainingIgnoreCase(String maVe, Pageable pageable);
 

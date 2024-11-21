@@ -394,4 +394,19 @@ public class MayBayController {
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
+    @GetMapping("/calculateHourOfPlane")
+    public ResponseEntity<ResponseData> calculateHourOfPlane (@RequestParam String period) {
+        Map<Integer, Map<Integer, Double>> list = mayBayService.calculateHoursOfPlane(period);
+        if (list.isEmpty()) {
+            response.setMessage("Can not get list plane has hour flight!!");
+            response.setStatusCode(500);
+            response.setData(null);
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        } else {
+            response.setData(list);
+            response.setStatusCode(200);
+            response.setMessage("Get list plane has hour flight success!!");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+    }
 }

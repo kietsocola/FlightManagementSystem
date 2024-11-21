@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Collections;
+import java.util.List;
 
 @Controller
 @RequestMapping("/ve")
@@ -183,11 +184,65 @@ public class VeController {
         }
     }
 
+//    @GetMapping("/search")
+//    public ResponseEntity<?> searchVeByMaVeAndDateBay(
+//            @RequestParam String maVe,
+//            @RequestParam(required = false) String startDate, // Để trống nếu không cần
+//            @RequestParam(required = false) String endDate,
+//            @RequestParam(required = false) String cccd, // Để trống nếu không cần
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "10") int size) {
+//
+//        ResponseData responseData = new ResponseData();
+//
+//        // Khởi tạo các giá trị LocalDate cho startDate và endDate nếu có
+//        LocalDate startDateLocal = null;
+//        LocalDate endDateLocal = null;
+//
+//        // Chuyển đổi startDate và endDate thành LocalDate nếu không trống
+//        try {
+//            if (startDate != null && !startDate.isEmpty()) {
+//                startDateLocal = LocalDate.parse(startDate);
+//            }
+//            if (endDate != null && !endDate.isEmpty()) {
+//                endDateLocal = LocalDate.parse(endDate);
+//            }
+//        } catch (DateTimeParseException e) {
+//            responseData.setStatusCode(400);
+//            responseData.setMessage("Invalid date format. Please use yyyy-MM-dd.");
+//            return ResponseEntity.badRequest().body(responseData);
+//        }
+//
+//        // Gọi hàm dịch vụ theo logic tùy thuộc vào startDate và endDate
+//        Page<VeDTO> veDTOPage;
+//        if (startDateLocal == null && endDateLocal == null) {
+//            veDTOPage = veService.searchVeMaVa(maVe, page, size);
+//        } else {
+//            veDTOPage = veService.searchVeMaVaAndDateBay(maVe, startDateLocal, endDateLocal, cccd, page, size);
+//        }
+//
+//        // Kiểm tra nếu kết quả trống
+//        if (veDTOPage.isEmpty()) {
+//            responseData.setStatusCode(204);
+//            responseData.setMessage("No ve found.");
+//            responseData.setData(Collections.emptyList());
+//            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(responseData);
+//        }
+//
+//        // Nếu có dữ liệu
+//        responseData.setStatusCode(200);
+//        responseData.setData(veDTOPage);
+//        responseData.setMessage("Successfully retrieved ve by ma ve.");
+//        return ResponseEntity.ok(responseData);
+//    }
+
+
     @GetMapping("/search")
     public ResponseEntity<?> searchVeByMaVeAndDateBay(
-            @RequestParam String maVe,
+            @RequestParam(required = false) String maVe,
             @RequestParam(required = false) String startDate, // Để trống nếu không cần
-            @RequestParam(required = false) String endDate,   // Để trống nếu không cần
+            @RequestParam(required = false) String endDate,
+            @RequestParam(required = false) String cccd, // Để trống nếu không cần
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
@@ -211,13 +266,8 @@ public class VeController {
             return ResponseEntity.badRequest().body(responseData);
         }
 
-        // Gọi hàm dịch vụ theo logic tùy thuộc vào startDate và endDate
-        Page<VeDTO> veDTOPage;
-        if (startDateLocal == null && endDateLocal == null) {
-            veDTOPage = veService.searchVeMaVa(maVe, page, size);
-        } else {
-            veDTOPage = veService.searchVeMaVaAndDateBay(maVe, startDateLocal, endDateLocal, page, size);
-        }
+        // Gọi hàm dịch vụ chỉ một lần, tùy thuộc vào sự tồn tại của startDate và endDate
+        Page<VeDTO> veDTOPage = veService.searchVeMaVaAndDateBay(maVe, startDateLocal, endDateLocal, cccd, page, size);
 
         // Kiểm tra nếu kết quả trống
         if (veDTOPage.isEmpty()) {
@@ -283,5 +333,21 @@ public class VeController {
             response.setStatusCode(204);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
+    }
+
+    @GetMapping("/getVeByIdCBNotPaging")
+    public ResponseEntity<?> getVeByIdCBNotPaging(@RequestParam int idChuyenBay) {
+        List<VeDTO> veDTOList = veService.getAllVeByIdChuyenBayNotPaging(idChuyenBay);
+        ResponseData responseData = new ResponseData();
+        if (veDTOList.isEmpty()) {
+            responseData.setStatusCode(204);
+            responseData.setMessage("No ve found.");
+            responseData.setData(Collections.emptyList());
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(responseData);
+        }
+        responseData.setStatusCode(200);
+        responseData.setData(veDTOList);
+        responseData.setMessage("Successfully retrieved ve by ma ve.");
+        return ResponseEntity.ok(responseData);
     }
 }

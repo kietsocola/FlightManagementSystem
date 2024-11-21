@@ -3,7 +3,6 @@ package com.project.flightManagement.Service.Impl;
 import com.project.flightManagement.DTO.AuthDTO.LoginDTO;
 import com.project.flightManagement.DTO.AuthDTO.SignupDTO;
 import com.project.flightManagement.DTO.KhachHangDTO.KhachHangCreateDTO;
-import com.project.flightManagement.DTO.KhachHangDTO.KhachHangDTO;
 import com.project.flightManagement.DTO.TaiKhoanDTO.TaiKhoanDTO;
 import com.project.flightManagement.DTO.TaiKhoanDTO.TaiKhoanResponseDTO;
 import com.project.flightManagement.DTO.TaiKhoanDTO.TaiKhoanUpdateNguoiDungDTO;
@@ -26,7 +25,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -195,11 +193,11 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
         }
     }
     @Override
-    public Optional<TaiKhoanDTO> updateTaiKhoan(TaiKhoanDTO tkDTO) {
+    public Optional<TaiKhoanDTO> updateTaiKhoan(TaiKhoanResponseDTO tkDTO) {
         Optional<TaiKhoan> existingTK = taiKhoanRepository.findById(tkDTO.getIdTaiKhoan());
         if(existingTK.isPresent()){
-            TaiKhoan tk = TaiKhoanMapper.toTaiKhoan(tkDTO);
-            tk.setMatKhau(passwordEncoder.encode(tkDTO.getMatKhau()));
+            TaiKhoan tk = taiKhoanMapper.toTaiKhoan(tkDTO);
+            tk.setMatKhau(getTaiKhoanByTenDangNhap(tk.getTenDangNhap()).get().getMatKhau());
             TaiKhoan tkSaved = taiKhoanRepository.save(tk);
             return Optional.of(taiKhoanMapper.toTaiKhoanDTO(tkSaved));
         }else {
@@ -231,6 +229,15 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
         return false;
     }
     @Override
+    public boolean checkExistTenDangNhap(TaiKhoanResponseDTO tkDTO) {
+        for(TaiKhoan tk : taiKhoanRepository.findAll()){
+            if(tkDTO.getTenDangNhap().equals(tk.getTenDangNhap())){
+                return true;
+            }
+        }
+        return false;
+    }
+    @Override
     public boolean checkExistKhachHang(TaiKhoanDTO taiKhoanDTO) {
         for(TaiKhoan tk : taiKhoanRepository.findAll()){
             if(tk.getKhachHang() != null && tk.getKhachHang().getIdKhachHang() == taiKhoanDTO.getKhachHang().getIdKhachHang()) {
@@ -240,6 +247,16 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
         return false;
     }
     @Override
+    public boolean checkExistKhachHang(TaiKhoanResponseDTO taiKhoanDTO) {
+        for(TaiKhoan tk : taiKhoanRepository.findAll()){
+            if(tk.getKhachHang() != null && tk.getKhachHang().getIdKhachHang() == taiKhoanDTO.getKhachHang().getIdKhachHang()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public boolean checkExistNhanVien(TaiKhoanDTO taiKhoanDTO) {
         for(TaiKhoan tk : taiKhoanRepository.findAll()){
             if (tk.getNhanVien() != null &&  tk.getNhanVien().getIdNhanVien() == taiKhoanDTO.getNhanVien().getIdNhanVien()) {
@@ -248,6 +265,17 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
         }
         return false;
     }
+    @Override
+    public boolean checkExistNhanVien(TaiKhoanResponseDTO taiKhoanDTO) {
+        for(TaiKhoan tk : taiKhoanRepository.findAll()){
+            if (tk.getNhanVien() != null &&  tk.getNhanVien().getIdNhanVien() == taiKhoanDTO.getNhanVien().getIdNhanVien()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
 
     @Override
     public void saveTaiKhoan(TaiKhoan taiKhoan) {

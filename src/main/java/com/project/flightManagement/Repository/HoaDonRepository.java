@@ -1,5 +1,6 @@
 package com.project.flightManagement.Repository;
 
+import com.project.flightManagement.DTO.ThongKeDTO.TKTongQuatDTO;
 import com.project.flightManagement.Model.ChiTietHoaDon;
 import com.project.flightManagement.Model.HoaDon;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -81,4 +82,25 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
     // Lấy danh sách các năm có trong hóa đơn
     @Query("SELECT DISTINCT YEAR(h.thoiGianLap) FROM HoaDon h ORDER BY YEAR(h.thoiGianLap) DESC")
     List<Integer> findDistinctYears();
+
+    @Query("SELECT h FROM HoaDon h WHERE FUNCTION('DATE', h.thoiGianLap) = :ngayLap")
+    List<HoaDon> findByNgayLap(@Param("ngayLap") LocalDate ngayLap);
+
+    @Query(value = """
+        SELECT 
+            COUNT(DISTINCT hd.id_hoa_don) AS tongSoHoaDon,
+            SUM(hd.tong_tien) AS tongDoanhThu,
+            (SUM(hd.tong_tien) / COUNT(DISTINCT hd.id_hoa_don)) AS doanhThuTrungBinh,
+            COUNT(ct.id_ve) AS tongSoVe
+        FROM hoadon hd
+        LEFT JOIN chitiethoadon ct ON hd.id_hoa_don = ct.id_hoa_don
+        WHERE
+                hd.thoi_gian_lap BETWEEN :startDate AND :endDate
+    """, nativeQuery = true)
+    List<Object[]> getTKTongQuatRaw(@Param("startDate") LocalDate startDate,
+                                    @Param("endDate") LocalDate endDate); // trả về dữ liệu dưới dạng Object[]
+
+    @Query(value = """
+        SELECT h.* FROM hoadon h WHERE h.thoi_gian_lap BETWEEN :startDate AND :endDate""", nativeQuery = true)
+    List<HoaDon> getHoaDonByStartAndEndDate(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 }

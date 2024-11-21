@@ -25,7 +25,7 @@ public interface VeService {
 
     void updateAutoGiaVeByIdChuyenBay(int idChuyenBay, double giaVeHangPhoThong, double giaVeHangThuongGia);
 
-    Page<VeDTO> searchVeMaVaAndDateBay(String maVe, LocalDate startDate, LocalDate endDate, int page, int size);
+    Page<VeDTO> searchVeMaVaAndDateBay(String maVe, LocalDate startDate, LocalDate endDate, String cccd, int page, int size);
 
     Page<VeDTO> searchVeMaVa(String maVe, int page, int size);
 

@@ -10,14 +10,21 @@ import com.project.flightManagement.Mapper.HangHoaMapper;
 import com.project.flightManagement.Mapper.HoaDonMapper;
 import com.project.flightManagement.Payload.ResponseData;
 import com.project.flightManagement.Service.*;
+import com.project.flightManagement.Service.Impl.ExcelService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.parameters.P;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 
 @RestController
@@ -29,7 +36,8 @@ public class HoaDonController {
     private ChiTietHoaDonService chiTietHoaDonService;
     @Autowired
     HangHoaService hangHoaService;
-
+    @Autowired
+    private ExcelService excelService;
     @Autowired
     private EmailService emailService;
     private ResponseData response = new ResponseData();
@@ -576,5 +584,19 @@ public class HoaDonController {
         response.put("data", statistics);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+    @GetMapping("thongke/export")
+    public ResponseEntity<byte[]> exportThongKeToExcel(@RequestParam("startDate") LocalDate startDate, @RequestParam("endDate") LocalDate endDate) throws IOException {
+        // Adjust endDate by adding 1 day to include the full end date
+        LocalDate adjustedEndDate = endDate.plusDays(1);
+
+        // Gọi service để xuất Excel
+        ByteArrayOutputStream outputStream = excelService.exportThongKeToExcel(startDate, adjustedEndDate);
+
+        // Đặt header cho response để người dùng tải file
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=ThongKeTongQuat.xlsx");
+
+        return new ResponseEntity<>(outputStream.toByteArray(), headers, HttpStatus.OK);
     }
 }

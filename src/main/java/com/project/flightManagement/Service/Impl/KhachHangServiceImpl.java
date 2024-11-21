@@ -143,7 +143,7 @@ public class KhachHangServiceImpl implements KhachHangService {
             System.out.println("No customer found with the keyword: " + keyword);
         } else {
             KhachHang kh = khachHangList.get(0); // Dùng get(0) thay vì getFirst()
-            System.out.println("Id kh found: " + kh.getHoTen());
+//            System.out.println("Id kh found: " + kh.getHoTen());
         }
         return khachHangList.stream()
                 .map(KhachHangMapper::toDTO)
@@ -216,7 +216,7 @@ public class KhachHangServiceImpl implements KhachHangService {
             System.out.println("No customer found has not account");
         } else {
             KhachHang kh = khachHangList.get(0); // Dùng get(0) thay vì getFirst()
-            System.out.println("Id kh found: " + kh.getHoTen());
+//            System.out.println("Id kh found: " + kh.getHoTen());
         }
         return khachHangList.stream()
                 .map(KhachHangMapper::toDTO)

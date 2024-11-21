@@ -15,6 +15,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -43,6 +44,8 @@ public class EmailServiceImpl implements EmailService {
     private HoaDonService hoaDonService;
     @Autowired
     private ChiTietHoaDonService chiTietHoaDonService;
+    @Autowired
+    private PdfService pdfService;
     @Override
     @Async
     public void sendTextEmail(Email email) {
@@ -203,6 +206,18 @@ public class EmailServiceImpl implements EmailService {
             // Set the processed HTML content
             mimeMessageHelper.setText(emailContent, true);
             mimeMessageHelper.setFrom(email_host);
+
+            // Lặp qua từng vé và tạo file PDF
+            for (Ve ve : veList) {
+                Context pdfContext = pdfService.createContext(ve);
+                String pdfHtmlContent = pdfService.templateEngine.process("email/pdf", pdfContext); // Template cho PDF
+                byte[] pdfBytes = pdfService.generatePdfFromHtml(pdfHtmlContent); // Tạo file PDF từ HTML
+
+                // Đính kèm file PDF vào email
+                mimeMessageHelper.addAttachment("Ve_" + ve.getMaVe() + ".pdf", new ByteArrayResource(pdfBytes));
+            }
+
+            // Gửi email
             javaMailSender.send(mimeMessage);
         } catch (Exception e) {
             System.out.println("Failed to send email with Thymeleaf HTML");
