@@ -18,6 +18,8 @@ import org.springframework.security.core.parameters.P;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 
 @RestController
@@ -201,25 +203,33 @@ public class HoaDonController {
     }
 
     @GetMapping("/getHoaDonByField")
-    public ResponseEntity<ResponseData> getHoaDonByField(@RequestParam String field, @RequestParam int input) {
+    public ResponseEntity<ResponseData> getHoaDonByField(@RequestParam String field, @RequestParam String input) {
         System.out.println(field + " " + input);
         Iterable<HoaDonDTO> listHoaDonDTO = null;
 
-        if (field.equals("") || input == 0) {
+        if (field.equals("") || input.equals("0")) {
             listHoaDonDTO = hoaDonService.getAllHoaDon();
+            System.out.println("1");
+        } else if (field.equals("thoiGianLap")) {
+            // Chuyển đổi chuỗi ngày thành LocalDate
+            LocalDate ngayLap = LocalDate.parse(input); // Đảm bảo input là định dạng "yyyy-MM-dd"
+
+            // Gọi service để lấy dữ liệu từ cơ sở dữ liệu
+            listHoaDonDTO = hoaDonService.getHoaDonByNgaylap(ngayLap);
         } else {
+            int value = Integer.parseInt(input);
             switch (field) {
                 case "nhanVien":
-                    listHoaDonDTO = hoaDonService.getHoaDonByNV(input);
+                    listHoaDonDTO = hoaDonService.getHoaDonByNV(value);
                     break;
                 case "khachHang":
-                    listHoaDonDTO = hoaDonService.getHoaDonByKH(input);
+                    listHoaDonDTO = hoaDonService.getHoaDonByKH(value);
                     break;
                 case "phuongThucThanhToan":
-                    listHoaDonDTO = hoaDonService.getHoaDonByPTTT(input);
+                    listHoaDonDTO = hoaDonService.getHoaDonByPTTT(value);
                     break;
                 case "loaiHoaDon":
-                    listHoaDonDTO = hoaDonService.getHoaDonByLoaiHD(input);
+                    listHoaDonDTO = hoaDonService.getHoaDonByLoaiHD(value);
                     break;
             }
         }

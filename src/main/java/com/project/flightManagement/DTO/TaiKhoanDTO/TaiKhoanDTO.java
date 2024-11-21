@@ -10,6 +10,7 @@ import com.project.flightManagement.Model.NhanVien;
 import com.project.flightManagement.Model.Quyen;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,15 +24,17 @@ import java.time.LocalDateTime;
 //@JsonInclude(JsonInclude.Include.NON_NULL)
 public class TaiKhoanDTO {
     private int idTaiKhoan;
-    @NotBlank(message = "Ten dang nhap khong duoc bo trong")
+    @NotBlank(message = "Tên đăng nhập không được bỏ trống!")
     private String tenDangNhap;
 
-    @NotBlank(message = "mat khau khong duoc bo trong")
+    @NotBlank(message = "Mật khẩu không được bỏ trống!")
     private String matKhau;
 
+    @NotNull(message = "Quyền không được bỏ trống!")
     private QuyenBasicDTO quyen;
 
     private KhachHangBasicDTO khachHang;
+
     private NhanVienDTO nhanVien;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate thoiGianTao;

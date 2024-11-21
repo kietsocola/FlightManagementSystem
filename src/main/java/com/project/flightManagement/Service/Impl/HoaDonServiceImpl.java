@@ -201,6 +201,14 @@ public class HoaDonServiceImpl implements HoaDonService {
     }
 
     @Override
+    public List<HoaDonDTO> getHoaDonByNgaylap(LocalDate ngayLap) {
+        List<HoaDon> hoaDonList = hdRepo.findByNgayLap(ngayLap);
+        return hoaDonList.stream()
+                .map(hoaDon -> HoaDonMapper.toDTO(hoaDon))
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public boolean markDanhGia(int idHoaDon) {
         try {
             Optional<HoaDon> hd = hdRepo.findById(idHoaDon);

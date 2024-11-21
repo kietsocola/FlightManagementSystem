@@ -28,11 +28,15 @@ public interface TaiKhoanService {
     boolean updateTaiKhoan_RefreshPassword(TaiKhoan taiKhoan);
     Iterable<TaiKhoanDTO> findByKeyword(String keyword);
     Iterable<TaiKhoanDTO> getAllTaiKhoanSorted(String field, String order);
-    Optional<TaiKhoanDTO> updateTaiKhoan(TaiKhoanDTO tkDTO);
+
+    Optional<TaiKhoanDTO> updateTaiKhoan(TaiKhoanResponseDTO tkDTO);
     Optional<TaiKhoanDTO> addNewTaiKhoan(TaiKhoanDTO tkDTO);
     boolean checkExistTenDangNhap(TaiKhoanDTO tkDTO);
+    boolean checkExistTenDangNhap(TaiKhoanResponseDTO tkDTO);
     boolean checkExistKhachHang(TaiKhoanDTO tkDTO);
+    boolean checkExistKhachHang(TaiKhoanResponseDTO tkDTO);
     boolean checkExistNhanVien(TaiKhoanDTO tkDTO);
+    boolean checkExistNhanVien(TaiKhoanResponseDTO tkDTO);
     void saveTaiKhoan(TaiKhoan taiKhoan);
 
 }

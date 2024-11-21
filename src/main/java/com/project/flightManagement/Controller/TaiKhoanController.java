@@ -1,8 +1,10 @@
 package com.project.flightManagement.Controller;
 
+import com.project.flightManagement.DTO.KhachHangDTO.KhachHangBasicDTO;
 import com.project.flightManagement.DTO.TaiKhoanDTO.TaiKhoanDTO;
 import com.project.flightManagement.DTO.TaiKhoanDTO.TaiKhoanResponseDTO;
 import com.project.flightManagement.DTO.TaiKhoanDTO.TaiKhoanUpdateNguoiDungDTO;
+import com.project.flightManagement.Mapper.TaiKhoanMapper;
 import com.project.flightManagement.Model.TaiKhoan;
 import com.project.flightManagement.Payload.ResponseData;
 import com.project.flightManagement.Security.JwtTokenProvider;
@@ -30,6 +32,9 @@ public class TaiKhoanController {
     private TaiKhoanService taiKhoanService;
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
+    @Autowired
+    private TaiKhoanMapper taiKhoanMapper;
+
     @GetMapping // Đây là ánh xạ cho yêu cầu GET đến /review
     public ResponseEntity<?> getAllTaiKhoan(@RequestParam(defaultValue = "0") int page,
                                            @RequestParam(defaultValue = "10") int size) {
@@ -232,7 +237,7 @@ public class TaiKhoanController {
 
         if (taiKhoanDTO != null && taiKhoanDTO.getTenDangNhap() != null && (taiKhoanDTO.getKhachHang() != null || taiKhoanDTO.getNhanVien() != null)) {
             if(taiKhoanService.checkExistTenDangNhap(taiKhoanDTO)){
-                response.setStatusCode(202);
+                response.setStatusCode(400);
                 fieldErrors.put("tenDangNhap", "Tên đăng nhập đã tồn tại!");
                 response.setMessage("Ten dang nhap exist!!");
                 response.setData(fieldErrors);
@@ -240,7 +245,7 @@ public class TaiKhoanController {
             }
             if (taiKhoanDTO.getKhachHang() != null) {
                 if(taiKhoanService.checkExistKhachHang(taiKhoanDTO)) {
-                    response.setStatusCode(202);
+                    response.setStatusCode(400);
                     response.setMessage("Khach hang exist!!");
                     fieldErrors.put("khachHang", "Khách hàng đã có tài khoản!");
                     response.setData(fieldErrors);
@@ -248,7 +253,7 @@ public class TaiKhoanController {
                 }
             } else {
                 if(taiKhoanService.checkExistNhanVien(taiKhoanDTO)) {
-                    response.setStatusCode(202);
+                    response.setStatusCode(400);
                     response.setMessage("Nhan vien exist!!");
                     fieldErrors.put("nhanVien", "Nhân viên đã có tài khoản!");
                     response.setData(fieldErrors);
@@ -277,7 +282,7 @@ public class TaiKhoanController {
         }
     }
     @PutMapping("/updateTaiKhoan/{idTK}")
-    public ResponseEntity<ResponseData> updateTaiKhoan(@PathVariable("idTK") int idTK, @Valid @RequestBody TaiKhoanDTO taiKhoanDTO, BindingResult bindingResult) {
+    public ResponseEntity<ResponseData> updateTaiKhoan(@PathVariable("idTK") int idTK, @Valid @RequestBody TaiKhoanResponseDTO taiKhoanResponseDTO, BindingResult bindingResult) {
         ResponseData response = new ResponseData();
         Map<String, String> fieldErrors = new HashMap<>();
         if(bindingResult.hasErrors()){
@@ -288,21 +293,31 @@ public class TaiKhoanController {
             response.setMessage("There are some fields invalid");
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
-        if (taiKhoanDTO != null && taiKhoanDTO.getTenDangNhap() != null && (taiKhoanDTO.getKhachHang() != null || taiKhoanDTO.getNhanVien() != null)) {
-            System.out.println(taiKhoanDTO);
-            if (!taiKhoanService.getTaiKhoanByIdTaiKhoan(idTK).getTenDangNhap().equals(taiKhoanDTO.getTenDangNhap())){
-                if(taiKhoanService.checkExistTenDangNhap(taiKhoanDTO)){
-                    response.setStatusCode(202);
+        System.out.println("1+++"+ taiKhoanResponseDTO.getTenDangNhap());
+        if(taiKhoanResponseDTO.getTenDangNhap() == ""){
+            response.setStatusCode(400);
+            fieldErrors.put("tenDangNhap", "Tên đăng nhập không được để trống!");
+            response.setMessage("Ten dang nhap not null!!");
+            response.setData(fieldErrors);
+            return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+        }
+        if (taiKhoanResponseDTO != null && taiKhoanResponseDTO.getTenDangNhap() != null && (taiKhoanResponseDTO.getKhachHang() != null || taiKhoanResponseDTO.getNhanVien() != null)) {
+            if (!taiKhoanService.getTaiKhoanByIdTaiKhoan(idTK).getTenDangNhap().equals(taiKhoanResponseDTO.getTenDangNhap())){
+                if(taiKhoanService.checkExistTenDangNhap(taiKhoanResponseDTO)){
+                    response.setStatusCode(400);
                     response.setMessage("Ten dang nhap exist!");
                     fieldErrors.put("tenDangNhap", "Tên đăng nhập đã tồn tại!");
                     response.setData(fieldErrors);
                     return new ResponseEntity<>(response, HttpStatus.CONFLICT);
                 }
             }
-            if (taiKhoanDTO.getKhachHang() != null) {
-                if (taiKhoanService.getTaiKhoanByIdTaiKhoan(idTK).getKhachHang().getIdKhachHang() != taiKhoanDTO.getKhachHang().getIdKhachHang()) {
-                    if(taiKhoanService.checkExistKhachHang(taiKhoanDTO)) {
-                        response.setStatusCode(202);
+            if (taiKhoanResponseDTO.getKhachHang() != null) {
+                System.out.println("id tai khoan: " + idTK);
+                TaiKhoanResponseDTO tkRsp = taiKhoanService.getTaiKhoanByIdTaiKhoan(idTK);
+                System.out.println("tk respone get by id: " + tkRsp);
+                if ((taiKhoanService.getTaiKhoanByIdTaiKhoan(idTK).getKhachHang()).getIdKhachHang() != (taiKhoanResponseDTO.getKhachHang()).getIdKhachHang()) {
+                    if(taiKhoanService.checkExistKhachHang(taiKhoanResponseDTO)) {
+                        response.setStatusCode(400);
                         response.setMessage("Khach hang exist!!");
                         fieldErrors.put("khachHang", "Khách hàng đã có tài khoản!");
                         response.setData(fieldErrors);
@@ -310,15 +325,15 @@ public class TaiKhoanController {
                     }
                 }
             } else {
-                if(taiKhoanService.getTaiKhoanByIdTaiKhoan(idTK).getNhanVien().getIdNhanVien() != taiKhoanDTO.getNhanVien().getIdNhanVien() && taiKhoanService.checkExistNhanVien(taiKhoanDTO)) {
-                    response.setStatusCode(202);
+                if(taiKhoanService.getTaiKhoanByIdTaiKhoan(idTK).getNhanVien().getIdNhanVien() != taiKhoanResponseDTO.getNhanVien().getIdNhanVien() && taiKhoanService.checkExistNhanVien(taiKhoanResponseDTO)) {
+                    response.setStatusCode(400);
                     response.setMessage("Nhan vien exist!!");
                     fieldErrors.put("nhanVien", "Nhân viên đã có tài khoản!");
                     response.setData(fieldErrors);
                     return new ResponseEntity<>(response, HttpStatus.CONFLICT);
                 }
             }
-            Optional<TaiKhoanDTO> savedTK = taiKhoanService.updateTaiKhoan(taiKhoanDTO);
+            Optional<TaiKhoanDTO> savedTK = taiKhoanService.updateTaiKhoan(taiKhoanResponseDTO);
             if (savedTK.isPresent()) {
                 response.setMessage("Save account successfully!!");
                 response.setData(savedTK.get());

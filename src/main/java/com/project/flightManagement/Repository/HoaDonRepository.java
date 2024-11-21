@@ -76,4 +76,7 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
     // Lấy danh sách các năm có trong hóa đơn
     @Query("SELECT DISTINCT YEAR(h.thoiGianLap) FROM HoaDon h ORDER BY YEAR(h.thoiGianLap) DESC")
     List<Integer> findDistinctYears();
+
+    @Query("SELECT h FROM HoaDon h WHERE FUNCTION('DATE', h.thoiGianLap) = :ngayLap")
+    List<HoaDon> findByNgayLap(@Param("ngayLap") LocalDate ngayLap);
 }
