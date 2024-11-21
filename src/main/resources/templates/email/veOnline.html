@@ -166,11 +166,11 @@
             </thead>
             <tbody>
             <tr class="row_first">
-                <td><span class="bold" th:text="${ve.getChuyenBay().getTuyenBay().getSanBayBatDau().getThanhPho().getTenThanhPho()}">HA NOI</span><span th:text=" ${ve.getChuyenBay().getTuyenBay().getSanBayBatDau().getTenSanBay()}"></span></td>
-                <td><span class="bold" th:text="${ve.getChuyenBay().getTuyenBay().getSanBayKetThuc().getThanhPho().getTenThanhPho()}">HOCHIMINH</span><span th:text=" ${ve.getChuyenBay().getTuyenBay().getSanBayKetThuc().getTenSanBay()}"></span></td>
+                <td><span class="bold" th:text="${ve.getChuyenBay().getTuyenBay().getSanBayBatDau().getThanhPho().getTenThanhPho()}">HA NOI</span>  &nbsp; <span th:text=" ${ve.getChuyenBay().getTuyenBay().getSanBayBatDau().getIataSanBay()}"></span></td>
+                <td><span class="bold" th:text="${ve.getChuyenBay().getTuyenBay().getSanBayKetThuc().getThanhPho().getTenThanhPho()}">HOCHIMINH</span>  &nbsp; <span th:text=" ${ve.getChuyenBay().getTuyenBay().getSanBayKetThuc().getIataSanBay()}"></span></td>
                 <td th:text="${ve.getChuyenBay().getMayBay().getSoHieu()}"></td>
                 <td class="bold" th:text="${ve.getChuyenBay().getTimeFormatBatDau()}"></td>
-                <td class="bold" th:text="${ve.getChuyenBay().getTimeFormatBatDau()}"></td>
+                <td class="bold" th:text="${ve.getChuyenBay().getTimeFormatKetThuc()}"></td>
             </tr>
             <tr class="row_first">
                 <td>Cổng: <span th:text="${ve.getChuyenBay().getCong().getTenCong()}"></span></td>
