@@ -18,9 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 
 @RestController
@@ -283,5 +281,23 @@ public class TuyenBayController {
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
+
+
+
+    @GetMapping("/top-routes")
+    public ResponseEntity<ResponseData> getTopRoutes(@RequestParam String period) {
+        // Lấy danh sách top 5 tuyến bay từ service
+        Map<String, List<Map<String, Object>>> result = tuyenBayService.getTop5FlightRoutesByTimePeriod(period);
+
+        // Tạo phản hồi
+        ResponseData response = new ResponseData();
+        response.setMessage("Get top 5 frequency routes successfully!!");
+        response.setData(result);
+        response.setStatusCode(200); // OK
+
+        // Trả về ResponseEntity với mã trạng thái 200 và dữ liệu phản hồi
+        return ResponseEntity.ok(response);
+    }
+
 
 }

@@ -327,10 +327,11 @@ public class HoaDonServiceImpl implements HoaDonService {
 
         Map<String, Long> stats = new LinkedHashMap<>();
         for (Object[] record : rawStats) {
-            String ageGroup = ((Long) record[0]).intValue() + "-" + (((Long) record[0]).intValue() + 9);
+            String ageGroup = (String) record[0]; // Trực tiếp lấy nhóm tuổi từ truy vấn SQL
             Long count = (Long) record[1];
             stats.put(ageGroup, count);
         }
         return stats;
     }
+
 }

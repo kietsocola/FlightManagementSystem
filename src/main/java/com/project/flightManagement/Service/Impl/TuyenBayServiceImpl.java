@@ -12,9 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -141,9 +140,6 @@ public class TuyenBayServiceImpl implements TuyenBayService {
     }
 
 
-
-
-
     @Override
     public Iterable<TuyenBayDTO> getAllTuyenBaySorted(String sortBy, String direction) {
         // Default to idTuyenBay and ASC if invalid inputs
@@ -168,5 +164,64 @@ public class TuyenBayServiceImpl implements TuyenBayService {
             return Collections.emptyList();
         }
     }
+
+    @Override
+    public Map<String, List<Map<String, Object>>> getTop5FlightRoutesByTimePeriod(String period) {
+        Map<String, List<Map<String, Object>>> statistics = new LinkedHashMap<>();
+        LocalDate now = LocalDate.now();
+
+        switch (period.toLowerCase()) {
+            case "monthly":
+                for (int i = 1; i <= 12; i++) {
+                    LocalDate startOfMonth = now.withMonth(i).withDayOfMonth(1);
+                    LocalDate endOfMonth = startOfMonth.withDayOfMonth(startOfMonth.lengthOfMonth());
+
+                    List<Map<String, Object>> routesStats = processTop5Routes(startOfMonth, endOfMonth);
+                    statistics.put("Month " + i, routesStats);
+                }
+                break;
+
+            case "quarterly":
+                for (int i = 1; i <= 4; i++) {
+                    // Tính ngày bắt đầu và ngày kết thúc cho từng quý
+                    LocalDate startOfQuarter = now.withMonth((i - 1) * 3 + 1).withDayOfMonth(1);
+                    LocalDate endOfQuarter = startOfQuarter.plusMonths(2).withDayOfMonth(startOfQuarter.plusMonths(2).lengthOfMonth());
+
+                    List<Map<String, Object>> routesStats = processTop5Routes(startOfQuarter, endOfQuarter);
+                    statistics.put("Quarter " + i, routesStats);
+                }
+                break;
+
+            case "yearly":
+                for (int i = now.getYear() - 5; i <= now.getYear(); i++) {
+                    LocalDate startOfYear = LocalDate.of(i, 1, 1);
+                    LocalDate endOfYear = startOfYear.withDayOfYear(startOfYear.lengthOfYear());
+
+                    List<Map<String, Object>> routesStats = processTop5Routes(startOfYear, endOfYear);
+                    statistics.put("Year " + i, routesStats);
+                }
+                break;
+
+            default:
+                throw new IllegalArgumentException("Invalid period. Use 'monthly', 'quarterly', or 'yearly'.");
+        }
+
+        return statistics;
+    }
+
+    private List<Map<String, Object>> processTop5Routes(LocalDate startDate, LocalDate endDate) {
+        List<Object[]> rawStats = tbRepo.getTop5FlightRoutesByFrequency(startDate, endDate);
+
+        List<Map<String, Object>> stats = new ArrayList<>();
+        for (Object[] record : rawStats) {
+            Map<String, Object> routeData = new LinkedHashMap<>();
+            routeData.put("route", record[0] + "-" + record[1]);
+
+            routeData.put("countFlight", record[2]);
+            stats.add(routeData);
+        }
+        return stats;
+    }
+
 
 }

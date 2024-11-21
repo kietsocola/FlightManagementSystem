@@ -51,7 +51,11 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
 
     @Query(value = """
             SELECT
-                FLOOR((YEAR(:referenceDate) - YEAR(hk.ngay_sinh)) / 10) * 10 AS ageGroup,
+                CASE
+                    WHEN (YEAR(:referenceDate) - YEAR(hk.ngay_sinh)) < 16 THEN 'Dưới 16'
+                    WHEN (YEAR(:referenceDate) - YEAR(hk.ngay_sinh)) BETWEEN 16 AND 35 THEN '16-35'
+                    ELSE 'Trên 35'
+                END AS ageGroup,
                 COUNT(v.id_ve) AS totalTickets
             FROM
                 Ve v
@@ -72,6 +76,7 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
             @Param("referenceDate") LocalDate referenceDate,
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate);
+
 
     // Lấy danh sách các năm có trong hóa đơn
     @Query("SELECT DISTINCT YEAR(h.thoiGianLap) FROM HoaDon h ORDER BY YEAR(h.thoiGianLap) DESC")
