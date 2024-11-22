@@ -432,4 +432,12 @@ public class MayBayController {
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
     }
+    @GetMapping("/getTotalPlane")
+    public ResponseEntity<ResponseData> getTotal() {
+        int total = mayBayService.getTotalPlane();
+        response.setMessage("Get total plane success!!");
+        response.setData(total);
+        response.setStatusCode(200);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }

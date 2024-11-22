@@ -29,4 +29,5 @@ public interface MayBayService {
     String getHoursOfPlane(int id);
     List<Pair<String, Double>> calculateHoursOfPlane(String period, int month, int quarter, int year);
     List<Pair<String, Double>> getTop5PlaneHasHighestFlightHours(int month, int year);
+    int getTotalPlane();
 }
