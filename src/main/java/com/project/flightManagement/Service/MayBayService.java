@@ -1,5 +1,6 @@
 package com.project.flightManagement.Service;
 
+import com.nimbusds.jose.util.Pair;
 import com.project.flightManagement.DTO.HangBayDTO.HangBayDTO;
 import com.project.flightManagement.DTO.MayBayDTO.MayBayDTO;
 import com.project.flightManagement.Model.HangBay;
@@ -26,5 +27,5 @@ public interface MayBayService {
     public Optional<MayBayDTO> unblockMayBay(int id);
     public List<MayBayDTO> findMayBayBySanBay(SanBay sanBay);
     String getHoursOfPlane(int id);
-    Map<Integer, Map<Integer, Double>> calculateHoursOfPlane(String period);
+    List<Pair<String, Double>> getTop5PlaneHasHighestFlightHours(int month, int year);
 }

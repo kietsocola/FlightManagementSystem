@@ -1,5 +1,6 @@
 package com.project.flightManagement.Controller;
 
+import com.nimbusds.jose.util.Pair;
 import com.project.flightManagement.DTO.ChoNgoiDTO.ChoNgoiDTO;
 import com.project.flightManagement.DTO.HangBayDTO.HangBayDTO;
 import com.project.flightManagement.DTO.MayBayDTO.MayBayDTO;
@@ -394,18 +395,19 @@ public class MayBayController {
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
-    @GetMapping("/calculateHourOfPlane")
-    public ResponseEntity<ResponseData> calculateHourOfPlane (@RequestParam String period) {
-        Map<Integer, Map<Integer, Double>> list = mayBayService.calculateHoursOfPlane(period);
+
+    @GetMapping("/top5PlaneHasHighestFlightHours")
+    public ResponseEntity<ResponseData> getTop5PlaneHasHighestFlightHours (@RequestParam int month, @RequestParam int year) {
+        List<Pair<String, Double>> list = mayBayService.getTop5PlaneHasHighestFlightHours(month, year);
         if (list.isEmpty()) {
-            response.setMessage("Can not get list plane has hour flight!!");
+            response.setMessage("Can not get top 5 plane has highest hour flight!!");
             response.setStatusCode(500);
             response.setData(null);
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         } else {
             response.setData(list);
             response.setStatusCode(200);
-            response.setMessage("Get list plane has hour flight success!!");
+            response.setMessage("Get top 5 plane has highest hour flight success!!");
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
     }
