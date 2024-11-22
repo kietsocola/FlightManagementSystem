@@ -649,7 +649,7 @@ public class ChuyenBayController {
     public ResponseEntity<ResponseData> thongkechuyenbaytheotrangthaibyyearandmonth(){
 
         int namBatDau = 2017;
-        int namKetThuc = 2024 ;
+        int namKetThuc = LocalDate.now().getYear();
         List<Map<String , Map<String , Map<String , Integer>>>> result = new ArrayList<>();
 
 
@@ -718,7 +718,7 @@ public class ChuyenBayController {
     public ResponseEntity<ResponseData> thongkechuyenbaytheotrangthaibyyearandquy(){
 
         int namBatDau = 2017;
-        int namKetThuc = 2024 ;
+        int namKetThuc = LocalDate.now().getYear(); ;
         List<Map<String , Map<String , Map<String , Integer>>>> result = new ArrayList<>();
 
 
