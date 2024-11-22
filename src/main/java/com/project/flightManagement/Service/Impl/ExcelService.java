@@ -17,7 +17,10 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 @Service
 public class ExcelService {
@@ -40,6 +43,12 @@ public class ExcelService {
 
         // Tạo sheet thứ hai
         createSheet2(workbook, hoaDonDTOList);
+
+        // Tạo sheet thứ ba
+        createSheet3(workbook, hoaDonDTOList, thongKe.getTongDoanhThu());
+
+        // Tạo sheet thứ tư (Doanh thu theo ngày)
+        createSheet4(workbook, hoaDonDTOList);
 
         // Lưu file Excel vào ByteArrayOutputStream
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -193,6 +202,124 @@ public class ExcelService {
             sheet.autoSizeColumn(i);
         }
     }
+    private void createSheet3(Workbook workbook, List<HoaDonDTO> hoaDonDTOList, double tongDoanhThu) {
+        // Tạo sheet thứ ba (Thống kê theo tuyến bay)
+        Sheet sheet = workbook.createSheet("Thống kê tuyến bay");
+
+        // Tiêu đề header chính cho sheet thứ 3
+        Row headerRow = sheet.createRow(0);
+        String[] headers = {"Tuyến Bay", "Số Hóa Đơn", "Doanh Thu", "Tỷ Lệ (%)"};
+
+        // Tạo kiểu dáng cho header
+        CellStyle headerStyle = workbook.createCellStyle();
+        headerStyle.setFillForegroundColor(IndexedColors.LIGHT_YELLOW.getIndex());
+        headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        headerStyle.setAlignment(HorizontalAlignment.CENTER);
+        Font headerFont = workbook.createFont();
+        headerFont.setBold(true);
+        headerStyle.setFont(headerFont);
+
+        for (int i = 0; i < headers.length; i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(headers[i]);
+            cell.setCellStyle(headerStyle);
+        }
+
+        // Tổng hợp dữ liệu
+        Map<String, Integer> soHoaDonByTuyenBay = new HashMap<>();
+        Map<String, Double> doanhThuByTuyenBay = new HashMap<>();
+
+        for (HoaDonDTO hoaDonDTO : hoaDonDTOList) {
+            List<ChiTietHoaDonDTO> chiTietHoaDonDTOList = hoaDonService.getChiTietHoaDon(hoaDonDTO.getIdHoaDon());
+            if (chiTietHoaDonDTOList.isEmpty()) continue;
+
+            String tuyenBay = getTuyenBay(chiTietHoaDonDTOList);
+            soHoaDonByTuyenBay.put(tuyenBay, soHoaDonByTuyenBay.getOrDefault(tuyenBay, 0) + 1);
+            doanhThuByTuyenBay.put(tuyenBay, doanhThuByTuyenBay.getOrDefault(tuyenBay, 0.0) + hoaDonDTO.getTongTien());
+        }
+
+        // Thêm dữ liệu vào sheet
+        int rowNum = 1;
+        for (String tuyenBay : soHoaDonByTuyenBay.keySet()) {
+            Row dataRow = sheet.createRow(rowNum++);
+            dataRow.createCell(0).setCellValue(tuyenBay);
+            dataRow.createCell(1).setCellValue(soHoaDonByTuyenBay.get(tuyenBay));
+            double doanhThu = doanhThuByTuyenBay.get(tuyenBay);
+            dataRow.createCell(2).setCellValue(doanhThu);
+            double tyLe = (tongDoanhThu > 0) ? (doanhThu / tongDoanhThu) * 100 : 0;
+            dataRow.createCell(3).setCellValue(String.format("%.2f%%", tyLe));
+        }
+
+        // Cài đặt chiều rộng của cột
+        for (int i = 0; i < headers.length; i++) {
+            sheet.autoSizeColumn(i);
+        }
+    }
+
+    // Helper method to get Tuyen Bay
+    private String getTuyenBay(List<ChiTietHoaDonDTO> chiTietHoaDonDTOList) {
+        ChiTietHoaDonDTO chiTiet = chiTietHoaDonDTOList.get(0); // Lấy chi tiết đầu tiên
+        if (chiTiet.getVe() == null || chiTiet.getVe().getChuyenBay() == null || chiTiet.getVe().getChuyenBay().getTuyenBay() == null) {
+            return "N/A";
+        }
+
+        String sanBayBatDau = chiTiet.getVe().getChuyenBay().getTuyenBay().getSanBayBatDau() != null
+                ? chiTiet.getVe().getChuyenBay().getTuyenBay().getSanBayBatDau().getIataSanBay()
+                : "N/A";
+
+        String sanBayKetThuc = chiTiet.getVe().getChuyenBay().getTuyenBay().getSanBayKetThuc() != null
+                ? chiTiet.getVe().getChuyenBay().getTuyenBay().getSanBayKetThuc().getIataSanBay()
+                : "N/A";
+
+        return sanBayBatDau + " - " + sanBayKetThuc;
+    }
+
+    private void createSheet4(Workbook workbook, List<HoaDonDTO> hoaDonDTOList) {
+        // Tạo sheet thứ tư (Doanh thu theo ngày)
+        Sheet sheet = workbook.createSheet("Doanh thu theo ngày");
+
+        // Tiêu đề header chính
+        Row headerRow = sheet.createRow(0);
+        String[] headers = {"Ngày", "Doanh thu"};
+
+        // Tạo kiểu dáng cho header
+        CellStyle headerStyle = workbook.createCellStyle();
+        headerStyle.setFillForegroundColor(IndexedColors.LIGHT_YELLOW.getIndex());
+        headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        headerStyle.setAlignment(HorizontalAlignment.CENTER);
+        Font headerFont = workbook.createFont();
+        headerFont.setBold(true);
+        headerStyle.setFont(headerFont);
+
+        for (int i = 0; i < headers.length; i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(headers[i]);
+            cell.setCellStyle(headerStyle);
+        }
+
+        // Tổng hợp doanh thu theo ngày
+        Map<LocalDate, Double> doanhThuTheoNgay = new TreeMap<>();
+        for (HoaDonDTO hoaDonDTO : hoaDonDTOList) {
+            LocalDate ngayLap = hoaDonDTO.getThoiGianLap().toLocalDate();
+            double tongTien = hoaDonDTO.getTongTien();
+
+            doanhThuTheoNgay.put(ngayLap, doanhThuTheoNgay.getOrDefault(ngayLap, 0.0) + tongTien);
+        }
+
+        // Tạo các dòng dữ liệu
+        int rowNum = 1;
+        for (Map.Entry<LocalDate, Double> entry : doanhThuTheoNgay.entrySet()) {
+            Row dataRow = sheet.createRow(rowNum++);
+            dataRow.createCell(0).setCellValue(entry.getKey().toString());
+            dataRow.createCell(1).setCellValue(entry.getValue());
+        }
+
+        // Cài đặt chiều rộng của cột
+        for (int i = 0; i < headers.length; i++) {
+            sheet.autoSizeColumn(i);
+        }
+    }
+
     // Private method to format the input datetime string
     private static String formatDateTime(String dateTimeString) {
         // Parse the string to LocalDateTime
