@@ -27,5 +27,6 @@ public interface MayBayService {
     public Optional<MayBayDTO> unblockMayBay(int id);
     public List<MayBayDTO> findMayBayBySanBay(SanBay sanBay);
     String getHoursOfPlane(int id);
+    List<Pair<String, Double>> calculateHoursOfPlane(String period, int month, int quarter, int year);
     List<Pair<String, Double>> getTop5PlaneHasHighestFlightHours(int month, int year);
 }

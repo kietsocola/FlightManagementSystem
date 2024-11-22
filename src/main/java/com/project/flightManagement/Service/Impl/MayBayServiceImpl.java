@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -239,6 +240,190 @@ public class MayBayServiceImpl implements MayBayService {
         return hours + minutesInHours + secondsInHours;
     }
 
+    @Override
+//    public List<Pair<String, Double>> calculateHoursOfPlane(String period, int month, int quarter, int year) {
+//        List<Pair<String, Double>> maxOfTimeFlightOfPlane = new ArrayList<>();
+//        List<Pair<String, Double>> planeHoursList = new ArrayList<>();
+//        int count;
+//        LocalDate now = LocalDate.now();
+//
+//        try {
+//            switch (period.toLowerCase()) {
+//                case "monthly":
+//                        LocalDateTime startOfMonth = LocalDateTime.of(year, month, 1, 0, 0, 0);
+//                        LocalDate endOfMonthDate = LocalDate.of(year, month, 1)
+//                                .withDayOfMonth(LocalDate.of(year, month, 1).lengthOfMonth());
+//                        LocalDateTime endOfMonth = LocalDateTime.of(endOfMonthDate, LocalDateTime.MAX.toLocalTime().withNano(0));
+//
+//                        // Danh sách các máy bay
+//                        for (MayBayDTO mb : getAllMayBay()) {
+//                            double hours = getHoursOfPlaneInABetweenTime(mb.getIdMayBay(), startOfMonth, endOfMonth);
+//                            // Thêm vào danh sách tạm thời với tên máy bay và số giờ bay
+//                            planeHoursList.add(Pair.of(mb.getTenMayBay(), hours));
+//                        }
+//
+//                        // Sắp xếp danh sách theo giờ bay giảm dần
+//                        planeHoursList.sort((pair1, pair2) -> Double.compare(pair2.getRight(), pair1.getRight()));
+//
+//                        // Lấy 5 máy bay có giờ bay cao nhất
+//                        count = 0;
+//                        for (Pair<String, Double> pair : planeHoursList) {
+//                            if (count >= 5) break; // Lấy 5 máy bay đầu tiên
+//                            maxOfTimeFlightOfPlane.add(pair);
+//                            count++;
+//                        }
+//
+//                    break;
+//
+//                case "quarterly":
+//                    for (int i = 1; i <= 4; i++) {
+//                        LocalDate date = LocalDate.of(year, 1, 1);
+//                        LocalDate startOfQuarter = date.withMonth((quarter - 1) * 3 + 1).withDayOfMonth(1);
+//                        LocalDateTime startOfQuarterTime = startOfQuarter.atStartOfDay();
+//                        LocalDate endOfQuarter = startOfQuarter.plusMonths(2).withDayOfMonth(startOfQuarter.plusMonths(2).lengthOfMonth());
+//                        LocalDateTime endOfQuarterTime = endOfQuarter.atTime(23, 59, 59);
+//
+//                        for (MayBayDTO mb : getAllMayBay()) {
+//                            double hours = getHoursOfPlaneInABetweenTime(mb.getIdMayBay(), startOfQuarterTime, endOfQuarterTime);
+//                            // Thêm vào danh sách tạm thời với tên máy bay và số giờ bay
+//                            planeHoursList.add(Pair.of(mb.getTenMayBay(), hours));
+//                        }
+//
+//                        // Sắp xếp danh sách theo giờ bay giảm dần
+//                        planeHoursList.sort((pair1, pair2) -> Double.compare(pair2.getRight(), pair1.getRight()));
+//
+//                        // Lấy 5 máy bay có giờ bay cao nhất
+//                        count = 0;
+//                        for (Pair<String, Double> pair : planeHoursList) {
+//                            if (count >= 5) break; // Lấy 5 máy bay đầu tiên
+//                            maxOfTimeFlightOfPlane.add(pair);
+//                            count++;
+//                        }
+//                    }
+//                    break;
+//
+//                case "yearly":
+//                        LocalDate startOfYear = LocalDate.of(year, 1, 1);
+//                        LocalDateTime startOfYearTime = startOfYear.atStartOfDay();
+//                        LocalDate endOfYear = startOfYear.withDayOfYear(startOfYear.lengthOfYear());
+//                        LocalDateTime endOfYearTime = endOfYear.atTime(23,59,59);
+//
+//                        for (MayBayDTO mb : getAllMayBay()) {
+//                            double hours = getHoursOfPlaneInABetweenTime(mb.getIdMayBay(), startOfYearTime, endOfYearTime);
+//                            // Thêm vào danh sách tạm thời với tên máy bay và số giờ bay
+//                            planeHoursList.add(Pair.of(mb.getTenMayBay(), hours));
+//                        }
+//
+//                        // Sắp xếp danh sách theo giờ bay giảm dần
+//                        planeHoursList.sort((pair1, pair2) -> Double.compare(pair2.getRight(), pair1.getRight()));
+//
+//                        // Lấy 5 máy bay có giờ bay cao nhất
+//                        count = 0;
+//                        for (Pair<String, Double> pair : planeHoursList) {
+//                            if (count >= 5) break; // Lấy 5 máy bay đầu tiên
+//                            maxOfTimeFlightOfPlane.add(pair);
+//                            count++;
+//                        }
+//                    break;
+//
+//                default:
+//                    throw new IllegalArgumentException("Invalid period specified. Use 'monthly', 'quarterly', or 'yearly'.");
+//            }
+//        } catch (Exception e) {
+//            System.err.println("Error occurred while calculating hour of plane: " + e.getMessage());
+//        }
+//
+//        return maxOfTimeFlightOfPlane;
+//    }
+
+    public List<Pair<String, Double>> calculateHoursOfPlane(String period, int month, int quarter, int year) {
+        List<Pair<String, Double>> maxOfTimeFlightOfPlane = new ArrayList<>();
+        int count;
+        LocalDate now = LocalDate.now();
+
+        try {
+            switch (period.toLowerCase()) {
+                case "monthly":
+                    LocalDateTime startOfMonth = LocalDateTime.of(year, month, 1, 0, 0, 0);
+                    LocalDate endOfMonthDate = LocalDate.of(year, month, 1)
+                            .withDayOfMonth(LocalDate.of(year, month, 1).lengthOfMonth());
+                    LocalDateTime endOfMonth = LocalDateTime.of(endOfMonthDate, LocalTime.MAX); // Sử dụng LocalTime.MAX
+
+                    List<Pair<String, Double>> planeHoursList = new ArrayList<>();
+                    for (MayBayDTO mb : getAllMayBay()) {
+                        double hours = getHoursOfPlaneInABetweenTime(mb.getIdMayBay(), startOfMonth, endOfMonth);
+                        planeHoursList.add(Pair.of(mb.getTenMayBay(), hours));
+                    }
+
+                    planeHoursList.sort((pair1, pair2) -> Double.compare(pair2.getRight(), pair1.getRight()));
+
+                    count = 0;
+                    for (Pair<String, Double> pair : planeHoursList) {
+                        if (count >= 5) break;
+                        maxOfTimeFlightOfPlane.add(pair);
+                        count++;
+                    }
+                    break;
+
+                case "quarterly":
+                    List<Pair<String, Double>> quarterlyHoursList = new ArrayList<>(); // Reset danh sách
+
+                    LocalDate date = LocalDate.of(year, 1, 1);
+                    LocalDate startOfQuarter = date.withMonth((quarter - 1) * 3 + 1).withDayOfMonth(1);
+                    LocalDateTime startOfQuarterTime = startOfQuarter.atStartOfDay();
+                    LocalDate endOfQuarter = startOfQuarter.plusMonths(2).withDayOfMonth(startOfQuarter.plusMonths(2).lengthOfMonth());
+                    LocalDateTime endOfQuarterTime = endOfQuarter.atTime(23, 59, 59);
+
+                    for (MayBayDTO mb : getAllMayBay()) {
+                        double hours = getHoursOfPlaneInABetweenTime(mb.getIdMayBay(), startOfQuarterTime, endOfQuarterTime);
+                        quarterlyHoursList.add(Pair.of(mb.getTenMayBay(), hours));
+                    }
+
+                    quarterlyHoursList.sort((pair1, pair2) -> Double.compare(pair2.getRight(), pair1.getRight()));
+
+                    count = 0;
+                    for (Pair<String, Double> pair : quarterlyHoursList) {
+                        if (count >= 5) break;
+                        maxOfTimeFlightOfPlane.add(pair);
+                        count++;
+                    }
+                    break;
+
+                case "yearly":
+                    List<Pair<String, Double>> yearlyHoursList = new ArrayList<>(); // Reset danh sách
+
+                    LocalDate startOfYear = LocalDate.of(year, 1, 1);
+                    LocalDateTime startOfYearTime = startOfYear.atStartOfDay();
+                    LocalDate endOfYear = startOfYear.withDayOfYear(startOfYear.lengthOfYear());
+                    LocalDateTime endOfYearTime = endOfYear.atTime(23, 59, 59);
+
+                    for (MayBayDTO mb : getAllMayBay()) {
+                        double hours = getHoursOfPlaneInABetweenTime(mb.getIdMayBay(), startOfYearTime, endOfYearTime);
+                        yearlyHoursList.add(Pair.of(mb.getTenMayBay(), hours));
+                    }
+
+                    yearlyHoursList.sort((pair1, pair2) -> Double.compare(pair2.getRight(), pair1.getRight()));
+
+                    count = 0;
+                    for (Pair<String, Double> pair : yearlyHoursList) {
+                        if (count >= 5) break;
+                        maxOfTimeFlightOfPlane.add(pair);
+                        count++;
+                    }
+                    break;
+
+                default:
+                    throw new IllegalArgumentException("Invalid period specified. Use 'monthly', 'quarterly', or 'yearly'.");
+            }
+        } catch (Exception e) {
+            System.err.println("Error occurred while calculating hour of plane: " + e.getMessage());
+        }
+
+        return maxOfTimeFlightOfPlane;
+    }
+
+
+    @Override
     public List<Pair<String, Double>> getTop5PlaneHasHighestFlightHours(int month, int year) {
         List<Pair<String, Double>> top5PlaneHasFlightHoursByPeriod = new ArrayList<>();
         List<Pair<String, Double>> planeHoursList = new ArrayList<>();
