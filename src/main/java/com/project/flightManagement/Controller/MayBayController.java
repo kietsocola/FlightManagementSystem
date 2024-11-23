@@ -1,5 +1,6 @@
 package com.project.flightManagement.Controller;
 
+import com.nimbusds.jose.util.Pair;
 import com.project.flightManagement.DTO.ChoNgoiDTO.ChoNgoiDTO;
 import com.project.flightManagement.DTO.HangBayDTO.HangBayDTO;
 import com.project.flightManagement.DTO.MayBayDTO.MayBayDTO;
@@ -395,8 +396,14 @@ public class MayBayController {
         }
     }
     @GetMapping("/calculateHourOfPlane")
-    public ResponseEntity<ResponseData> calculateHourOfPlane (@RequestParam String period) {
-        Map<Integer, Map<Integer, Double>> list = mayBayService.calculateHoursOfPlane(period);
+    public ResponseEntity<ResponseData> calculateHourOfPlane(
+            @RequestParam(required = false) String period,
+            @RequestParam(required = false) Integer month,
+            @RequestParam(required = false) Integer quarter,
+            @RequestParam(required = true) Integer year) {
+        List<Pair<String, Double>> list = mayBayService.calculateHoursOfPlane(period, month, quarter, year);
+        ResponseData response = new ResponseData();
+
         if (list.isEmpty()) {
             response.setMessage("Can not get list plane has hour flight!!");
             response.setStatusCode(500);
@@ -408,5 +415,29 @@ public class MayBayController {
             response.setMessage("Get list plane has hour flight success!!");
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
+    }
+
+    @GetMapping("/top5PlaneHasHighestFlightHours")
+    public ResponseEntity<ResponseData> getTop5PlaneHasHighestFlightHours (@RequestParam int month, @RequestParam int year) {
+        List<Pair<String, Double>> list = mayBayService.getTop5PlaneHasHighestFlightHours(month, year);
+        if (list.isEmpty()) {
+            response.setMessage("Can not get top 5 plane has highest hour flight!!");
+            response.setStatusCode(500);
+            response.setData(null);
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        } else {
+            response.setData(list);
+            response.setStatusCode(200);
+            response.setMessage("Get top 5 plane has highest hour flight success!!");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+    }
+    @GetMapping("/getTotalPlane")
+    public ResponseEntity<ResponseData> getTotal() {
+        int total = mayBayService.getTotalPlane();
+        response.setMessage("Get total plane success!!");
+        response.setData(total);
+        response.setStatusCode(200);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

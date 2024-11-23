@@ -1,5 +1,6 @@
 package com.project.flightManagement.Service.Impl;
 
+import com.nimbusds.jose.util.Pair;
 import com.project.flightManagement.DTO.HangBayDTO.HangBayDTO;
 import com.project.flightManagement.DTO.MayBayDTO.MayBayDTO;
 import com.project.flightManagement.Enum.ActiveEnum;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -44,7 +46,7 @@ public class MayBayServiceImpl implements MayBayService {
 
     @Override
     public Iterable<MayBayDTO> getAllMayBay() {
-        try{
+        try {
             Iterable<MayBay> mbList = mbRepo.findAll();
             Iterable<MayBayDTO> mbDTOList = StreamSupport.stream(mbList.spliterator(), false).map(MayBayMapper::toDTO).toList();
             return mbDTOList;
@@ -55,7 +57,7 @@ public class MayBayServiceImpl implements MayBayService {
     }
 
     @Override
-    public Optional<MayBayDTO> getMayBayBySoHieu(String soHieu){
+    public Optional<MayBayDTO> getMayBayBySoHieu(String soHieu) {
         try {
             MayBay mb = mbRepo.findBySoHieu(soHieu);
             return Optional.ofNullable(MayBayMapper.toDTO(mb));
@@ -63,8 +65,9 @@ public class MayBayServiceImpl implements MayBayService {
             return Optional.empty();
         }
     }
+
     @Override
-    public List<MayBayDTO> findMayBayByTenMayBay(String keyword){
+    public List<MayBayDTO> findMayBayByTenMayBay(String keyword) {
         List<MayBay> mayBayList = mbRepo.findByKeywordContainingIgnoreCase(keyword);
         if (mayBayList.isEmpty()) {
             System.out.println("No plane found with the keyword: " + keyword);
@@ -76,11 +79,12 @@ public class MayBayServiceImpl implements MayBayService {
                 .map(MayBayMapper::toDTO)
                 .collect(Collectors.toList());
     }
+
     @Override
-    public Iterable<MayBayDTO> getAllMayBaySorted(String sortBy, String order){
+    public Iterable<MayBayDTO> getAllMayBaySorted(String sortBy, String order) {
         try {
             List<MayBay> mayBayList;
-            if(order.equals("asc")){
+            if (order.equals("asc")) {
                 mayBayList = mbRepo.findAll(Sort.by(Sort.Direction.ASC, sortBy));
             } else {
                 mayBayList = mbRepo.findAll(Sort.by(Sort.Direction.DESC, sortBy));
@@ -97,42 +101,46 @@ public class MayBayServiceImpl implements MayBayService {
             return Collections.emptyList(); // Trả về danh sách rỗng nếu có lỗi
         }
     }
+
     @Override
-    public List<MayBayDTO> findMayBayByHangBay(HangBay hangBay){
+    public List<MayBayDTO> findMayBayByHangBay(HangBay hangBay) {
         List<MayBay> listMb = mbRepo.findByHangBay(hangBay);
         return listMb.stream().map(MayBayMapper::toDTO).collect(Collectors.toList());
     }
+
     @Override
-    public Optional<MayBayDTO> addNewMayBay(MayBayDTO mbDTO){
+    public Optional<MayBayDTO> addNewMayBay(MayBayDTO mbDTO) {
         try {
             System.out.println("add plane success");
             System.out.println(mbDTO.toString());
             MayBay mb = MayBayMapper.toEntity(mbDTO);
             MayBay mbSaved = mbRepo.save(mb);
             return Optional.of(MayBayMapper.toDTO(mbSaved));
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println("add plane failed");
             System.out.println(mbDTO.toString());
             System.err.println("Error occurred while save plane: " + e.getMessage());
             return null;
         }
     }
+
     @Override
-    public  Optional<MayBayDTO> updateMayBay(MayBayDTO mayBayDTO){
+    public Optional<MayBayDTO> updateMayBay(MayBayDTO mayBayDTO) {
         Optional<MayBay> existingMB = mbRepo.findById(mayBayDTO.getIdMayBay());
-        if(existingMB.isPresent()){
+        if (existingMB.isPresent()) {
             MayBay mb = MayBayMapper.toEntity(mayBayDTO);
             MayBay mbSaved = mbRepo.save(mb);
             return Optional.of(MayBayMapper.toDTO(mbSaved));
-        }else {
+        } else {
             System.err.println("Plane does not existing!!!");
             return Optional.empty();
         }
     }
+
     @Override
-    public Optional<MayBayDTO> blockMayBay(int id){
+    public Optional<MayBayDTO> blockMayBay(int id) {
         Optional<MayBay> existingMB = mbRepo.findById(id);
-        if(existingMB.isPresent()){
+        if (existingMB.isPresent()) {
             MayBay mb = existingMB.get();
             mb.setTrangThaiActive(ActiveEnum.IN_ACTIVE);
             MayBay savedMB = mbRepo.save(mb);
@@ -142,10 +150,11 @@ public class MayBayServiceImpl implements MayBayService {
             return Optional.empty();
         }
     }
+
     @Override
-    public Optional<MayBayDTO> unblockMayBay(int id){
+    public Optional<MayBayDTO> unblockMayBay(int id) {
         Optional<MayBay> existingMB = mbRepo.findById(id);
-        if(existingMB.isPresent()){
+        if (existingMB.isPresent()) {
             MayBay mb = existingMB.get();
             mb.setTrangThaiActive(ActiveEnum.ACTIVE);
             MayBay savedMB = mbRepo.save(mb);
@@ -155,11 +164,13 @@ public class MayBayServiceImpl implements MayBayService {
             return Optional.empty();
         }
     }
+
     @Override
     public List<MayBayDTO> findMayBayBySanBay(SanBay sanBay) {
         List<MayBay> listMb = mbRepo.findMayBayBySanBay(sanBay);
         return listMb.stream().map(MayBayMapper::toDTO).collect(Collectors.toList());
     }
+
     @Override
     public String getHoursOfPlane(int id) {
         Optional<MayBay> mb = mbRepo.findById(id);
@@ -190,6 +201,7 @@ public class MayBayServiceImpl implements MayBayService {
             return "00:00:00"; // Trả về 0 giờ nếu không tìm thấy máy bay
         }
     }
+
     public double getHoursOfPlaneInABetweenTime(int idMayBay, LocalDateTime startTime, LocalDateTime endTime) {
         Optional<MayBay> mb = mbRepo.findById(idMayBay);
         if (mb.isPresent()) {
@@ -229,85 +241,79 @@ public class MayBayServiceImpl implements MayBayService {
     }
 
     @Override
-    public Map<Integer, Map<Integer, Double>> calculateHoursOfPlane(String period) {
-        Map<Integer, Map<Integer, Double>> maxOfTimeFlightOfPlane = new HashMap<>();
+    public List<Pair<String, Double>> calculateHoursOfPlane(String period, int month, int quarter, int year) {
+        List<Pair<String, Double>> maxOfTimeFlightOfPlane = new ArrayList<>();
+        int count;
         LocalDate now = LocalDate.now();
 
         try {
             switch (period.toLowerCase()) {
                 case "monthly":
-                    for (int i = 1; i <= 12; i++) {
-                        LocalDateTime startOfMonth = LocalDateTime.of(now.getYear(), i, 1, 0, 0, 0);
-                        LocalDate endOfMonthDate = LocalDate.of(now.getYear(), i, 1)
-                                .withDayOfMonth(LocalDate.of(now.getYear(), i, 1).lengthOfMonth());
-                        LocalDateTime endOfMonth = LocalDateTime.of(endOfMonthDate, LocalDateTime.MAX.toLocalTime().withNano(0));
+                    LocalDateTime startOfMonth = LocalDateTime.of(year, month, 1, 0, 0, 0);
+                    LocalDate endOfMonthDate = LocalDate.of(year, month, 1)
+                            .withDayOfMonth(LocalDate.of(year, month, 1).lengthOfMonth());
+                    LocalDateTime endOfMonth = LocalDateTime.of(endOfMonthDate, LocalTime.MAX); // Sử dụng LocalTime.MAX
 
-                        // Danh sách các máy bay
-                        List<MayBay> listMB = mbRepo.findAll();
-                        Map<Integer, Double> maxPlaneData = new HashMap<>();
-                        double maxHours = 0.0; // Giờ bay lớn nhất, mặc định là 0.0
-                        int maxPlaneId = 0; // ID máy bay, mặc định là 0 nếu không có máy bay nào bay
+                    List<Pair<String, Double>> planeHoursList = new ArrayList<>();
+                    for (MayBayDTO mb : getAllMayBay()) {
+                        double hours = getHoursOfPlaneInABetweenTime(mb.getIdMayBay(), startOfMonth, endOfMonth);
+                        planeHoursList.add(Pair.of(mb.getTenMayBay(), hours));
+                    }
 
-                        for (MayBay mb : listMB) {
-                            Double hours = getHoursOfPlaneInABetweenTime(mb.getIdMayBay(), startOfMonth, endOfMonth);
+                    planeHoursList.sort((pair1, pair2) -> Double.compare(pair2.getRight(), pair1.getRight()));
 
-                            if (hours > maxHours) {
-                                maxHours = hours;
-                                maxPlaneId = mb.getIdMayBay(); // Cập nhật ID máy bay có giờ bay cao nhất
-                            }
-                        }
-
-                        // Nếu không có máy bay nào bay trong tháng, giữ maxPlaneId = 0 và maxHours = 0.0
-                        maxPlaneData.put(maxPlaneId, maxHours);
-                        maxOfTimeFlightOfPlane.put(i, maxPlaneData);
+                    count = 0;
+                    for (Pair<String, Double> pair : planeHoursList) {
+                        if (count >= 5) break;
+                        maxOfTimeFlightOfPlane.add(pair);
+                        count++;
                     }
                     break;
 
                 case "quarterly":
-                    for (int i = 1; i <= 4; i++) {
-                        LocalDate startOfQuarter = now.withMonth((i - 1) * 3 + 1).withDayOfMonth(1);
-                        LocalDate endOfQuarter = startOfQuarter.plusMonths(2).withDayOfMonth(startOfQuarter.plusMonths(2).lengthOfMonth());
+                    List<Pair<String, Double>> quarterlyHoursList = new ArrayList<>(); // Reset danh sách
 
-                        List<MayBay> listMB = mbRepo.findAll();
-                        Map<Integer, Double> maxPlaneData = new HashMap<>();
-                        double maxHours = 0.0;
-                        int maxPlaneId = 0;
+                    LocalDate date = LocalDate.of(year, 1, 1);
+                    LocalDate startOfQuarter = date.withMonth((quarter - 1) * 3 + 1).withDayOfMonth(1);
+                    LocalDateTime startOfQuarterTime = startOfQuarter.atStartOfDay();
+                    LocalDate endOfQuarter = startOfQuarter.plusMonths(2).withDayOfMonth(startOfQuarter.plusMonths(2).lengthOfMonth());
+                    LocalDateTime endOfQuarterTime = endOfQuarter.atTime(23, 59, 59);
 
-                        for (MayBay mb : listMB) {
-                            Double hours = getHoursOfPlaneInABetweenTime(mb.getIdMayBay(), startOfQuarter.atStartOfDay(), endOfQuarter.atStartOfDay());
+                    for (MayBayDTO mb : getAllMayBay()) {
+                        double hours = getHoursOfPlaneInABetweenTime(mb.getIdMayBay(), startOfQuarterTime, endOfQuarterTime);
+                        quarterlyHoursList.add(Pair.of(mb.getTenMayBay(), hours));
+                    }
 
-                            if (hours > maxHours) {
-                                maxHours = hours;
-                                maxPlaneId = mb.getIdMayBay();
-                            }
-                        }
+                    quarterlyHoursList.sort((pair1, pair2) -> Double.compare(pair2.getRight(), pair1.getRight()));
 
-                        maxPlaneData.put(maxPlaneId, maxHours);
-                        maxOfTimeFlightOfPlane.put(i, maxPlaneData);
+                    count = 0;
+                    for (Pair<String, Double> pair : quarterlyHoursList) {
+                        if (count >= 5) break;
+                        maxOfTimeFlightOfPlane.add(pair);
+                        count++;
                     }
                     break;
 
                 case "yearly":
-                    for (int i = now.getYear() - 5; i <= now.getYear(); i++) {
-                        LocalDate startOfYear = LocalDate.of(i, 1, 1);
-                        LocalDate endOfYear = startOfYear.withDayOfYear(startOfYear.lengthOfYear());
+                    List<Pair<String, Double>> yearlyHoursList = new ArrayList<>(); // Reset danh sách
 
-                        List<MayBay> listMB = mbRepo.findAll();
-                        Map<Integer, Double> maxPlaneData = new HashMap<>();
-                        double maxHours = 0.0;
-                        int maxPlaneId = 0;
+                    LocalDate startOfYear = LocalDate.of(year, 1, 1);
+                    LocalDateTime startOfYearTime = startOfYear.atStartOfDay();
+                    LocalDate endOfYear = startOfYear.withDayOfYear(startOfYear.lengthOfYear());
+                    LocalDateTime endOfYearTime = endOfYear.atTime(23, 59, 59);
 
-                        for (MayBay mb : listMB) {
-                            Double hours = getHoursOfPlaneInABetweenTime(mb.getIdMayBay(), startOfYear.atStartOfDay(), endOfYear.atStartOfDay());
+                    for (MayBayDTO mb : getAllMayBay()) {
+                        double hours = getHoursOfPlaneInABetweenTime(mb.getIdMayBay(), startOfYearTime, endOfYearTime);
+                        yearlyHoursList.add(Pair.of(mb.getTenMayBay(), hours));
+                    }
 
-                            if (hours > maxHours) {
-                                maxHours = hours;
-                                maxPlaneId = mb.getIdMayBay();
-                            }
-                        }
+                    yearlyHoursList.sort((pair1, pair2) -> Double.compare(pair2.getRight(), pair1.getRight()));
 
-                        maxPlaneData.put(maxPlaneId, maxHours);
-                        maxOfTimeFlightOfPlane.put(i, maxPlaneData);
+                    count = 0;
+                    for (Pair<String, Double> pair : yearlyHoursList) {
+                        if (count >= 5) break;
+                        maxOfTimeFlightOfPlane.add(pair);
+                        count++;
                     }
                     break;
 
@@ -322,4 +328,50 @@ public class MayBayServiceImpl implements MayBayService {
     }
 
 
+    @Override
+    public List<Pair<String, Double>> getTop5PlaneHasHighestFlightHours(int month, int year) {
+        List<Pair<String, Double>> top5PlaneHasFlightHoursByPeriod = new ArrayList<>();
+        List<Pair<String, Double>> planeHoursList = new ArrayList<>();
+
+        LocalDate now = LocalDate.now();
+        for (int i = 2020; i <= now.getYear(); i++) {
+            if (i == year) {
+                for (int j = 1; j <= 12; j++) {
+                    if (month == j) {
+                        LocalDateTime firstDayOfMonth = LocalDateTime.of(i, j, 1, 0, 0, 0);
+                        LocalDate endOfMonthDate = LocalDate.of(i, j, 1)
+                                .withDayOfMonth(LocalDate.of(i, j, 1).lengthOfMonth());
+                        LocalDateTime lastDayOfMonth = LocalDateTime.of(endOfMonthDate, LocalDateTime.MAX.toLocalTime().withNano(0));
+
+                        // Tính giờ bay cho từng máy bay
+                        for (MayBayDTO mb : getAllMayBay()) {
+                            double hours = getHoursOfPlaneInABetweenTime(mb.getIdMayBay(), firstDayOfMonth, lastDayOfMonth);
+                            // Thêm vào danh sách tạm thời với tên máy bay và số giờ bay
+                            planeHoursList.add(Pair.of(mb.getTenMayBay(), hours));
+                        }
+
+                        // Sắp xếp danh sách theo giờ bay giảm dần
+                        planeHoursList.sort((pair1, pair2) -> Double.compare(pair2.getRight(), pair1.getRight()));
+
+                        // Lấy 5 máy bay có giờ bay cao nhất
+                        int count = 0;
+                        for (Pair<String, Double> pair : planeHoursList) {
+                            if (count >= 5) break; // Lấy 5 máy bay đầu tiên
+                            top5PlaneHasFlightHoursByPeriod.add(pair);
+                            count++;
+                        }
+                    }
+                }
+            }
+        }
+        return top5PlaneHasFlightHoursByPeriod;
+    }
+    @Override
+    public int getTotalPlane() {
+        int count = 0;
+        for (MayBayDTO mb : getAllMayBay()) {
+            count++;
+        }
+        return count;
+    }
 }
