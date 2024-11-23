@@ -718,7 +718,7 @@ public class ChuyenBayController {
     public ResponseEntity<ResponseData> thongkechuyenbaytheotrangthaibyyearandquy(){
 
         int namBatDau = 2017;
-        int namKetThuc = LocalDate.now().getYear(); ;
+        int namKetThuc = LocalDate.now().getYear();
         List<Map<String , Map<String , Map<String , Integer>>>> result = new ArrayList<>();
 
 
@@ -1277,4 +1277,35 @@ public class ChuyenBayController {
 
         return ResponseEntity.ok(responseData);
     }
+
+    @GetMapping("/thongkesochuyenbay")
+    public ResponseEntity<ResponseData> thongsochuyenbay(){
+        Iterable<ChuyenBayDTO> listcb = cbservice.getAllChuyenBay();
+        int count = 0 ;
+        for(ChuyenBayDTO cb : listcb )
+        {
+            if(cb.getTrangThai().name().equals("CANCELED") || cb.getTrangThai().name().equals("COMPLETED"))
+                ++count ;
+        }
+            response.setMessage("Thống kê số chuyến bay thành công");
+            response.setData(count);
+            response.setStatusCode(201); // Created
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/thongkesonhanvien")
+    public ResponseEntity<ResponseData> thongkesonhanvien(){
+        Iterable<NhanVienDTO> listnv = nhanVienService.getAllNhanVien();
+        int count = 0 ;
+        for(NhanVienDTO cb : listnv)
+        {
+            ++count;
+        }
+        response.setMessage("Thống kê số nhân viên thành công");
+        response.setData(count);
+        response.setStatusCode(201); // Created
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+
 }
