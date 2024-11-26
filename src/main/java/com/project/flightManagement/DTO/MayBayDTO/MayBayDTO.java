@@ -35,10 +35,10 @@ public class MayBayDTO {
     @Min(value = 1, message = "Số hàng ghế VIP phải là số nguyên dương")
     private int soHangGheVip;
 
-    @Pattern(regexp = "^[A-Z]{6,10}", message = "Số cột ghế thường ít nhất phải có 6 kí tự in hoa")
+    @Pattern(regexp = "^(?!.*(.).*\\1)[A-Z]{6,10}$", message = "Số cột ghế thường phải có từ 6 đến 10 ký tự in hoa không trùng lặp")
     private String soCotGheThuong;
 
-    @Pattern(regexp = "^[A-Z]{4,10}", message = "Số cột ghế VIP ít nhất phải có 4 kí tự in hoa")
+    @Pattern(regexp = "^(?!.*(.).*\\1)[A-Z]{4,10}", message = "Số cột ghế VIP ít nhất phải có 4 kí tự in hoa không trùng lặp")
     private String soCotGheVip;
     @NotBlank(message = "Không được bỏ trống số hiệu")
     @Pattern(regexp = "^[A-Z]{1,2}-[A-Z0-9]{3,5}$", message = "Số hiệu phải có 6 kí tự[Mã quốc gia(1-2 kí tự chữ in hoa và số) - Mã số hiệu(1-3 kí tự chữ in hoa và số)]")
