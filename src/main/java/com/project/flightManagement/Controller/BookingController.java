@@ -178,7 +178,16 @@ public class BookingController {
                 HanhKhach hkAfterSave;
                 if(hk.isPresent()){
 //                    hkAfterSave = hanhKhachService.saveNewHanhKhachWhenBooking(hk.get());
-                    ve.setHanhKhach(hk.get());
+                    HanhKhach hktoUpdate = hk.get();
+                    hktoUpdate.setHoTen(hanhKhach.getHoTen());
+                    hktoUpdate.setNgaySinh(hanhKhach.getNgaySinh());
+                    hktoUpdate.setSoDienThoai(hanhKhach.getSoDienThoai());
+                    hktoUpdate.setEmail(hanhKhach.getEmail());
+                    hktoUpdate.setCccd(hanhKhach.getCccd());
+                    hktoUpdate.setHoChieu(hanhKhach.getHoChieu());
+                    hktoUpdate.setGioiTinhEnum(GioiTinhEnum.valueOf(hanhKhach.getGioiTinhEnum().toString()));
+                    hkAfterSave = hanhKhachService.saveNewHanhKhachWhenBooking(hktoUpdate);
+                    ve.setHanhKhach(hkAfterSave);
                     veRepo.save(ve);
                 } else {
                     HanhKhach hk2 = new HanhKhach();
