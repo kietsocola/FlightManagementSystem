@@ -131,6 +131,14 @@ public class ChucVuController {
             return new ResponseEntity<>(response, HttpStatus.CONFLICT);
         }
 
+        Optional<ChucVuDTO> existIdChucVu =  cvservice.getChucVuById(idChucVu);
+            if(existIdChucVu.get().getTen().equals("Cơ trưởng") || existIdChucVu.get().getTen().equals("Cơ phó") || existIdChucVu.get().getTen().equals("Tiếp viên")) {
+                response.setMessage("chuc vu khong the sua ten!!");
+                response.setData(null);
+                response.setStatusCode(403);
+                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+            }
+
         Optional<ChucVuDTO> saveCv = cvservice.addChucVu(cvDTO);
         if (saveCv.isPresent()) {
             response.setMessage("Sửa Chuc Vu successfully!!");
