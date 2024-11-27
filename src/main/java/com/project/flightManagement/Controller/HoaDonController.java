@@ -319,6 +319,7 @@ public class HoaDonController {
         double tongTien = 0;
         int soLuongVe = 0;
         System.out.println("hang hoa list: " + hoaDonCreateDTO.getHangHoaDTOList());
+        System.out.println(hoaDonCreateDTO);
         // Tiến hành lưu hóa đơn
         Optional<HoaDonDTO> savedHoaDon = hoaDonService.addHoaDon(hoaDonCreateDTO.getHoaDonDTO());
         if (savedHoaDon.isPresent()) {
@@ -346,14 +347,7 @@ public class HoaDonController {
                     // Gán hàng hóa đã lưu vào chi tiết hóa đơn
                     chiTietHoaDonDTO.setHangHoa(HangHoaMapper.toEntity(savedHangHoa.get()));
                     chiTietHoaDonDTO.setHoaDon(HoaDonMapper.toEntity(savedHoaDon.get()));
-                    Optional<ChiTietHoaDonDTO> savedCTHD = chiTietHoaDonService.addChiTietHoaDon(chiTietHoaDonDTO); // Gọi
-                                                                                                                    // service
-                                                                                                                    // để
-                                                                                                                    // thêm
-                                                                                                                    // chi
-                                                                                                                    // tiết
-                                                                                                                    // hóa
-                                                                                                                    // đơn
+                    Optional<ChiTietHoaDonDTO> savedCTHD = chiTietHoaDonService.addChiTietHoaDon(chiTietHoaDonDTO);
 
                     if (savedCTHD.get().getVe() != null) {
                         soLuongVe++;
@@ -367,9 +361,12 @@ public class HoaDonController {
             savedHoaDon.get().setTongTien(tongTien);
             savedHoaDon.get().setSoLuongVe(soLuongVe);
             hoaDonService.updateHoaDon(savedHoaDon.get());
-            String email = savedHoaDon.get().getKhachHang().getEmail();
-            System.out.println("Email khach hang: " + savedHoaDon.get().getKhachHang().getEmail());
-            emailService.sendHtmlVeOnlineEmail(email, savedHoaDon.get().getIdHoaDon());
+            if (savedHoaDon.get().getKhachHang() != null ) {
+                String email = savedHoaDon.get().getKhachHang().getEmail();
+                System.out.println("Email khach hang: " + savedHoaDon.get().getKhachHang().getEmail());
+                emailService.sendHtmlVeOnlineEmail(email, savedHoaDon.get().getIdHoaDon());
+            }
+
 
             response.setMessage("Save Hoa Don successfully!");
             response.setData(savedHoaDon.get());
