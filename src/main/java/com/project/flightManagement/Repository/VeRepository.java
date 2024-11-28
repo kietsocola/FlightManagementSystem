@@ -22,12 +22,11 @@ public interface VeRepository extends JpaRepository<Ve, Integer> {
 
         boolean existsByHanhKhach_IdHanhKhach(int idHanhKhach);
         @Query("SELECT v FROM Ve v " +
-                "JOIN v.chuyenBay cb " +
-                "JOIN v.hanhKhach hk " +
+                "LEFT JOIN v.chuyenBay cb " +
+                "LEFT JOIN v.hanhKhach hk " +
                 "WHERE (:maVe IS NULL OR LOWER(v.maVe) LIKE LOWER(CONCAT('%', :maVe, '%'))) " +
                 "AND (:startDate IS NULL OR cb.ngayBay BETWEEN :startDate AND :endDate) " +
-                "AND (:cccd IS NULL OR LOWER(hk.cccd) LIKE LOWER(CONCAT('%', :cccd, '%'))) " +
-                "AND v.hanhKhach.idHanhKhach = hk.idHanhKhach")
+                "AND (:cccd IS NULL OR (hk IS NULL OR LOWER(hk.cccd) LIKE LOWER(CONCAT('%', :cccd, '%'))))")
         Page<Ve> searchVeMaVaAndDateBay(
                 @Param("maVe") String maVe,
                 @Param("startDate") LocalDate startDate,
