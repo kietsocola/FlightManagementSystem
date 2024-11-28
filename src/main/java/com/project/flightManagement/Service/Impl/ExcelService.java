@@ -37,9 +37,11 @@ public class ExcelService {
 
         // Tạo workbook mới
         Workbook workbook = new XSSFWorkbook();
+        // Trừ đi 1 ngày từ endDate
+        LocalDate adjustedEndDate = endDate.minusDays(1);
 
         // Tạo sheet thứ nhất
-        createSheet1(workbook, thongKe, startDate, endDate);
+        createSheet1(workbook, thongKe, startDate, adjustedEndDate);
 
         // Tạo sheet thứ hai
         createSheet2(workbook, hoaDonDTOList);

@@ -122,6 +122,8 @@ public class TaiKhoanServiceImpl implements TaiKhoanService {
         if (optionalTaiKhoan.isPresent()) {
             TaiKhoan taiKhoanNew = optionalTaiKhoan.get();
             taiKhoanNew.setMatKhau(passwordEncoder.encode(taiKhoan.getMatKhau()));
+            taiKhoanNew.setSoLanNhapSai(0);
+            taiKhoanNew.setTrangThaiActive(ActiveEnum.ACTIVE);
             taiKhoanRepository.save(taiKhoanNew);
             return true;
         }

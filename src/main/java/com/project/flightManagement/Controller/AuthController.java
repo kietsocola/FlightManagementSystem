@@ -56,12 +56,13 @@ public class AuthController {
         try {
 
             int checkLogin = taiKhoanService.checkLogin(loginDTO);
+            // -1 tai khoan bi khoa
             // 0 thanh cong
             // 1 sai mat khau
             // 2 khong tim thay tk
             if (checkLogin == -1) {
                 responseData.setStatusCode(999);
-                responseData.setMessage("Đăng nhập thất bại: Tai khoan da bi khoa");
+                responseData.setMessage("Đăng nhập thất bại: Tài khoản của bạn đã bị khoá. Bạn có thể thực hiện chức năng quên mật khẩu để mở khoá");
                 return new ResponseEntity<>(responseData, HttpStatus.OK);
             }
             else if (checkLogin == 0) {
@@ -98,11 +99,11 @@ public class AuthController {
             } else if (checkLogin == 1) {
                 increaseFailedAttempts(loginDTO.getUserName());
                 responseData.setStatusCode(401);
-                responseData.setMessage("Đăng nhập thất bại: Sai thông tin đăng nhập");
+                responseData.setMessage("Đăng nhập thất bại: Sai thông tin đăng nhập (Bạn có tối đa 5 lần đăng nhập sai mật khẩu)");
                 return new ResponseEntity<>(responseData, HttpStatus.OK);
             } else {
                 responseData.setStatusCode(401);
-                responseData.setMessage("Đăng nhập thất bại: Sai thông tin đăng nhập");
+                responseData.setMessage("Đăng nhập thất bại: Sai thông tin đăng nhập (Bạn có tối đa 5 lần đăng nhập sai mật khẩu)");
                 return new ResponseEntity<>(responseData, HttpStatus.OK);
             }
         } catch (Exception e) {
