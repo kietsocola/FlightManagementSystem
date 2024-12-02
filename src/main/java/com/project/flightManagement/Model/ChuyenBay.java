@@ -28,7 +28,6 @@ public class ChuyenBay {
     private int idChuyenBay;
 
     @ManyToOne
-    @JsonIgnore
     @JoinColumn(name = "id_tuyen_bay", nullable = false)
     private TuyenBay tuyenBay;
 
