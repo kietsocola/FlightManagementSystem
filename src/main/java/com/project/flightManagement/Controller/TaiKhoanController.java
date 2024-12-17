@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
-@Controller
+@RestController
 @RequestMapping("/taikhoan")
 public class TaiKhoanController {
     @Autowired

@@ -22,9 +22,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.time.LocalDate;
 import java.util.*;
 
-@RestController
 @CrossOrigin(origins = "http://localhost:5173")
-@Controller
+@RestController
 @RequestMapping("/khachhang")
 public class KhachHangController {
     @Autowired

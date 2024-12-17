@@ -28,7 +28,7 @@ import java.time.format.DateTimeParseException;
 import java.util.Collections;
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/ve")
 public class VeController {
     @Autowired

@@ -43,7 +43,7 @@ public class SendEmailTest {
     }
     @Test
     void createAutoVe() {
-        veService.createAutoVeByIdChuyenBay(18, 1, 2);
+        veService.createAutoVeByIdChuyenBay(43, 888888, 1000033);
     }
     @Test
     void updateAutoVe() {

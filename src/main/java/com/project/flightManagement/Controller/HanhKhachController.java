@@ -21,7 +21,7 @@ import java.util.Map;
 
 import java.time.format.DateTimeParseException;
 
-@Controller
+@RestController
 @RequestMapping("/hanhkhach")
 public class HanhKhachController {
     @Autowired
