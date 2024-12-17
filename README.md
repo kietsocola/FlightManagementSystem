@@ -5,7 +5,9 @@ The backend for the Flight Management System, developed with Spring Boot,
 offers essential services for managing flight bookings, including authentication, 
 role-based access control, payment integration,
 and real-time updates through WebSocket support.
+
 ---
+
 ## Documentation
 
 For a comprehensive overview of the entire system, including database design, user interface, diagrams (such as use case and sequence diagrams), and more, please refer to the PDF documentation:
