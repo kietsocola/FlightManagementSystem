@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  app:
+    image: locnguyen04/springboot-app:1.0  # Backend Spring Boot
+    container_name: spring_boot_app
+    ports:
+      - "8080:8080"  # Map port của ứng dụng backend
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/flightManagement
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=12345abc
+    depends_on:
+      - mysql
+
+  mysql:
+    image: locnguyen04/mysql-custom:1.0  # Image MySQL tùy chỉnh
+    container_name: mysql_db
+    ports:
+      - "3307:3306"  # Map port của MySQL ra bên ngoài
+    volumes:
+      - mysql-data:/var/lib/mysql  # Dữ liệu của MySQL
+
+volumes:
+  mysql-data:  # Volume lưu trữ dữ liệu MySQL

@@ -12,6 +12,8 @@ import com.project.flightManagement.Service.*;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.security.SignatureException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -26,7 +28,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
-
+@Tag(name = "Authentication", description = "APIs liên quan đến xác thực người dùng")
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -43,9 +45,8 @@ public class AuthController {
     @Autowired
     private EmailService emailService;
 
-
     private static final int MAX_FAILED_ATTEMPTS = 5;
-
+    @Operation(summary = "Đăng nhập", description = "API đăng nhập")
     @PostMapping("/login")
     public ResponseEntity<ResponseData> login(@RequestBody LoginDTO loginDTO) {
         // 999 bi khoa
@@ -130,7 +131,7 @@ public class AuthController {
         taiKhoan.setSoLanNhapSai(0);
         taiKhoanService.saveTaiKhoan(taiKhoan);
     }
-
+    @Operation(summary = "Đăng kí", description = "API đăng kí")
     @PostMapping("/signup")
     public ResponseEntity<ResponseData> signup(@Valid @RequestBody SignupDTO signupDTO) {
         ResponseData responseData = new ResponseData();
@@ -192,6 +193,7 @@ public class AuthController {
             return new ResponseEntity<>(responseData, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    @Operation(summary = "Đăng xuất", description = "API đăng xuất")
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletRequest request, @RequestBody LogoutDTO logoutDTO) {
         ResponseData responseData = new ResponseData();
@@ -242,6 +244,7 @@ public class AuthController {
         }
     }
 
+    @Operation(summary = "Làm mới token", description = "API làm mới token")
     @PostMapping("/refresh_token")
     public ResponseEntity<?> refreshToken(HttpServletRequest request) {
         String refreshToken = getRefreshTokenFromRequest(request);
@@ -297,7 +300,7 @@ public class AuthController {
         }
     }
 
-
+    @Operation(summary = "Quên mật khẩu", description = "API gửi email quên mật khẩu")
     @PostMapping("/forgot_password")
     public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordDTO forgotPasswordDTO) {
         ResponseData responseData = new ResponseData();
@@ -321,7 +324,7 @@ public class AuthController {
         responseData.setData("");
         return new ResponseEntity<>(responseData, HttpStatus.OK);
     }
-
+    @Operation(summary = "Đặt lại mật khẩu", description = "API đặt lại mật khẩu")
     @PostMapping("/reset_password")
     public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordDTO resetPasswordDTO) {
 
