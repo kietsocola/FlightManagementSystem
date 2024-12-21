@@ -85,10 +85,12 @@ If you encounter errors related to Lombok (such as “cannot resolve symbol @Dat
 
 You can access the API documentation for the Flight Management System at the following link:
 
-[Flight Management System API Documentation](https://app.swaggerhub.com/apis/LOCKBKBANG/api-document_for_flight_management_system/v1.0.0)
+[Flight Management System API Documentation](http://14.225.255.160:8080/swagger-ui/index.html#/)
 
 Please refer to this documentation for all available API endpoints and usage details.
 
+userName: `admin`
+password: `123456`
 ---
 ## Frontend
 
